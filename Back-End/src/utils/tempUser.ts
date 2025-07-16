@@ -1,0 +1,1 @@
+export const tempUserStore : Record<string,any> = {}

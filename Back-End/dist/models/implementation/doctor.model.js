@@ -1,0 +1,100 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose_1 = __importStar(require("mongoose"));
+const doctorSchema = new mongoose_1.Schema({
+    email: {
+        type: String,
+        required: false,
+        unique: true,
+    },
+    name: {
+        type: String,
+        required: false,
+    },
+    phone: {
+        type: String,
+        required: false,
+    },
+    password: {
+        type: String,
+        required: false,
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false,
+    },
+    profile_img: {
+        type: String,
+    },
+    isApproved: {
+        type: Boolean,
+        default: false,
+    },
+    gender: {
+        type: String,
+        enum: ["male", "female", "others"],
+        required: false,
+        default: "male",
+    },
+    DOB: {
+        type: Date,
+    },
+    role: {
+        type: String,
+        enum: ["doctors"],
+        default: "doctors",
+    },
+    qualifications: {
+        degree: { type: String },
+        institution: { type: String },
+        experince: { type: Number },
+        educationCertificate: { type: String, required: false },
+        experienceCertificate: { type: String, required: false },
+        graduationYear: { type: Number },
+        specialization: { type: String },
+        medicalSchool: { type: String },
+        about: { type: String },
+        fees: { type: Number },
+    },
+    otp: {
+        type: String,
+    },
+    otpExpire: {
+        type: Date,
+    },
+}, { timestamps: true });
+const Doctor = mongoose_1.default.model("Doctor", doctorSchema);
+exports.default = Doctor;

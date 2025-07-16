@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const doctor_controller_1 = require("../controllers/doctors/doctor.controller");
+const doctor_service_1 = require("../services/doctor/doctor.service");
+const auth_repository_1 = require("../repositories/auth/auth.repository");
+const doctor_repository_1 = require("../repositories/doctors/doctor.repository");
+const doctor_auth_repository_1 = require("../repositories/doctors/doctor.auth.repository");
+const multer_middleware_1 = require("../middleware/multer.middleware");
+const router = express_1.default.Router();
+const patientRepo = new auth_repository_1.PatientRepository();
+const doctorRepo = new doctor_repository_1.DoctorRepository();
+const doctorAuthRepo = new doctor_auth_repository_1.DoctorAuthRepository();
+const doctorService = new doctor_service_1.DoctorService(doctorRepo, patientRepo, doctorAuthRepo);
+const doctorController = new doctor_controller_1.DoctorController(doctorService);
+router.post('/kycSubmit/:id', multer_middleware_1.multiFileUpload, doctorController.uploadDocuments.bind(doctorController));
+exports.default = router;
