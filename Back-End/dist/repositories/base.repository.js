@@ -30,5 +30,15 @@ class BaseRepository {
             return yield newItem.save();
         });
     }
+    findAllWithFilter() {
+        return __awaiter(this, arguments, void 0, function* (filter = []) {
+            return this.model.find(filter);
+        });
+    }
+    findAll() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.model.find();
+        });
+    }
 }
 exports.BaseRepository = BaseRepository;

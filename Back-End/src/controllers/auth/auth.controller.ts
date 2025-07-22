@@ -3,7 +3,7 @@ import IAuthController from "../../interface/auth/auth.controller";
 import { AuthService } from "../../services/auth/auth.service";
 import { HttpStatus } from "../../utils/httpStatus";
 import { CONTROLLER_MESSAGE } from "../../utils/controllerMessage";
-import { verifyToken } from "../../utils/jwt";
+import { verifyAccessToken } from "../../utils/jwt";
  export class AuthController implements IAuthController{
   constructor(private authService : AuthService) {}
 
@@ -12,9 +12,22 @@ import { verifyToken } from "../../utils/jwt";
         try {
             const {email,password} = req.body;
              
-            const data = await this.authService.login(email,password)
+            const {user,accessToken,refreshToken,msg} = await this.authService.login(email,password)
+            res.cookie('accessToken',accessToken,{
+                httpOnly:true,
+                secure:false,
+                sameSite:"lax",
+                maxAge: 15 * 60 * 1000,
+            })
 
-            res.status(HttpStatus.OK).json({data})
+              res.cookie("refreshToken",refreshToken,{
+                httpOnly:true,
+                secure:false,
+                sameSite:"lax",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+              })
+
+            res.status(HttpStatus.OK).json({msg,user:{id:user,email:user.email,role:user.role}});
             
         } catch (error) {
             const err = error as Error
@@ -51,7 +64,7 @@ import { verifyToken } from "../../utils/jwt";
        try {
         const token = req.cookies.token
       
-        const payload = verifyToken(token);
+        const payload = verifyAccessToken(token);
        
         res.status(HttpStatus.OK).json({token,user:payload})
        } catch (error) {
@@ -116,6 +129,13 @@ import { verifyToken } from "../../utils/jwt";
        } catch (error) {
         const err = error as Error
         res.status(HttpStatus.UNAUTHORIZED).json({msg:err.message});
+       }
+   }
+   async refreshToken(req: Request, res: Response): Promise<void> {
+       try {
+        const result = await this.authService.refreshAccessToken(req,res);
+       } catch (error) {
+        
        }
    }
 }

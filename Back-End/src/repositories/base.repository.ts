@@ -16,5 +16,12 @@ export class BaseRepository<T> implements IBaseRepository<T>{
         const newItem =  new this.model(Data)
         return await newItem.save();
     }
-   
+
+    async findAllWithFilter(filter:any = []):Promise<T | null>{
+        return this.model.find(filter);
+    }
+    async findAll(): Promise<T | null> {
+        return await this.model.find()
+    }
+    
 }

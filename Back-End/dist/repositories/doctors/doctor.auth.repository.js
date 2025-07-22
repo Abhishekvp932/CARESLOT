@@ -66,5 +66,10 @@ class DoctorAuthRepository extends base_repository_1.BaseRepository {
             return yield this.model.findOneAndUpdate({ email }, { $set: { password: update } }, { new: true });
         });
     }
+    findByIdAndDelete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.model.findByIdAndDelete(id);
+        });
+    }
 }
 exports.DoctorAuthRepository = DoctorAuthRepository;

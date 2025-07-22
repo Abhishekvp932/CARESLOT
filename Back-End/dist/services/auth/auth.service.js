@@ -15,6 +15,7 @@ const otp_1 = require("../../utils/otp");
 const hash_1 = require("../../utils/hash");
 const jwt_1 = require("../../utils/jwt");
 const mail_service_1 = require("../mail.service");
+const httpStatus_1 = require("../../utils/httpStatus");
 class AuthService {
     constructor(PatientRepo, doctorRepo, adminRepo) {
         this.PatientRepo = PatientRepo;
@@ -24,15 +25,15 @@ class AuthService {
     login(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             let user = null;
-            user = yield this.PatientRepo.findByEmail(email);
+            user = (yield this.PatientRepo.findByEmail(email));
             let role = "patients";
             if (!user) {
-                user = yield this.doctorRepo.findByEmail(email);
+                user = (yield this.doctorRepo.findByEmail(email));
                 role = "doctors";
             }
             if (!user) {
                 // console.log('1')
-                user = yield this.adminRepo.findByEmail(email);
+                user = (yield this.adminRepo.findByEmail(email));
                 role = "admin";
             }
             if (!user) {
@@ -49,19 +50,18 @@ class AuthService {
                     throw new Error(ServiceMessage_1.SERVICE_MESSAGE.PASSWORD_NOT_MATCH);
                 }
             }
-            // if(user.isVerified === false){
-            //   throw new Error (SERVICE_MESSAGE.USER_NOT_VERIFYIED)
-            // }
-            const token = (0, jwt_1.genarateToken)({
-                id: user._id,
+            const payload = {
+                id: user._id.toString(),
                 email: user.email,
                 role: role,
-            });
+            };
+            const accessToken = (0, jwt_1.generateAccessToken)(payload);
+            const refreshToken = (0, jwt_1.generateRefreshToken)(payload);
             return {
                 msg: ServiceMessage_1.SERVICE_MESSAGE.USER_LOGIN_SUCCESS,
                 user,
-                role,
-                token,
+                accessToken,
+                refreshToken,
             };
         });
     }
@@ -86,7 +86,7 @@ class AuthService {
                     otp,
                     otpExpire,
                     isVerified: false,
-                    role: 'patients',
+                    role: "patients",
                 };
                 yield this.PatientRepo.create(newPatient);
             }
@@ -237,6 +237,53 @@ class AuthService {
             const updated = yield this.PatientRepo.updatePasswordWithEmail(email, hashedPassword);
             console.log("updated user is", updated);
             return { msg: ServiceMessage_1.SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
+        });
+    }
+    refreshAccessToken(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const refreshToken = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken;
+            if (!refreshToken) {
+                throw new Error("No refresh token provieded");
+                return;
+            }
+            const decoded = (0, jwt_1.verifyRefreshToken)(refreshToken);
+            console.log('decode', decoded);
+            if (!decoded) {
+                res.clearCookie("accessToken");
+                res.clearCookie("refreshToken");
+                return res.status(403).json({ msg: "Invalid or expired refresh token" });
+            }
+            let user;
+            if (decoded.role === "patient") {
+                user = yield this.PatientRepo.findById(decoded.id);
+            }
+            else if (decoded.role === "doctor") {
+                user = yield this.doctorRepo.findById(decoded.id);
+            }
+            else if (decoded.role === "admin") {
+                user = yield this.adminRepo.findById(decoded.id);
+            }
+            const payload = {
+                id: user._id.toString(),
+                email: user.email,
+                role: user.role,
+            };
+            const newAccessToken = (0, jwt_1.generateAccessToken)(payload);
+            const newRefreshToken = (0, jwt_1.generateRefreshToken)(payload);
+            res.cookie("accessToken", newAccessToken, {
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax",
+                maxAge: 15 * 60 * 1000,
+            });
+            res.cookie("refreshToken", newRefreshToken, {
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
+            res.status(httpStatus_1.HttpStatus.OK).json({ msg: "token refreshed" });
         });
     }
 }

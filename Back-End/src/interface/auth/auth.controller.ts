@@ -10,4 +10,5 @@ export default interface IAuthController{
     verfiyEmail (req:Request,res:Response):Promise<void> 
     verifyEmailOTP(req:Request,res:Response):Promise<void> 
     forgotPassword(req:Request,res:Response):Promise<void> 
+    refreshToken(req:Request,res:Response):Promise<void>
 }

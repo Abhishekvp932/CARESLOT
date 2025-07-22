@@ -21,8 +21,20 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, password } = req.body;
-                const data = yield this.authService.login(email, password);
-                res.status(httpStatus_1.HttpStatus.OK).json({ data });
+                const { user, accessToken, refreshToken, msg } = yield this.authService.login(email, password);
+                res.cookie('accessToken', accessToken, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: "lax",
+                    maxAge: 15 * 60 * 1000,
+                });
+                res.cookie("refreshToken", refreshToken, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: "lax",
+                    maxAge: 7 * 24 * 60 * 60 * 1000,
+                });
+                res.status(httpStatus_1.HttpStatus.OK).json({ msg, user: { id: user, email: user.email, role: user.role } });
             }
             catch (error) {
                 const err = error;
@@ -62,7 +74,7 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const token = req.cookies.token;
-                const payload = (0, jwt_1.verifyToken)(token);
+                const payload = (0, jwt_1.verifyAccessToken)(token);
                 res.status(httpStatus_1.HttpStatus.OK).json({ token, user: payload });
             }
             catch (error) {
@@ -138,6 +150,15 @@ class AuthController {
             catch (error) {
                 const err = error;
                 res.status(httpStatus_1.HttpStatus.UNAUTHORIZED).json({ msg: err.message });
+            }
+        });
+    }
+    refreshToken(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield this.authService.refreshAccessToken(req, res);
+            }
+            catch (error) {
             }
         });
     }

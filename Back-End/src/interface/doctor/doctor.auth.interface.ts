@@ -9,4 +9,5 @@ export interface IDoctorAuthRepository{
    findByGoogleId(googleId:string):Promise<any>
    createWithGoogle(profile:Profile):Promise<any>
    updatePasswordWithEmail(email:string,update:Partial<any>):Promise<any>
+   findByIdAndDelete(id:string):Promise<any>
 }

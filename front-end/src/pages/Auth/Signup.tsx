@@ -109,7 +109,7 @@ const Signup = () => {
             <div className="signup-form-container">
               <h1>Create Account</h1>
               <p className="signup-subtitle">
-                Join thousands of patients who trust HealthCare+ for their
+                Join thousands of patients who trust careslot for their
                 medical needs
               </p>
 

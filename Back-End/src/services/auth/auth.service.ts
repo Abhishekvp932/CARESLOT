@@ -4,14 +4,19 @@ import { generateOTP } from "../../utils/otp";
 import bcrypt from "bcrypt";
 import { hashPassword, comparePassword } from "../../utils/hash";
 import { stringify } from "querystring";
-import { genarateToken } from "../../utils/jwt";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  TokenPayload,
+  verifyRefreshToken,
+} from "../../utils/jwt";
 import { Profile } from "passport-google-oauth20";
 import { IService } from "../../interface/auth/IService.interface";
-import { tempUserStore } from "../../utils/tempUser";
 import { MailService } from "../mail.service";
 import { DoctorAuthRepository } from "../../repositories/doctors/doctor.auth.repository";
 import { AdminRepository } from "../../repositories/admin/admin.repository";
-import { throwDeprecation } from "process";
+import { IBaseUser } from "../../utils/IBaseUser";
+import { HttpStatus } from "../../utils/httpStatus";
 export class AuthService implements IService {
   constructor(
     private PatientRepo: PatientRepository,
@@ -20,19 +25,19 @@ export class AuthService implements IService {
   ) {}
 
   async login(email: string, password: string): Promise<any> {
-    let user = null;
-    user = await this.PatientRepo.findByEmail(email);
+    let user: IBaseUser | null = null;
+    user = (await this.PatientRepo.findByEmail(email)) as IBaseUser | null;
     let role = "patients";
     if (!user) {
-      user = await this.doctorRepo.findByEmail(email);
+      user = (await this.doctorRepo.findByEmail(email)) as IBaseUser | null;
       role = "doctors";
     }
     if (!user) {
-      // console.log('1')
-      user = await this.adminRepo.findByEmail(email);
+      
+      user = (await this.adminRepo.findByEmail(email)) as IBaseUser | null;
       role = "admin";
     }
-
+   
     if (!user) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
@@ -48,21 +53,19 @@ export class AuthService implements IService {
         throw new Error(SERVICE_MESSAGE.PASSWORD_NOT_MATCH);
       }
     }
-
-    // if(user.isVerified === false){
-    //   throw new Error (SERVICE_MESSAGE.USER_NOT_VERIFYIED)
-    // }
-
-    const token = genarateToken({
-      id: user._id,
+    const payload: TokenPayload = {
+      id: user._id.toString(),
       email: user.email,
       role: role,
-    });
+    };
+
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
     return {
       msg: SERVICE_MESSAGE.USER_LOGIN_SUCCESS,
       user,
-      role,
-      token,
+      accessToken,
+      refreshToken,
     };
   }
 
@@ -85,20 +88,18 @@ export class AuthService implements IService {
       if (existingUser) {
         throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
       }
-       
-      
 
       const newPatient = {
         name,
         email,
         DOB: dob,
         phone,
-        gender : gender as 'male' | 'female' | 'others',
+        gender: gender as "male" | "female" | "others",
         password: hashedPassword,
         otp,
         otpExpire,
         isVerified: false,
-        role: 'patients' as 'patients',
+        role: "patients" as "patients",
       };
 
       await this.PatientRepo.create(newPatient);
@@ -114,7 +115,7 @@ export class AuthService implements IService {
         email,
         DOB: dob,
         phone,
-        gender : gender as 'male' | 'female' | 'others',
+        gender: gender as "male" | "female" | "others",
         password: hashedPassword,
         otp,
         otpExpire,
@@ -265,5 +266,52 @@ export class AuthService implements IService {
     console.log("updated user is", updated);
 
     return { msg: SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
+  }
+  async refreshAccessToken(req: any, res: any): Promise<any> {
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!refreshToken) {
+      throw new Error("No refresh token provieded");
+      return;
+    }
+    const decoded = verifyRefreshToken(refreshToken);
+    console.log('decode',decoded);
+    if (!decoded) {
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+      return res.status(403).json({ msg: "Invalid or expired refresh token" });
+    }
+    let user: any;
+    if (decoded.role === "patient") {
+      user = await this.PatientRepo.findById(decoded.id);
+    } else if (decoded.role === "doctor") {
+      user = await this.doctorRepo.findById(decoded.id);
+    } else if (decoded.role === "admin") {
+      user = await this.adminRepo.findById(decoded.id);
+    }
+    const payload: TokenPayload = {
+      id: user._id.toString(),
+      email: user.email,
+      role: user.role,
+    };
+
+    const newAccessToken = generateAccessToken(payload);
+    const newRefreshToken = generateRefreshToken(payload);
+
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(HttpStatus.OK).json({ msg: "token refreshed" });
   }
 }

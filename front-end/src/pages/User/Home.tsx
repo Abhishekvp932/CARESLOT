@@ -12,18 +12,16 @@ import { useDispatch,useSelector} from 'react-redux'
 import { setCredentials } from '@/features/auth/authSlice'
 import type { AppDispatch } from '@/app/store'
 import type { RootState } from '@/app/store'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 const Index = () => {
 
 
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state:RootState) => state.auth.token);
-  console.log(user)
-    useEffect(()=>{
-      if(!user){
-          
-      }
-    })
+  
+  const admin = useSelector((state:RootState)=> state.admin.admin);
+  const navigate = useNavigate()
+    
   const doctors = [
     {
       id: 1,
@@ -71,7 +69,6 @@ interface userInfo{
   useEffect(()=>{
     const getUserData = async()=>{
 
-      // if(!user) return;
       try {
         const res = await axios.get<userInfo>('http://localhost:3000/api/auth/me',{
           withCredentials:true

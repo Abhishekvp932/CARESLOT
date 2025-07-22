@@ -37,16 +37,24 @@ router.get('/google/callback', passport_1.default.authenticate('google', { sessi
     if (!user) {
         return res.redirect('http://localhost:2025/login');
     }
-    const token = (0, jwt_1.genarateToken)({
-        id: user._id,
+    const payload = {
+        id: user._id.toString(),
         email: user.email,
-        role: user.role
-    });
-    res.cookie('token', token, {
+        role: user.role,
+    };
+    const accessToken = (0, jwt_1.generateAccessToken)(payload);
+    const refreshToken = (0, jwt_1.generateRefreshToken)(payload);
+    res.cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: false,
         sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 15 * 60 * 1000,
+    });
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.redirect('http://localhost:2025/');
 }));
@@ -55,4 +63,5 @@ router.post('/resend-otp', authController.resendOTP.bind(authController));
 router.post('/send-otp', authController.verfiyEmail.bind(authController));
 router.post('/verify-email', authController.verifyEmailOTP.bind(authController));
 router.post('/forgot-password', authController.forgotPassword.bind(authController));
+router.post('/refresh-token', authController.refreshToken.bind(authController));
 exports.default = router;

@@ -11,9 +11,9 @@ export class PatientRepository extends BaseRepository<IPatient> implements Ipati
   }
  
 
-  async updateById(id: string, update: Partial<any>) {
-    return await this.model.findByIdAndUpdate(id, update, { new: true });
-  }
+    async updateById(id: string, update: Partial<any>) {
+      return await this.model.findByIdAndUpdate(id, update, { new: true });
+    }
   async upsertWithOTP(email: string, otp: string, otpExpire: Date) {
     return Patient.findOneAndUpdate(
       { email },
@@ -57,6 +57,6 @@ export class PatientRepository extends BaseRepository<IPatient> implements Ipati
       {email},
       {$set:{password:update}},
       {new:true}
-    );
+    );``
   }
 }

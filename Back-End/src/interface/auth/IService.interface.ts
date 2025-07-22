@@ -12,4 +12,5 @@ export interface IService{
     verifiyEmail(email:string) : Promise <any>;
     verifyEmailOTP(email:string,otp:string):Promise<any>;
     forgotPassword(email:string,newPassword:string):Promise<any>
+    refreshAccessToken(req:any,res:any):Promise<any>
 }

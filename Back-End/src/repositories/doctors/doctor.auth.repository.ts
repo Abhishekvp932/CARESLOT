@@ -55,4 +55,7 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
       {new:true}
     );
   }
+   async findByIdAndDelete(id: string): Promise<any> {
+     return await this.model.findByIdAndDelete(id)
+   }
 }

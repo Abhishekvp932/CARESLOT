@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useLoginMutation } from "@/features/auth/authApi";
 import { setCredentials } from "@/features/auth/authSlice";
+import { setCredentialsDoctor } from "@/features/docotr/doctorSlice";
+import { setCredentialsAdmin } from "@/features/admin/adminSlice";
 import type { AppDispatch } from "@/app/store";
 import type { RootState } from "@/app/store";
 
@@ -23,16 +25,12 @@ const Login = () => {
   const navigate = useNavigate();
   const googleAuth = useGoogleAuth();
   const dispatch = useDispatch<AppDispatch>();
-  const token = useSelector((state: RootState) => state.auth.token);
+
+  const admin = useSelector((state:RootState)=> state.admin.admin);
+  const user = useSelector((state:RootState)=> state.auth.user);
   const [login, { isLoading }] = useLoginMutation();
-  
-  useEffect(() => {
-    if (token) {
-      navigate("/");
-    } else {
-      navigate("/login");
-    }
-  }, []);
+
+
 
   type formType = {
     email: string;
@@ -72,32 +70,36 @@ const Login = () => {
 
     try {
       const res = await login(form).unwrap();
-       console.log('response from the back-end',res);
+      console.log("response from the back-end", res);
 
-       toast.success(res.msg);
-       const roles = res?.data?.role
-       const verifyd = res.data.user.isVerified
-       console.log('role is',roles)
-       if(roles === 'patients'){
-          if(verifyd === false){
-            navigate('/otp-verification')
-            return;
-          }
-          dispatch(
+      toast.success(res.msg);
+      const roles = res?.user?.role;
+      console.log("role is", roles);
+      if (roles === "patients") {
+       dispatch(
         setCredentials({
-          user: res?.data?.user?._id,
-          role: res?.data?.user.role,
-          token: res?.data?.token,
+          user:res?.user?.id,
+          role:res?.user?.role
         })
-      );
-        navigate('/')
-       }else if(roles === 'doctors'){
-        navigate('/signup')
-       }else{
-        navigate('/admin');
-       }
-     
-     
+       )
+        navigate("/");
+      } else if (roles === "doctors") {
+        dispatch(
+          setCredentialsDoctor({
+            doctor:res?.user?.id,
+            role:res?.user?.role
+          })
+        )
+        navigate("/signup");
+      } else {
+        dispatch(
+          setCredentialsAdmin({
+             admin:res?.user?.id,
+            role:res?.user?.role
+          })
+        )
+        navigate("/admin");
+      }
     } catch (error: any) {
       console.error("Login error:", error);
 

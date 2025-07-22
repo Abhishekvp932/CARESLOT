@@ -65,6 +65,7 @@ class PatientRepository extends base_repository_1.BaseRepository {
     updatePasswordWithEmail(email, update) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.model.findOneAndUpdate({ email }, { $set: { password: update } }, { new: true });
+            ``;
         });
     }
 }

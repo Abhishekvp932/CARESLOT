@@ -4,7 +4,7 @@ import VerificationOTP from "@/components/common/OTPVerification";
 import { useVerifyOtpMutation } from "@/features/auth/authApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch} from "react-redux";
-import { setCredentials } from "@/features/docotr/doctorSlice";
+import { setCredentials } from "@/features/auth/authSlice";
 import { useEffect } from "react";
 import type { AppDispatch} from "@/app/store";
 
