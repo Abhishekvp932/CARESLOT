@@ -17,6 +17,8 @@ import DoctorsList from "./pages/Admin/DoctorsList"
 import VerificationList from "./pages/Admin/verificationList"
 import UserProfile from "./pages/User/userProfile"
 import { UserLayout } from "./layout/user/userLayout"
+import DoctorDetails from "@/pages/Admin/PendingDoctorDetailsPage";
+import DoctorEditPage from "./pages/Admin/DoctorEditPage"
 function App() {
   return (
     <div>
@@ -38,6 +40,8 @@ function App() {
           <Route path="/admin/users" element={<AdminLayout><UsersList/> </AdminLayout>}/>
            <Route path="/admin/doctors" element={<AdminLayout><DoctorsList/> </AdminLayout>}/>
            <Route path="/admin/pending-verification" element={<AdminLayout><VerificationList/> </AdminLayout>}/>
+           <Route path="/admin/doctor-details/:doctorId" element = {<DoctorDetails/>}/>
+           <Route path="/admin/doctor-edit/:doctorId" element = {<DoctorEditPage/>}/>
      </Routes>
    </div>
   )

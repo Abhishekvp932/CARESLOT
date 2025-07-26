@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { IPatientController } from "../../interface/patients/IPatient.controller";
 import { PatientService } from "../../services/patients/patients.service";
+import { IPatientService } from "../../interface/patients/IPatient.service";
 import { HttpStatus } from "../../utils/httpStatus";
 export class PatientController implements IPatientController {
-  constructor(private patientService: PatientService) {}
+  constructor(private patientService: IPatientService) {}
   async getResendAppoinment(req: Request, res: Response): Promise<void> {
     console.log("1");
     try {

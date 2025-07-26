@@ -19,6 +19,7 @@ export interface IDoctor extends Document {
     medicalSchool:string;
     about:string;
     fees:string;
+    lisence:string
 
   };
   

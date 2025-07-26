@@ -1,7 +1,6 @@
 import { api } from "@/app/api";
 
 
-
 export const adminApi = api.injectEndpoints({
     endpoints : (builder)=>({
         getAllUsers : builder.query({
@@ -37,7 +36,7 @@ export const adminApi = api.injectEndpoints({
             url : '/admin/verification-list',
             method:"GET"
         }),
-        transformResponse: (response: any) => response.doctors,
+        transformResponse: (response:any) => response.doctors,
     }),
       doctorApprove : builder.mutation({
         query : ({doctorId})=>({
@@ -51,6 +50,35 @@ export const adminApi = api.injectEndpoints({
             method:"DELETE",
         }),
       }),
+      getDoctorData:builder.query({
+        query:(doctorId)=>({
+            url:`/admin/doctor-details/${doctorId}`,
+            method:'GET',
+        }),
+        transformResponse: (response: any) => response.doctor,
+      }),
+      updateUserData:builder.mutation({
+        query:({formData,userId})=>({
+            url:`/admin/users/${userId}`,
+            method:"PUT",
+            body:formData
+        }),
+      }),
+      getEditDoctorData:builder.query({
+        query:(doctorId)=>({
+            url:`/admin/doctors/${doctorId}`,
+            method:"GET",
+        }),
+         transformResponse: (response: any) => response.doctor,
+      }),
+      editDoctorData:builder.mutation<any,{formData:any,doctorId:string}>({
+        query:({formData,doctorId})=>({
+            url:`/admin/doctors/${doctorId}`,
+            method:"PUT",
+            body:formData,
+            formData: true
+        }),
+      }),
     }),
 });
 
@@ -61,5 +89,9 @@ export const {
     useBlockDoctorMutation,
     useFindUnApprovedDoctorsQuery,
     useDoctorApproveMutation,
-    useDoctorRejectMutation
+    useDoctorRejectMutation,
+    useGetDoctorDataQuery,
+    useUpdateUserDataMutation,
+    useGetEditDoctorDataQuery,
+    useEditDoctorDataMutation,
 } = adminApi

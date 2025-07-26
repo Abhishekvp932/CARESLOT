@@ -16,6 +16,8 @@ export const doctorApi = api.injectEndpoints({
       fees,
       educationCertificate,
       experienceCertificate,
+      lisence,
+      profileImage ,
     } = payload;
 
     const formData = new FormData();
@@ -27,10 +29,10 @@ export const doctorApi = api.injectEndpoints({
     formData.append("graduationYear", graduationYear.toString());
     formData.append("about", about);
     formData.append("fees", fees ?? "");
-
+    formData.append('lisence',lisence);
     formData.append("educationCertificate", educationCertificate[0]);
     formData.append("experienceCertificate", experienceCertificate[0]);
-
+    formData.append('profileImage',profileImage[0]);
     return {
       url: `/doctor/kycSubmit/${doctorId}`,
       method: "POST",

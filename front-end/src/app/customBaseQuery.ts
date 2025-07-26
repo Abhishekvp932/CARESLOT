@@ -9,7 +9,7 @@ import type {
 
 import { logOut as userLogOut } from "@/features/auth/authSlice";
 import { logOut as doctorLogOut } from "@/features/docotr/doctorSlice";
-import { logOut as adminLogOut } from "@/features/admin/adminSlice";
+import { AdminlogOut as adminLogOut } from "@/features/admin/adminSlice";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:3000/api",
@@ -34,16 +34,19 @@ export const customBaseQuery: BaseQueryFn<
       api,
       extraOptions
     );
+    console.log('refresh result is',refreshResult);
 
     if (refreshResult?.data) {
       console.log("Refresh successful. Retrying original request.");
 
       result = await baseQuery(args, api, extraOptions);
+
     } else {
       console.log("Refresh failed. Logging out.");
 
       const state: any = api.getState();
-      if (state?.user?.token) {
+      console.log('state is',state);
+      if (state?.auth?.token) {
         api.dispatch(userLogOut());
       } else if (state?.doctor?.token) {
         api.dispatch(doctorLogOut());

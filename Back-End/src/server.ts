@@ -40,8 +40,13 @@ app.use('/api/auth',autRoutes)
 app.use('/api/doctor',doctorRoute);
 app.use('/api/admin',adminRoute);
 app.use('/api/patient',patientRoute);
-connectDB()
+
 const PORT = process.env.PORT 
-app.listen(PORT,()=>{
-    console.log(`server ${PORT} is running`)
+connectDB().then(()=>{
+  app.listen(PORT,()=>{
+    console.log(`server is running in port ${PORT}`);
+  })
+}).catch((err)=>{
+   console.log('faild to connect mongo db',err);
+   process.exit(1);
 })

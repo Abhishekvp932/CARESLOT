@@ -8,11 +8,16 @@ import type { RootState } from "@/app/store";
 import EditUserModal from "@/components/common/EditUserModal";
 import { useUpdateUserDataMutation } from "@/features/users/userApi";
 import { toast, ToastContainer } from "react-toastify";
+import { useEffect } from "react";
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { data: doctors, error, isLoading} = useGetResendAppoinmentsQuery();
   const {data:users,refetch} = useGetUserDataQuery(user?._id);
   const [updateUserData] = useUpdateUserDataMutation();
+
+  useEffect(()=>{
+    refetch();
+  },[]);
   if (isLoading) {
     return <div className="text-center mt-6 text-gray-600">Loading...</div>;
   }

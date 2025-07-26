@@ -7,4 +7,8 @@ export default interface IAdminController {
     findUnprovedDoctors(req:Request,res:Response):Promise<void>
     doctorApprove(req:Request,res:Response):Promise<void>
     doctorReject(req:Request,res:Response):Promise<void>
+    getVerificationDoctorDetails(req:Request,res:Response):Promise<void>;
+    updateUserData(req:Request,res:Response):Promise<void>;
+    editDoctorData(req:Request,res:Response):Promise<void>;
+    editDoctorProfile(req:Request,res:Response):Promise<void>;
 } 

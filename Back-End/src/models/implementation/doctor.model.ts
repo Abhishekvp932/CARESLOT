@@ -57,6 +57,7 @@ const doctorSchema = new Schema<IDoctor>(
       medicalSchool: { type: String },
       about: { type: String },
       fees: {type: Number},
+      lisence:{type:String}
     },
     otp: {
       type: String,

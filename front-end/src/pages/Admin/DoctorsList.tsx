@@ -6,13 +6,15 @@ import { Edit } from "lucide-react";
 import { useBlockDoctorMutation } from "@/features/admin/adminApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
-
+import { useNavigate } from "react-router-dom";
 const DoctorsList = () => {
   const [blockDoctor] = useBlockDoctorMutation();
-  
+  const navigate = useNavigate()
   const { data: doctors = [],refetch } = useGetAllDoctorsQuery();
   console.log(doctors);
-
+      useEffect(()=>{
+      refetch()
+    },[]);
   const handleDoctorBlockAndUnBlock = async (
     doctorId: string,
     isBlocked: boolean
@@ -33,10 +35,12 @@ const DoctorsList = () => {
     }
   };
 
+  const handleEdit = (doctorId:string)=>{
+     navigate(`/admin/doctor-edit/${doctorId}`);
+  }
+
   
-    useEffect(()=>{
-      refetch()
-    },[]);
+
 
   const columns = [
     { label: "Name", accessor: "name" },
@@ -48,7 +52,7 @@ const DoctorsList = () => {
       accessor: "actions",
       render: (item) => (
         <div className="flex gap-2">
-          <button className="bg-black text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1">
+          <button className="bg-black text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"  onClick={()=> handleEdit(item?._id)}>
             <Edit size={16} />
             Edit
           </button>

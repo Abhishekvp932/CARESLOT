@@ -13,7 +13,7 @@ const AdminSlice = createSlice({
             state.admin = action.payload.admin;
             state.role = action.payload.role;
         },
-        logOut:(state)=>{
+        AdminlogOut:(state)=>{
             state.admin = null;
             state.admin = null
         }
@@ -21,6 +21,6 @@ const AdminSlice = createSlice({
 })
 
 
-export const {logOut,setCredentialsAdmin} = AdminSlice.actions;
+export const {AdminlogOut,setCredentialsAdmin} = AdminSlice.actions;
 
 export default AdminSlice.reducer

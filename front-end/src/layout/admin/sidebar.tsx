@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Menu, X, Home, User, Stethoscope, CalendarDays,Timer,LogOut } from "lucide-react";
 import { Link,useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { logOut } from "@/features/admin/adminSlice"; 
+import { AdminlogOut as adminLogOut } from "@/features/admin/adminSlice"; 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
    const dispatch = useDispatch()
    const navigate = useNavigate()
 
   const handleLogout = ()=>{
-      dispatch(logOut())
+      dispatch(adminLogOut())
       navigate('/login');
   }
 

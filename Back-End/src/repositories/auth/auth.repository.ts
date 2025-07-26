@@ -4,7 +4,7 @@ import { Profile } from "passport-google-oauth20";
 import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
 import { BaseRepository } from "../base.repository";
 import { IPatient } from "../../models/interface/IPatient";
-import { AwardIcon } from "lucide-react";
+
 export class PatientRepository extends BaseRepository<IPatient> implements IpatientRepository {
   constructor(){
     super(Patient);

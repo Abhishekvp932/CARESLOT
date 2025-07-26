@@ -1,5 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { AvatarImage,Avatar } from "@/components/ui/avatar";
+import { useGetUserDataQuery } from '@/features/users/userApi';
 import type { RootState } from '@/app/store';
 import { 
   User, 
@@ -17,6 +19,7 @@ const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState('Profile');
   const user = useSelector((state:RootState)=> state.auth.user);
+  const {data:users} = useGetUserDataQuery(user?._id);
   const menuItems = [
     { name: 'Profile', icon: User, color: 'text-green-500' },
     { name: 'Sessions', icon: BarChart3, color: 'text-purple-500' },
@@ -88,14 +91,16 @@ const SideBar = () => {
         <div className="p-4 border-t border-gray-200 bg-white flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-              <User className="w-5 h-5 text-white" />
+              <Avatar>
+               <AvatarImage src={users?.profile_img} />
+              </Avatar>
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-800 truncate">
-               {user?.name}
+               {users?.name}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {user?.email}
+                {users?.email}
               </p>
             </div>
           </div>

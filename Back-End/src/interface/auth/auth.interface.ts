@@ -1,12 +1,13 @@
 import {Profile} from 'passport-google-oauth20'
+import { IPatient } from '../../models/interface/IPatient';
 export interface IpatientRepository{
-   findById(id:string):Promise<any>;
-   findByEmail(email:string):Promise<any>;
-   create(patientData:Partial<any>):Promise<any>
-   updateById(id:string,update:Partial<any>):Promise<any>
-   upsertWithOTP(email:string,otp:string,otpExpire:Date):Promise<any>
-   verifyOtp(email:string,otp:string):Promise<any>
-   findByGoogleId(googleId:string):Promise<any>
-   createWithGoogle(profile:Profile):Promise<any>
-   updatePasswordWithEmail(email:string,update:Partial<any>):Promise<any>
+   findById(id:string):Promise<IPatient | null>;
+   findByEmail(email:string):Promise<IPatient | null>;
+   create(patientData:Partial<any>):Promise<IPatient | null>
+   updateById(id:string,update:Partial<any>):Promise<IPatient | null>
+   upsertWithOTP(email:string,otp:string,otpExpire:Date):Promise<IPatient | null>
+   verifyOtp(email:string,otp:string):Promise<boolean>
+   findByGoogleId(googleId:string):Promise<IPatient | null>
+   createWithGoogle(profile:Profile):Promise<IPatient | null>
+   updatePasswordWithEmail(email:string,update:Partial<any>):Promise<IPatient | null>
 }

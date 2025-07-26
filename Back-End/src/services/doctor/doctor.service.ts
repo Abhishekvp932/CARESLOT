@@ -16,15 +16,16 @@ export class DoctorService implements IDoctor {
   ) {}
   async uploadDocument(
     doctorId: string,
-    input: QualificationInput
+    input: QualificationInput,
+    profileImage:string
   ): Promise<any> {
     const doctor = await this.authDoctor.findById(doctorId);
-
+    console.log('profile image od doctor',profileImage,input);
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
 
-    await this.doctorRepo.uploadDocument(doctorId, input);
+    await this.doctorRepo.uploadDocument(doctorId, {profile_img:profileImage,qualifications:input});
     const mailService = new MailService();
 
     await mailService.sendMail(

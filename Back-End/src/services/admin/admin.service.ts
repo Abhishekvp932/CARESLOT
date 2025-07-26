@@ -4,6 +4,7 @@ import { IAdminService } from "../../interface/admin/admin.serivce.interface";
 import { DoctorRepository } from "../../repositories/doctors/doctor.repository";
 import { DoctorAuthRepository } from "../../repositories/doctors/doctor.auth.repository";
 import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
+import { IDoctor } from "../../interface/doctor/doctor.service.interface";
 export class AdminService implements IAdminService {
   constructor(
     private patientRepo: PatientRepository,
@@ -90,5 +91,45 @@ async findUnApprovedDoctors(): Promise<any> {
 
       return {msg:"Doctor reject successfully"}
  }
+ async getVerificationDoctorDetails(doctorId: string): Promise<any> {
+      
+  const doctor = await this.doctorAuthRepo.findById(doctorId);
+    
+  if(!doctor){
+    throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+  }
+   
+  return {msg:"doctor fethced successfull",doctor}
+ }
 
+ async updateUserData(formData: any, userId: string,profileImage?:string): Promise<any> {
+   const user = await this.patientRepo.findById(userId)
+   console.log('admin updating user is',user);
+   if(!user){
+    throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+   }
+   await this.patientRepo.updateById(userId,{...formData,profile_img:profileImage});
+
+   return {msg:"user profile updated successfully"};
+
+ }
+
+ async editDoctorData(doctorId: string): Promise<any> {
+    const doctor = await this.doctorAuthRepo.findById(doctorId);
+       if(!doctor){
+        throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+       }
+       return {msg:"edit doctor data taken success fully",doctor};
+   }
+   async editDoctorProfile(doctorId: string, data: Partial<IDoctor>): Promise<{msg:string}> {
+     const doctor = await this.doctorAuthRepo.findById(doctorId)
+     if(!doctor){
+      throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+     }
+
+     await this.doctorAuthRepo.updateById(doctorId,data);
+     
+     return {msg:"doctor profile updated successfully"}
+  
+   }
 }

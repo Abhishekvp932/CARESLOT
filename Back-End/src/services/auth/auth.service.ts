@@ -17,11 +17,14 @@ import { DoctorAuthRepository } from "../../repositories/doctors/doctor.auth.rep
 import { AdminRepository } from "../../repositories/admin/admin.repository";
 import { IBaseUser } from "../../utils/IBaseUser";
 import { HttpStatus } from "../../utils/httpStatus";
+import { IpatientRepository } from "../../interface/auth/auth.interface";
+import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interface";
+import { IAdminRepository } from "../../interface/admin/admin.repo.interface";
 export class AuthService implements IService {
   constructor(
-    private PatientRepo: PatientRepository,
-    private doctorRepo: DoctorAuthRepository,
-    private adminRepo: AdminRepository
+    private PatientRepo: IpatientRepository,
+    private doctorRepo: IDoctorAuthRepository,
+    private adminRepo: IAdminRepository
   ) {}
 
   async login(email: string, password: string): Promise<any> {
@@ -260,7 +263,7 @@ export class AuthService implements IService {
     const hashedPassword = await hashPassword(newPassword);
     const updated = await this.PatientRepo.updatePasswordWithEmail(
       email,
-      hashedPassword
+      {password:hashedPassword}
     );
 
     console.log("updated user is", updated);
@@ -275,16 +278,17 @@ export class AuthService implements IService {
       return;
     }
     const decoded = verifyRefreshToken(refreshToken);
-    console.log('decode',decoded);
+    
     if (!decoded) {
       res.clearCookie("accessToken");
       res.clearCookie("refreshToken");
       return res.status(403).json({ msg: "Invalid or expired refresh token" });
     }
+
     let user: any;
-    if (decoded.role === "patient") {
+    if (decoded.role === "patients") {
       user = await this.PatientRepo.findById(decoded.id);
-    } else if (decoded.role === "doctor") {
+    } else if (decoded.role === "doctors") {
       user = await this.doctorRepo.findById(decoded.id);
     } else if (decoded.role === "admin") {
       user = await this.adminRepo.findById(decoded.id);
@@ -312,6 +316,6 @@ export class AuthService implements IService {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(HttpStatus.OK).json({ msg: "token refreshed" });
+   return res.status(HttpStatus.OK).json({ msg: "token refreshed" });
   }
 }

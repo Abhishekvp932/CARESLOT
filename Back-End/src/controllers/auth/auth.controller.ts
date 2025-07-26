@@ -4,8 +4,9 @@ import { AuthService } from "../../services/auth/auth.service";
 import { HttpStatus } from "../../utils/httpStatus";
 import { CONTROLLER_MESSAGE } from "../../utils/controllerMessage";
 import { verifyAccessToken } from "../../utils/jwt";
+import { IService } from "../../interface/auth/IService.interface";
  export class AuthController implements IAuthController{
-  constructor(private authService : AuthService) {}
+  constructor(private authService : IService) {}
 
 
     async login(req: Request, res: Response): Promise<void> {
@@ -134,8 +135,10 @@ import { verifyAccessToken } from "../../utils/jwt";
    async refreshToken(req: Request, res: Response): Promise<void> {
        try {
         const result = await this.authService.refreshAccessToken(req,res);
+        // res.status(HttpStatus.OK).json(result)
        } catch (error) {
-        
+        const err = error as Error
+        res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
        }
    }
 }

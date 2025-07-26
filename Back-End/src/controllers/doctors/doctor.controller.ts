@@ -4,8 +4,9 @@ import { CONTROLLER_MESSAGE } from "../../utils/controllerMessage";
 import { NextFunction, Request, Response } from "express";
 import { DoctorService } from "../../services/doctor/doctor.service";
 import { QualificationInput } from "../../interface/doctor/doctor.service.interface";
+import { IDoctor } from "../../interface/doctor/doctor.service.interface";
 export class DoctorController implements IDoctorController {
-  constructor(private doctorService: DoctorService) {}
+  constructor(private doctorService: IDoctor) {}
 
   async uploadDocuments(req: Request, res: Response): Promise<void> {
     console.log('controller recived')
@@ -13,6 +14,7 @@ export class DoctorController implements IDoctorController {
       const files = req.files as {
         educationCertificate?: Express.Multer.File[];
         experienceCertificate?: Express.Multer.File[];
+        profileImage?:Express.Multer.File[];
       };
       console.log('files',files)
      const { id: doctorId } = req.params;
@@ -32,22 +34,24 @@ export class DoctorController implements IDoctorController {
         graduationYear,
         about,
         fees,
+        lisence
       } = req.body;
     console.log('qualifications',req.body);
       const input : QualificationInput = {
         degree,
         institution,
-        experience: Number(experience),
+        experince: Number(experience),
         specialization,
         medicalSchool,
         graduationYear: Number(graduationYear),
         about,
+        lisence:lisence,
         fees,
         educationCertificate: files.educationCertificate?.[0]?.path || '',
         experienceCertificate: files.experienceCertificate?.[0]?.path || '',
       }
-
-      const result = await this.doctorService.uploadDocument(doctorId,input)
+      const profileImage = files.profileImage?.[0]?.path || ''
+      const result = await this.doctorService.uploadDocument(doctorId,input,profileImage);
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
         const err = error as Error

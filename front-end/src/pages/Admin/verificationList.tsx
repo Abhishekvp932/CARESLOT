@@ -8,11 +8,18 @@ import {
   useDoctorApproveMutation,
 } from "@/features/admin/adminApi";
 import { Check, X,Eye} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const VerificationList = () => {
   const { data: doctors = [], refetch } = useFindUnApprovedDoctorsQuery();
   const [doctorApprove] = useDoctorApproveMutation();
   const [doctorReject] = useDoctorRejectMutation();
+  const navigate = useNavigate()
+
+  useEffect(()=>{
+    refetch()
+  },[]);
   const handleApproveDoctor = async (doctorId: string) => {
     try {
       console.log("1");
@@ -27,7 +34,7 @@ const VerificationList = () => {
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
-        toast.error("OTP verification error");
+        toast.error("Doctor approve error");
       }
     }
   };
@@ -36,11 +43,22 @@ const VerificationList = () => {
     try {
       const res = await doctorReject({ doctorId }).unwrap();
       console.log("res", res);
-      fetch();
-    } catch (error) {
-      console.log(error);
+      refetch();
+    } catch (error:any) {
+       console.log(error);
+      if (error?.data?.msg) {
+        toast.error(error.data.msg);
+      } else {
+        toast.error("Doctor rejection error");
+      }
     }
   };
+
+
+  const handleDetailsPage = (doctorId:string)=>{
+    console.log('doctor id is',doctorId);
+    navigate(`/admin/doctor-details/${doctorId}`)
+  }
 
   const columns = [
     { label: "Name", accessor: "name" },
@@ -75,7 +93,7 @@ const VerificationList = () => {
       accessor: "view",
       render: (item) => (
         <div className="flex gap-2">
-          <button className="bg-blue-500 text-white px-1 py-1 rounded hover:bg-gray-900 flex items-center gap-1">
+          <button className="bg-blue-500 text-white px-1 py-1 rounded hover:bg-gray-900 flex items-center gap-1" onClick={()=> handleDetailsPage(item._id)}>
             <Eye size={20}/>
             View Details
           </button>
@@ -126,7 +144,7 @@ const VerificationList = () => {
                 Reject
               </button>
 
-              <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1">
+              <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1" onClick={()=> handleDetailsPage(user._id)}>
                 <Eye size={20}/>
                 View
               </button>

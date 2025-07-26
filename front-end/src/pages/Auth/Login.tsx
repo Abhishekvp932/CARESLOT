@@ -91,7 +91,7 @@ const Login = () => {
           })
         )
         navigate("/signup");
-      } else {
+      } else if(roles === 'admin') {  
         dispatch(
           setCredentialsAdmin({
              admin:res?.user?.id,

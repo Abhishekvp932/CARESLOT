@@ -4,7 +4,7 @@
        
         email:string;
         name:string;
-        phone:string;
+        phone?:string;
         gender:'male' | 'female' | 'others';
         DOB:Date;
         profile_img?:string;

@@ -4,7 +4,8 @@ import VerificationOTP from "@/components/common/OTPVerification";
 import { useVerifyOtpMutation } from "@/features/auth/authApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch} from "react-redux";
-import { setCredentials } from "@/features/auth/authSlice";
+
+import { setCredentialsDoctor } from "@/features/docotr/doctorSlice";
 import { useEffect } from "react";
 import type { AppDispatch} from "@/app/store";
 
@@ -31,7 +32,7 @@ useEffect(()=>{
           navigate("/login");
       }else if(role === 'doctors'){
                dispatch(
-               setCredentials({
+               setCredentialsDoctor({
                  doctor: res?.user,
                  role: res?.role,
                  token : res?.token,
