@@ -1,8 +1,8 @@
 
 import { Profile } from "passport-google-oauth20";
-
+import { IBaseUser } from "../../utils/IBaseUser";
 export interface IService{
-     login(email:string,password:string) : Promise<any>;
+     login(email:string,password:string) :Promise<{msg:string,user:IBaseUser,accessToken:string,refreshToken:string}>;
      signup(name:string,email:string,password:string,phone:string,dob:Date,gender:string,role:string):Promise<any>;
      verifyOtp(email:string,otp:string):Promise<any>;
      findOrCreateGoogleUser(profile:Profile):Promise<any>;

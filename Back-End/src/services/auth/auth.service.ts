@@ -27,7 +27,7 @@ export class AuthService implements IService {
     private adminRepo: IAdminRepository
   ) {}
 
-  async login(email: string, password: string): Promise<any> {
+  async login(email: string, password: string): Promise<{msg:string,user:IBaseUser,accessToken:string,refreshToken:string}> {
     let user: IBaseUser | null = null;
     user = (await this.PatientRepo.findByEmail(email)) as IBaseUser | null;
     let role = "patients";
@@ -40,7 +40,7 @@ export class AuthService implements IService {
       user = (await this.adminRepo.findByEmail(email)) as IBaseUser | null;
       role = "admin";
     }
-   
+
     if (!user) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
@@ -50,6 +50,10 @@ export class AuthService implements IService {
         throw new Error(SERVICE_MESSAGE.PASSWORD_NOT_MATCH);
       }
     } else {
+
+      if(role=== 'doctors' && user.isApproved === false){
+        throw new Error("Doctor is not verified");
+      }
       const isPassword = await comparePassword(password, user.password);
 
       if (!isPassword) {
@@ -216,6 +220,7 @@ export class AuthService implements IService {
     }
 
     const otp = generateOTP();
+    console.log('forgot opt is',otp);
     const otpExpire = new Date(Date.now() + 60 * 1000);
 
     if (role === "patients") {
@@ -253,23 +258,31 @@ export class AuthService implements IService {
 
     return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS };
   }
-  async forgotPassword(email: string, newPassword: string): Promise<any> {
-    const user = await this.PatientRepo.findByEmail(email);
-    console.log("user is ", user);
-    if (!user) {
-      throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
-    }
+  async forgotPassword(email: string, newPassword: string): Promise<{ msg: string }> {
+  let user = await this.PatientRepo.findByEmail(email);
+  let role = "patients";
 
-    const hashedPassword = await hashPassword(newPassword);
-    const updated = await this.PatientRepo.updatePasswordWithEmail(
-      email,
-      {password:hashedPassword}
-    );
-
-    console.log("updated user is", updated);
-
-    return { msg: SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
+  if (!user) {
+    user = await this.doctorRepo.findByEmail(email);
+    role = "doctors";
   }
+
+  if (!user) {
+    throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+   console.log('hashed password',hashedPassword);
+  if (role === "patients") {
+    await this.PatientRepo.updatePasswordWithEmail(email, { password: hashedPassword });
+  } else {
+    console.log('1')
+    await this.doctorRepo.updatePasswordWithEmail(email,{ password: hashedPassword });
+  }
+
+  return { msg: SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
+}
+
   async refreshAccessToken(req: any, res: any): Promise<any> {
     const refreshToken = req.cookies?.refreshToken;
 

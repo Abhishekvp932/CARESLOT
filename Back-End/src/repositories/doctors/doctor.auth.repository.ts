@@ -51,7 +51,7 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
   async updatePasswordWithEmail(email: string, update:any) {
     return  await this.model.findOneAndUpdate(
       {email},
-      {$set:{password:update}},
+      {$set:{password:update.password}},
       {new:true}
     );
   }

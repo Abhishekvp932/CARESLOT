@@ -14,49 +14,16 @@ import type { AppDispatch } from '@/app/store'
 import type { RootState } from '@/app/store'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useGetAllApprovedDoctorsQuery } from '@/features/users/userApi'
 const Index = () => {
-
+ const {data:doctors = []} = useGetAllApprovedDoctorsQuery()
 
   const dispatch = useDispatch<AppDispatch>();
   
   const admin = useSelector((state:RootState)=> state.admin.admin);
   const navigate = useNavigate()
     
-  const doctors = [
-    {
-      id: 1,
-      name: "Dr Amruth",
-      specialty: "Cardiologist",
-      experience: "15 years",
-      rating: 4.9,
-      image: Dcotor_one
-    },
-    {
-      id: 2,
-      name: "Dr Anees",
-      specialty: "Neurologist",
-      experience: "12 years",
-      rating: 4.8,
-      image: Doctor_two
-    },
-    {
-      id: 3,
-      name: "Dr. Faique Faizal",
-      specialty: "Pediatrician",
-      experience: "10 years",
-      rating: 4.9,
-      image: Doctor_three
-    },
-    {
-      id: 4,
-      name: "Dr. Lena",
-      specialty: "psychologist",
-      experience: "18 years",
-      rating: 4.7,
-      image: Doctor_four
-    }
-  ];
-
+  
 interface userInfo{
   token : string,
   user:{
@@ -145,15 +112,15 @@ interface userInfo{
             {doctors.map((doctor) => (
               <div key={doctor.id} className="doctor-card">
                 <div className="doctor-image flex justify-center">
-                  <img src={doctor.image} alt={doctor.name}  />
+                  <img src={doctor.profile_img} alt={doctor?.name}  />
                 </div>
                 <div className="doctor-info">
-                  <h3>{doctor.name}</h3>
-                  <p className="specialty">{doctor.specialty}</p>
-                  <p className="experience">{doctor.experience} experience</p>
+                  <h3>Dr.{doctor?.name}</h3>
+                  <p className="specialty">{doctor?.qualifications?.specialization}</p>
+                  <p className="experience">{doctor?.qualifications?.experince} experience</p>
                   <div className="rating">
-                    <span className="stars">⭐⭐⭐⭐⭐</span>
-                    <span className="rating-number">{doctor.rating}</span>
+                    <span className="stars"></span>
+                    <span className="rating-number"></span>
                   </div>
                   <button className="btn-book">Book Appointment</button>
                 </div>

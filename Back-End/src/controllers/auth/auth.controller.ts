@@ -122,7 +122,6 @@ import { IService } from "../../interface/auth/IService.interface";
    }
     async forgotPassword(req: Request, res: Response): Promise<void> {
     const {email,newPassword} = req.body
-    console.log(email)
        try {
           const result = await this.authService.forgotPassword(email,newPassword);
               console.log(result)

@@ -7,7 +7,7 @@ export const userApi = api.injectEndpoints({
         url: `/patient/profile`,
         method: "GET",
       }),
-      transformResponse: (response: any) => {
+      transformResponse: (response) => {
         return response.doctors;
       },
     }),
@@ -23,9 +23,42 @@ export const userApi = api.injectEndpoints({
             url:`/patient/profile/${id}`,
             method:"GET"
         }),
-        transformResponse: (response: any) => response.users,
+        transformResponse: (response) => response.users,
+    }),
+    getAllApprovedDoctors:builder.query({
+      query:()=>({
+        url:"/patient/doctors",
+        method:"GET"
+      }),
+       transformResponse: (response) => {
+        console.log('response from user api',response.doctors);
+        return response.doctors;
+      },
+    }),
+    getDoctorDetailPage :builder.query({
+      query:(doctorId)=>({
+        url:`/patient/doctor/${doctorId}`,
+        method:"GET",
+      }),
+       transformResponse: (response) => {
+        console.log('response from user api',response.doctor);
+        return response.doctor;
+      },
+    }),
+    getDoctorSlot:builder.query({
+      query:(doctorId)=>({
+        url:`/patinet/doctor/${doctorId}`
+      })
     })
   }),
 });
 
-export const { useGetResendAppoinmentsQuery,useUpdateUserDataMutation,useGetUserDataQuery} = userApi;
+export const {
+   useGetResendAppoinmentsQuery,
+   useUpdateUserDataMutation
+   ,useGetUserDataQuery,
+   useGetAllApprovedDoctorsQuery,
+   useGetDoctorDetailPageQuery,
+   useGetDoctorSlotQuery,
+  }
+   = userApi;

@@ -18,5 +18,10 @@ router.route('/profile/:id').put(protect,multiFileUpload,patientController.updat
 .get(patientController.getUserData.bind(patientController));
 
 
+router.route('/doctors')
+.get(protect,patientController.getAllDoctors.bind(patientController));
+
+router.route('/doctor/:id').
+get(protect,patientController.getDoctorDetails.bind(patientController));
 
 export default router;

@@ -6,7 +6,7 @@ import { HttpStatus } from "../../utils/httpStatus";
 export class PatientController implements IPatientController {
   constructor(private patientService: IPatientService) {}
   async getResendAppoinment(req: Request, res: Response): Promise<void> {
-    console.log("1");
+    
     try {
       const result = await this.patientService.getResendAppoinments();
 
@@ -17,7 +17,7 @@ export class PatientController implements IPatientController {
     }
   }
   async updateUserProfile(req: Request, res: Response): Promise<void> {
-    console.log("1");
+   
     try {
       const { id: userId } = req.params;
       console.log("updating user id is", userId);
@@ -29,7 +29,7 @@ export class PatientController implements IPatientController {
       const imgDate = (req.files as { [key: string]: Express.Multer.File[] })
         ?.profileImage?.[0];
       const profileImg = imgDate?.path;
-      console.log('imge path',profileImg);      
+      console.log("imge path", profileImg);
       const result = await this.patientService.updateUserProfile(
         formData,
         userId,
@@ -43,15 +43,39 @@ export class PatientController implements IPatientController {
     }
   }
   async getUserData(req: Request, res: Response): Promise<void> {
-      try {
-        const {id:userId} = req.params
+    try {
+      const { id: userId } = req.params;
 
-        const result = await this.patientService.getUserData(userId);
-        res.status(HttpStatus.OK).json(result);
-      } catch (error) {
-        const err = error as Error
+      const result = await this.patientService.getUserData(userId);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      const err = error as Error;
 
-        res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
-      }
+      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+    }
+  }
+  async getAllDoctors(req: Request, res: Response): Promise<void> {
+    try {
+      // console.log('request is comming');
+      const result = await this.patientService.getAllDoctors();
+      // console.log('result',result);
+      res.status(HttpStatus.OK).json({ doctors: result });
+    } catch (error) {
+      const err = error as Error;
+      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+    }
+  }
+  async getDoctorDetails(req: Request, res: Response): Promise<void> {
+     console.log('ijnvijnvjn')
+    try {
+      
+      const { id: doctorId } = req.params;
+      const result = await this.patientService.getDoctorDetails(doctorId);
+      res.status(HttpStatus.OK).json({doctor:result});
+      console.log(result);
+    } catch (error) {
+      const err = error as Error;
+      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+    }
   }
 }

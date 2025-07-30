@@ -18,12 +18,17 @@ const router = express.Router()
 
 router.route('/users')
 .get(protect,adminController.getAllUsers.bind(adminController))
+.post(protect,multiFileUpload,adminController.addUser.bind(adminController));
+
 router.route('/users/:id').
 patch(protect,adminController.blockAndUnblockUsers.bind(adminController)).
 put(protect,multiFileUpload,adminController.updateUserData.bind(adminController));
 
 
-router.route('/doctors').get(protect,adminController.getAllDoctors.bind(adminController));
+router.route('/doctors')
+.get(protect,adminController.getAllDoctors.bind(adminController))
+.post(protect,multiFileUpload,adminController.addDoctor.bind(adminController));
+
 
 
 router.route('/doctors/:id').

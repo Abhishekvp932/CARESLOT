@@ -2,19 +2,20 @@ import { CommonCardView } from "@/components/common/commonCardView";
 import { CommonTableView } from "@/components/common/commonTableView";
 import { useGetAllDoctorsQuery } from "@/features/admin/adminApi";
 import ActionMenu from "@/components/common/actionMenu";
-import { Edit } from "lucide-react";
+import { Edit, Plus,Eye } from "lucide-react";
 import { useBlockDoctorMutation } from "@/features/admin/adminApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 const DoctorsList = () => {
   const [blockDoctor] = useBlockDoctorMutation();
-  const navigate = useNavigate()
-  const { data: doctors = [],refetch } = useGetAllDoctorsQuery();
-  console.log(doctors);
-      useEffect(()=>{
-      refetch()
-    },[]);
+  const navigate = useNavigate();
+  const { data: doctors = [], refetch } = useGetAllDoctorsQuery();
+  
+  useEffect(() => {
+    refetch();
+  }, []);
   const handleDoctorBlockAndUnBlock = async (
     doctorId: string,
     isBlocked: boolean
@@ -22,7 +23,10 @@ const DoctorsList = () => {
     console.log("doctor Id", doctorId);
 
     try {
-      const res = await blockDoctor({ doctorId, isBlocked:!isBlocked }).unwrap();
+      const res = await blockDoctor({
+        doctorId,
+        isBlocked: !isBlocked,
+      }).unwrap();
       toast.success(res.msg);
       refetch();
     } catch (error: any) {
@@ -35,13 +39,14 @@ const DoctorsList = () => {
     }
   };
 
-  const handleEdit = (doctorId:string)=>{
-     navigate(`/admin/doctor-edit/${doctorId}`);
+  const handleEdit = (doctorId: string) => {
+    navigate(`/admin/doctor-edit/${doctorId}`);
+  };
+   
+
+  const handleDoctorDetailsPage = (doctorId:string)=>{
+     navigate(`/admin/doctor-details/${doctorId}`);
   }
-
-  
-
-
   const columns = [
     { label: "Name", accessor: "name" },
     { label: "Email", accessor: "email" },
@@ -52,7 +57,10 @@ const DoctorsList = () => {
       accessor: "actions",
       render: (item) => (
         <div className="flex gap-2">
-          <button className="bg-black text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"  onClick={()=> handleEdit(item?._id)}>
+          <button
+            className="bg-black text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+            onClick={() => handleEdit(item?._id)}
+          >
             <Edit size={16} />
             Edit
           </button>
@@ -67,13 +75,33 @@ const DoctorsList = () => {
           >
             {item.isBlocked ? "Unblock" : "Block"}
           </button>
+
+           <button
+            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+            onClick={() => handleDoctorDetailsPage(item?._id)}
+          >
+            <Eye size={16} />
+            view
+          </button>
         </div>
       ),
     },
   ];
 
+
+  const handleAdd = ()=>{
+    navigate('/admin/add-doctors');
+  }
+
   return (
     <div>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-gray-800"></h2>
+        <Button className="bg-black text-white hover:bg-black" onClick={handleAdd}>
+          <Plus size={16} />
+          Add Doctor
+        </Button>
+      </div>
       <CommonTableView title="Doctors" data={doctors} columns={columns} />
 
       <CommonCardView
@@ -101,7 +129,9 @@ const DoctorsList = () => {
             <div className="md:hidden">
               <ActionMenu
                 user={user}
-                onBlockToggle={() => handleDoctorBlockAndUnBlock(user._id, user.isBlocked)}
+                onBlockToggle={() =>
+                  handleDoctorBlockAndUnBlock(user._id, user.isBlocked)
+                }
               />
             </div>
           </div>

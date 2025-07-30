@@ -10,6 +10,9 @@ import { confiqurePassport } from './config/passport';
 import doctorRoute from './routes/doctor.route'
 import adminRoute from './routes/admin.route'
 import patientRoute from './routes/patient.route'
+import slotRoute from './routes/slot.route'
+
+
 dotenv.config()
 const app : Application = express()
 
@@ -40,7 +43,7 @@ app.use('/api/auth',autRoutes)
 app.use('/api/doctor',doctorRoute);
 app.use('/api/admin',adminRoute);
 app.use('/api/patient',patientRoute);
-
+app.use('/api/slots',slotRoute)
 const PORT = process.env.PORT 
 connectDB().then(()=>{
   app.listen(PORT,()=>{
