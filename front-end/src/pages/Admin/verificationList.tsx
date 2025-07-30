@@ -57,7 +57,7 @@ const VerificationList = () => {
 
   const handleDetailsPage = (doctorId:string)=>{
     console.log('doctor id is',doctorId);
-    navigate(`/admin/doctor-details/${doctorId}`)
+    navigate(`/admin/verification-details/${doctorId}`)
   }
 
   const columns = [

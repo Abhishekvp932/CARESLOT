@@ -23,12 +23,26 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
       <div className="grid md:grid-cols-2 gap-6">
         {[
           { label: "Degree", field: "degree", placeholder: "e.g., MD, MBBS" },
-          { label: "Institution", field: "institution", placeholder: "Institution name" },
-          { label: "Specialization", field: "specialization", placeholder: "e.g., Cardiology" },
-          { label: "Medical School", field: "medicalSchool", placeholder: "Medical school name" },
+          {
+            label: "Institution",
+            field: "institution",
+            placeholder: "Institution name",
+          },
+          {
+            label: "Specialization",
+            field: "specialization",
+            placeholder: "e.g., Cardiology",
+          },
+          {
+            label: "Medical School",
+            field: "medicalSchool",
+            placeholder: "Medical school name",
+          },
         ].map(({ label, field, placeholder }) => (
           <div key={field} className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">{label}</label>
+            <label className="text-sm font-semibold text-gray-700">
+              {label}
+            </label>
             <input
               type="text"
               value={formData?.qualifications?.[field] || ""}
@@ -40,22 +54,30 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
         ))}
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700">Years of Experience</label>
+          <label className="text-sm font-semibold text-gray-700">
+            Years of Experience
+          </label>
           <input
             type="number"
             value={formData?.qualifications?.experince || ""}
-            onChange={(e) => onChange("experince", parseInt(e.target.value), true)}
+            onChange={(e) =>
+              onChange("experince", parseInt(e.target.value), true)
+            }
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="Years of experience"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700">Graduation Year</label>
+          <label className="text-sm font-semibold text-gray-700">
+            Graduation Year
+          </label>
           <input
             type="number"
             value={formData?.qualifications?.graduationYear || ""}
-            onChange={(e) => onChange("graduationYear", parseInt(e.target.value), true)}
+            onChange={(e) =>
+              onChange("graduationYear", parseInt(e.target.value), true)
+            }
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="Graduation year"
           />
@@ -82,7 +104,7 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
           </label>
           <input
             type="text"
-            value={formData?.qualifications?.license || ""}
+            value={formData?.qualifications?.lisence || ""}
             onChange={(e) => onChange("license", e.target.value, true)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="License number"
@@ -103,38 +125,46 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
           />
         </div>
 
-        {/* --- Education Certificate Upload --- */}
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700">Education Certificate</label>
+          <label className="text-sm font-semibold text-gray-700">
+            Education Certificate
+          </label>
           <input
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
-            onChange={(e) => onChange("educationCertificate", e.target.files?.[0], true)}
+            onChange={(e) =>
+              onChange("educationCertificate", e.target.files?.[0], true)
+            }
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
               file:rounded-full file:border-0 file:text-sm file:font-semibold
               file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
           {formData?.qualifications?.educationCertificate && (
             <p className="text-xs text-green-600">
-              Selected: {getFileLabel(formData.qualifications.educationCertificate)}
+              Selected:{" "}
+              {getFileLabel(formData.qualifications.educationCertificate)}
             </p>
           )}
         </div>
 
-        {/* --- Experience Certificate Upload --- */}
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700">Experience Certificate</label>
+          <label className="text-sm font-semibold text-gray-700">
+            Experience Certificate
+          </label>
           <input
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
-            onChange={(e) => onChange("experienceCertificate", e.target.files?.[0], true)}
+            onChange={(e) =>
+              onChange("experienceCertificate", e.target.files?.[0], true)
+            }
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
               file:rounded-full file:border-0 file:text-sm file:font-semibold
               file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
           {formData?.qualifications?.experienceCertificate && (
             <p className="text-xs text-green-600">
-              Selected: {getFileLabel(formData.qualifications.experienceCertificate)}
+              Selected:{" "}
+              {getFileLabel(formData.qualifications.experienceCertificate)}
             </p>
           )}
         </div>

@@ -2,17 +2,23 @@ import { CommonCardView } from "@/components/common/commonCardView";
 import { CommonTableView } from "@/components/common/commonTableView";
 import { useGetAllUsersQuery } from "@/features/admin/adminApi";
 import ActionMenu from "@/components/common/actionMenu";
-import { Edit } from "lucide-react";
+import { Edit,Plus } from "lucide-react";
 import { useBlockUserMutation } from "@/features/admin/adminApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 import EditUserModal from "@/components/common/EditUserModal";
 import { Button } from "@/components/ui/button";
 import { useUpdateUserDataMutation } from "@/features/admin/adminApi";
+import { useAddUserMutation } from "@/features/admin/adminApi";
+import AddUserModal from "./AddUser";
+import { useState } from "react";
 const UsersList = () => {
   const { data: users= [], refetch } = useGetAllUsersQuery();
   const [blockUser] = useBlockUserMutation();
   const [updateUserData] = useUpdateUserDataMutation();
+  const [addUser] = useAddUserMutation();
+
+
   const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
     try {
       const res = await blockUser({ userId, isBlocked: !isBlocked }).unwrap();
@@ -61,6 +67,36 @@ const UsersList = () => {
     }
   };
 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+ const handleUser = async (newUser: UserFormData) => {
+  try {
+    const formData = new FormData();
+    formData.append("name", newUser.name);
+    formData.append("email", newUser.email);
+    formData.append("phone", newUser.phone);
+    formData.append("gender", newUser.gender);
+    formData.append("dob", newUser.DOB);
+    formData.append("profileImage", newUser.profileImg);
+    formData.append("password", newUser.password);
+    formData.append("role", newUser.role);
+
+    const res = await addUser({ formData }).unwrap();
+    toast.success("user addedd successfully");
+    console.log(res);
+    setIsAddModalOpen(false);
+    refetch();
+  } catch (error: any) {
+      console.log(error);
+
+      if (error?.data?.msg) {
+        toast.error(error.data.msg);
+      } else {
+        toast.error("User profile updating error");
+      }
+    }
+};
+
   useEffect(() => {
     refetch();
   }, []);
@@ -99,10 +135,12 @@ const UsersList = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">Users</h2>
-        <Button className="bg-blue-600 text-white hover:bg-blue-700">
-          + Add User
+        <h2 className="text-xl font-semibold text-gray-800"></h2>
+        <Button className="bg-black text-white hover:bg-black" onClick={()=> setIsAddModalOpen(true)}>
+          <Plus size={16}/>
+          Add User
         </Button>
+        <AddUserModal onSave={handleUser} open={isAddModalOpen} onOpenChange={setIsAddModalOpen}/>
       </div>
 
       <CommonTableView title="Users" data={users} columns={columns} />

@@ -6,17 +6,21 @@ import EditDoctorTabs from '@/components/common/Doctor/EditDoctorTabs'
 import SaveCancelButtons from "@/components/common/Doctor/SaveCancelButtons";
 import QualificationSection from "@/components/common/Doctor/QualificationSection";
 import PersonalInfoSection from "@/components/common/Doctor/PersonalInfoSection";
-
+import isEqual from "lodash.isequal";
 const DoctorEditProfile = () => {
   const [activeSection, setActiveSection] = useState("personal");
   const { doctorId } = useParams<{ doctorId: string }>();
   const { data: doctor } = useGetEditDoctorDataQuery(doctorId);
   const [formData, setFormData] = useState<typeof doctor | null>(null);
+  const [original,setOriginal] = useState<typeof doctor | null>(null);
   const [editDoctorData] = useEditDoctorDataMutation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (doctor) setFormData(doctor);
+    if (doctor){
+      setFormData(doctor)
+      setOriginal(doctor);
+    };
   }, [doctor]);
 
   const handleInputChange = (field: string, value: any, isQualification = false) => {
@@ -37,7 +41,13 @@ const DoctorEditProfile = () => {
 
 const handleSave = async () => {
   if (!formData || !doctorId) return;
-
+   if(isEqual(formData,original)){
+    toast.info('No change detected');
+    setTimeout(()=>{
+      navigate(-1);
+    },1000);
+    return;
+   }
   try {
     const fd = new FormData();
 
@@ -78,7 +88,6 @@ const handleSave = async () => {
       fd.append("experienceCertificate", q.experienceCertificate);
     }
 
-    // Submit
     const res = await editDoctorData({ formData: fd, doctorId }).unwrap();
     toast.success(res?.msg);
     setTimeout(() => navigate(-1), 1000);

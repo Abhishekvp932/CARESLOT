@@ -4,6 +4,8 @@ import { IAdminService } from "../../interface/admin/admin.serivce.interface";
 import { DoctorRepository } from "../../repositories/doctors/doctor.repository";
 import { DoctorAuthRepository } from "../../repositories/doctors/doctor.auth.repository";
 import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
+import { hashPassword } from "../../utils/hash";
+import { IDoctor as Doctors} from "../../models/interface/IDoctor";
 import { IDoctor } from "../../interface/doctor/doctor.service.interface";
 export class AdminService implements IAdminService {
   constructor(
@@ -132,4 +134,36 @@ async findUnApprovedDoctors(): Promise<any> {
      return {msg:"doctor profile updated successfully"}
   
    }
+async addUser(name: string, email: string, phone: string, gender:string, dob: Date, password: string,profileImage?:string): Promise<{ msg: string; }> {
+    const user = await this.patientRepo.findByEmail(email);
+    if(user){
+      throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
+    }
+    const hashedPassword = await hashPassword(password);
+    const newUser = {
+      name,
+      email,
+      phone,
+      gender:gender as "male" | "female" | "others",
+      DOB:dob,
+      profile_img:profileImage,
+      password:hashedPassword,
+      isVerified:true
+    }
+   await this.patientRepo.create(newUser);
+   
+     return {msg:'User add successfully'}
+}
+async addDoctor(data:unknown): Promise<{ msg: string; }> {
+   const doctorData = data as Partial<Doctors>;
+     if (!doctorData.email) {
+    throw new Error("Email is required");
+    }
+   const doctor = await this.doctorAuthRepo.findByEmail(doctorData.email);
+    if(doctor){
+      throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
+    }
+     await this.doctorAuthRepo.create(doctorData);   
+  return {msg:'New doctor added successfully'}
+}
 }

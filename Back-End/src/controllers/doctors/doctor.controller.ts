@@ -5,26 +5,22 @@ import { NextFunction, Request, Response } from "express";
 import { DoctorService } from "../../services/doctor/doctor.service";
 import { QualificationInput } from "../../interface/doctor/doctor.service.interface";
 import { IDoctor } from "../../interface/doctor/doctor.service.interface";
+import { IDoctor as IDoctorData } from "../../models/interface/IDoctor";
 export class DoctorController implements IDoctorController {
   constructor(private doctorService: IDoctor) {}
 
   async uploadDocuments(req: Request, res: Response): Promise<void> {
-    console.log('controller recived')
+    console.log("controller recived");
     try {
       const files = req.files as {
         educationCertificate?: Express.Multer.File[];
         experienceCertificate?: Express.Multer.File[];
-        profileImage?:Express.Multer.File[];
+        profileImage?: Express.Multer.File[];
       };
-      console.log('files',files)
-     const { id: doctorId } = req.params;
+      console.log("files", files);
+      const { id: doctorId } = req.params;
 
-    
-     if(!doctorId){
-      res.status(HttpStatus.BAD_REQUEST).json({msg:"Doctor id missing"});
-     }
-
-      console.log('doctor id is showing',doctorId);
+      console.log("doctor id is showing", doctorId);
       const {
         degree,
         institution,
@@ -34,10 +30,10 @@ export class DoctorController implements IDoctorController {
         graduationYear,
         about,
         fees,
-        lisence
+        lisence,
       } = req.body;
-    console.log('qualifications',req.body);
-      const input : QualificationInput = {
+      console.log("qualifications", req.body);
+      const input: QualificationInput = {
         degree,
         institution,
         experince: Number(experience),
@@ -45,17 +41,57 @@ export class DoctorController implements IDoctorController {
         medicalSchool,
         graduationYear: Number(graduationYear),
         about,
-        lisence:lisence,
+        lisence: lisence,
         fees,
-        educationCertificate: files.educationCertificate?.[0]?.path || '',
-        experienceCertificate: files.experienceCertificate?.[0]?.path || '',
-      }
-      const profileImage = files.profileImage?.[0]?.path || ''
-      const result = await this.doctorService.uploadDocument(doctorId,input,profileImage);
+        educationCertificate: files.educationCertificate?.[0]?.path || "",
+        experienceCertificate: files.experienceCertificate?.[0]?.path || "",
+      };
+      const profileImage = files.profileImage?.[0]?.path || "";
+      const result = await this.doctorService.uploadDocument(
+        doctorId,
+        input,
+        profileImage
+      );
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
-        const err = error as Error
-        res.status(HttpStatus.BAD_REQUEST).json({msg:'qualification error msg'})
+      const err = error as Error;
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ msg: "qualification error msg" });
+    }
+  }
+  async getDoctorProfile(req: Request, res: Response): Promise<void> {
+    try {
+      const { id: doctorId } = req.params;
+
+      const result = await this.doctorService.getDoctorProfile(doctorId);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      const err = error as Error;
+      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+    }
+  }
+
+  async editDoctorProfile(req: Request, res: Response): Promise<void> {
+    try {
+      const {id:doctorId} = req.params;
+      console.log('doctor id',doctorId);
+      const files = req.files as {
+        profileImage?: Express.Multer.File[];
+        educationCertificate?: Express.Multer.File[];
+        experienceCertificate?: Express.Multer.File[];
+      };
+
+      const result = await this.doctorService.editDoctorProfile(
+        doctorId,
+        req.body,
+        files
+      );
+
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      const err = error as Error
+      res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
     }
   }
 }

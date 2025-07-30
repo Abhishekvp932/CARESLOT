@@ -79,6 +79,20 @@ export const adminApi = api.injectEndpoints({
             formData: true
         }),
       }),
+      addUser:builder.mutation({
+        query:({formData})=>({
+            url:"/admin/users",
+            method:"POST",
+            body:formData
+        }),
+      }),
+      addDoctor:builder.mutation({
+        query:({formData})=>({
+            url:'/admin/doctors',
+            method:"POST",
+            body:formData
+        }),
+      }),
     }),
 });
 
@@ -94,4 +108,6 @@ export const {
     useUpdateUserDataMutation,
     useGetEditDoctorDataQuery,
     useEditDoctorDataMutation,
+    useAddUserMutation,
+    useAddDoctorMutation,
 } = adminApi

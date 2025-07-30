@@ -90,7 +90,7 @@ const Login = () => {
             role:res?.user?.role
           })
         )
-        navigate("/signup");
+        navigate("/doctor");
       } else if(roles === 'admin') {  
         dispatch(
           setCredentialsAdmin({

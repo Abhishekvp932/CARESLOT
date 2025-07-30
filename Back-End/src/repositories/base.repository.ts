@@ -16,7 +16,7 @@
             return await newItem.save();
         }
 
-        async findAllWithFilter(filter:any = []):Promise<T | null>{
+        async findAllWithFilter(filter:any = []):Promise<T[]>{
             return this.model.find(filter);
         }
         async findAll(): Promise<T | null> {
