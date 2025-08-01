@@ -58,7 +58,7 @@ export default function TimeShedule() {
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
 
   const { data: slots = [], refetch } = useGetDoctorSlotsQuery(doctor?._id);
-  console.log("slots is ", slots);
+   
 
   const updateTimeSlot = (
     id: string,

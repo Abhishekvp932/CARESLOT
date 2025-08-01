@@ -31,7 +31,7 @@ const UserProfile = () => {
   }
 
     const handleSave = async (upadateUser) => {
-      console.log("updateuser", upadateUser);
+       
       const formData = new FormData();
       formData.append("name", upadateUser.name);
 
@@ -46,11 +46,11 @@ const UserProfile = () => {
           formData,
           userId: user?._id,
         }).unwrap();
-        console.log(res);
+         
         toast.success(res.msg);
        refetch()
       } catch (error: any) {
-        console.log(error);
+         
 
         if (error?.data?.msg) {
           toast.error(error.data.msg);

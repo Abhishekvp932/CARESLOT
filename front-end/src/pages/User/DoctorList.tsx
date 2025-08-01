@@ -44,7 +44,7 @@ export default function DoctorList() {
   const [selectedSpecialty, setSelectedSpecialty] = useState("All Specialties");
   const [sortBy, setSortBy] = useState("rating");
 
-  console.log('doctors', doctors);
+   
   const navigate = useNavigate()
   const filteredDoctors = doctors
     .filter((doctor) => {
@@ -64,6 +64,7 @@ export default function DoctorList() {
     });
      
     const handleDoctorDetailsPage = async (doctorId:string)=>{
+      console.log('passing doctor id',doctorId);
       navigate(`/doctor-details/${doctorId}`);
     }
 

@@ -8,14 +8,13 @@ export const adminApi = api.injectEndpoints({
                 url:"/admin/users",
                 method:'GET'
             }),
-             transformResponse: (response: any) => response.users,
+             transformResponse: (response) => response.users,
         }),
         getAllDoctors:builder.query({
-            query: ()=>({
-                url:'/admin/doctors',
+            query: ({page,limit})=>({
+                url:`/admin/doctors?page=${page}&limit=${limit}`,
                 method:'GET'
             }),
-            transformResponse: (response: any) => response.doctors,
         }),
        blockUser: builder.mutation({
        query:({userId,isBlocked})=>({

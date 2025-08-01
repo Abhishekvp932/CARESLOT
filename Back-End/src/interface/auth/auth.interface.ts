@@ -1,5 +1,6 @@
 import {Profile} from 'passport-google-oauth20'
 import { IPatient } from '../../models/interface/IPatient';
+
 export interface IpatientRepository{
    findById(id:string):Promise<IPatient | null>;
    findByEmail(email:string):Promise<IPatient | null>;
@@ -10,4 +11,5 @@ export interface IpatientRepository{
    findByGoogleId(googleId:string):Promise<IPatient | null>
    createWithGoogle(profile:Profile):Promise<IPatient | null>
    updatePasswordWithEmail(email:string,update:Partial<any>):Promise<IPatient | null>
+   findAll():Promise<IPatient []>
 }

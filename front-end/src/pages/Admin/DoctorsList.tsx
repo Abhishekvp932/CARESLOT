@@ -8,10 +8,18 @@ import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 const DoctorsList = () => {
   const [blockDoctor] = useBlockDoctorMutation();
   const navigate = useNavigate();
-  const { data: doctors = [], refetch } = useGetAllDoctorsQuery();
+
+   const [page, setPage] = useState(1);
+    const limit = 10;
+  const { data = {}, refetch } = useGetAllDoctorsQuery({page,limit});
+  console.log(data)
+  const doctors = data?.data || []
+  console.log('doctors',doctors);
+  const totalPages = data?.totalPages || 1;
   
   useEffect(() => {
     refetch();
@@ -20,7 +28,7 @@ const DoctorsList = () => {
     doctorId: string,
     isBlocked: boolean
   ) => {
-    console.log("doctor Id", doctorId);
+     
 
     try {
       const res = await blockDoctor({
@@ -30,7 +38,7 @@ const DoctorsList = () => {
       toast.success(res.msg);
       refetch();
     } catch (error: any) {
-      console.log("error is", error);
+       
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
@@ -102,7 +110,12 @@ const DoctorsList = () => {
           Add Doctor
         </Button>
       </div>
-      <CommonTableView title="Doctors" data={doctors} columns={columns} />
+      <CommonTableView title="Doctors" data={doctors} columns={columns} 
+      withPagination= {true}
+      currentPage={page}
+      totalPages={totalPages}
+      onPageChange={(newPage)=> setPage(newPage)}
+       />
 
       <CommonCardView
         data={doctors}

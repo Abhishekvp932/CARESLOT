@@ -2,7 +2,7 @@ import { IDoctor } from "../doctor/doctor.service.interface";
 
 export interface IAdminService {
   findAllUsers(): Promise<any>;
-  findAllDoctors(): Promise<any>;
+  findAllDoctors(page:number,limit:number): Promise<any>;
   blockAndUnblockUsers(userId: string, update: boolean): Promise<any>;
   blockAndUnblockDoctors(doctorId: string, update: boolean): Promise<any>;
   findUnApprovedDoctors(): Promise<any>;

@@ -5,13 +5,13 @@ import { ISlotService } from "../../interface/Slots/slotService.interface";
 import { emitWarning } from "process";
 import { HttpStatus } from "../../utils/httpStatus";
 export class SlotController implements ISlotController {
-    constructor (private slotService:ISlotService){}
+    constructor (private _slotService:ISlotService){}
 
     async addTimeSlot(req: Request, res: Response): Promise<void> {
        try {
        const data = req.body
-        console.log(data);
-       const result = await this.slotService.addTimeSlot(data);
+         
+       const result = await this._slotService.addTimeSlot(data);
        res.status(HttpStatus.CREATED).json(result);
        } catch (error) {
         const err = error as Error
@@ -20,12 +20,12 @@ export class SlotController implements ISlotController {
     }
     async getDoctorSlot(req: Request, res: Response): Promise<void> {
         try {
-            console.log('1')
+           
             const {id:doctorId} = req.params
 
-            const result = await this.slotService.getDoctotSlot(doctorId);
+            const result = await this._slotService.getDoctotSlot(doctorId);
             res.status(HttpStatus.OK).json(result);
-            console.log('get slot result is',result);
+             
         } catch (error) {
             const err = error as Error
             res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     admin : null,
-    role : 'admin',
+    role : null,
 
 };
 const AdminSlice = createSlice({
@@ -15,7 +15,7 @@ const AdminSlice = createSlice({
         },
         AdminlogOut:(state)=>{
             state.admin = null;
-            state.admin = null
+            state.role = null
         }
     }
 })

@@ -1,4 +1,3 @@
-import { PatientRepository } from "../../repositories/auth/auth.repository";
 import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
 import { generateOTP } from "../../utils/otp";
 import bcrypt from "bcrypt";
@@ -13,8 +12,7 @@ import {
 import { Profile } from "passport-google-oauth20";
 import { IService } from "../../interface/auth/IService.interface";
 import { MailService } from "../mail.service";
-import { DoctorAuthRepository } from "../../repositories/doctors/doctor.auth.repository";
-import { AdminRepository } from "../../repositories/admin/admin.repository";
+
 import { IBaseUser } from "../../utils/IBaseUser";
 import { HttpStatus } from "../../utils/httpStatus";
 import { IpatientRepository } from "../../interface/auth/auth.interface";
@@ -22,22 +20,29 @@ import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interf
 import { IAdminRepository } from "../../interface/admin/admin.repo.interface";
 export class AuthService implements IService {
   constructor(
-    private PatientRepo: IpatientRepository,
-    private doctorRepo: IDoctorAuthRepository,
-    private adminRepo: IAdminRepository
+    private _patientRepo: IpatientRepository,
+    private _doctorRepo: IDoctorAuthRepository,
+    private _adminRepo: IAdminRepository
   ) {}
 
-  async login(email: string, password: string): Promise<{msg:string,user:IBaseUser,accessToken:string,refreshToken:string}> {
+  async login(
+    email: string,
+    password: string
+  ): Promise<{
+    msg: string;
+    user: IBaseUser;
+    accessToken: string;
+    refreshToken: string;
+  }> {
     let user: IBaseUser | null = null;
-    user = (await this.PatientRepo.findByEmail(email)) as IBaseUser | null;
+    user = (await this._patientRepo.findByEmail(email)) as IBaseUser | null;
     let role = "patients";
     if (!user) {
-      user = (await this.doctorRepo.findByEmail(email)) as IBaseUser | null;
+      user = (await this._doctorRepo.findByEmail(email)) as IBaseUser | null;
       role = "doctors";
     }
     if (!user) {
-      
-      user = (await this.adminRepo.findByEmail(email)) as IBaseUser | null;
+      user = (await this._adminRepo.findByEmail(email)) as IBaseUser | null;
       role = "admin";
     }
 
@@ -50,8 +55,7 @@ export class AuthService implements IService {
         throw new Error(SERVICE_MESSAGE.PASSWORD_NOT_MATCH);
       }
     } else {
-
-      if(role=== 'doctors' && user.isApproved === false){
+      if (role === "doctors" && user.isApproved === false) {
         throw new Error("Doctor is not verified");
       }
       const isPassword = await comparePassword(password, user.password);
@@ -86,12 +90,12 @@ export class AuthService implements IService {
     role: string
   ): Promise<any> {
     const otp = generateOTP();
-    console.log("otp is", otp);
+
     const otpExpire = new Date(Date.now() + 60 * 1000);
     const hashedPassword = await hashPassword(password);
 
     if (role === "patients") {
-      const existingUser = await this.PatientRepo.findByEmail(email);
+      const existingUser = await this._patientRepo.findByEmail(email);
       if (existingUser) {
         throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
       }
@@ -109,9 +113,9 @@ export class AuthService implements IService {
         role: "patients" as "patients",
       };
 
-      await this.PatientRepo.create(newPatient);
+      await this._patientRepo.create(newPatient);
     } else if (role === "doctors") {
-      const existingDoctor = await this.doctorRepo.findByEmail(email);
+      const existingDoctor = await this._doctorRepo.findByEmail(email);
 
       if (existingDoctor) {
         throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
@@ -130,7 +134,7 @@ export class AuthService implements IService {
         role: "doctors" as "doctors",
       };
 
-      await this.doctorRepo.create(newDoctor);
+      await this._doctorRepo.create(newDoctor);
     }
     const mailService = new MailService();
 
@@ -144,11 +148,11 @@ export class AuthService implements IService {
   }
   async verifyOtp(email: string, otp: string): Promise<any> {
     let user = null;
-    user = await this.PatientRepo.findByEmail(email);
+    user = await this._patientRepo.findByEmail(email);
     let role = "patients";
 
     if (!user) {
-      user = await this.doctorRepo.findByEmail(email);
+      user = await this._doctorRepo.findByEmail(email);
       role = "doctors";
     }
     if (!user) {
@@ -156,22 +160,22 @@ export class AuthService implements IService {
     }
 
     if (role === "patients") {
-      await this.PatientRepo.verifyOtp(email, otp);
+      await this._patientRepo.verifyOtp(email, otp);
     } else {
-      await this.doctorRepo.verifyOtp(email, otp);
+      await this._doctorRepo.verifyOtp(email, otp);
     }
 
     return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS, role, user: user._id };
   }
 
   async findOrCreateGoogleUser(profile: Profile): Promise<any> {
-    const existingUser = await this.PatientRepo.findByGoogleId(profile.id);
+    const existingUser = await this._patientRepo.findByGoogleId(profile.id);
     if (existingUser) return existingUser;
-    const newUser = await this.PatientRepo.createWithGoogle(profile);
+    const newUser = await this._patientRepo.createWithGoogle(profile);
     return newUser;
   }
   async findUserById(id: string): Promise<any> {
-    return await this.PatientRepo.findById(id);
+    return await this._patientRepo.findById(id);
   }
 
   async logOut(): Promise<string> {
@@ -179,10 +183,10 @@ export class AuthService implements IService {
   }
   async resendOTP(email: string): Promise<any> {
     let user = null;
-    user = await this.PatientRepo.findByEmail(email);
+    user = await this._patientRepo.findByEmail(email);
     let role = "patients";
     if (!user) {
-      user = await this.doctorRepo.findByEmail(email);
+      user = await this._doctorRepo.findByEmail(email);
       role = "doctors";
     }
     if (!user) {
@@ -190,12 +194,12 @@ export class AuthService implements IService {
     }
 
     const newOTp = generateOTP();
-    console.log("resend otp", newOTp);
+
     const otpExpire = new Date(Date.now() + 60 * 1000);
     if (role === "patients") {
-      await this.PatientRepo.upsertWithOTP(email, newOTp, otpExpire);
+      await this._patientRepo.upsertWithOTP(email, newOTp, otpExpire);
     } else if (role === "doctors") {
-      await this.doctorRepo.upsertWithOTP(email, newOTp, otpExpire);
+      await this._doctorRepo.upsertWithOTP(email, newOTp, otpExpire);
     }
 
     const mailService = new MailService();
@@ -208,11 +212,11 @@ export class AuthService implements IService {
   }
   async verifiyEmail(email: string): Promise<any> {
     let user = null;
-    user = await this.PatientRepo.findByEmail(email);
+    user = await this._patientRepo.findByEmail(email);
     let role = "patients";
 
     if (!user) {
-      user = await this.doctorRepo.findByEmail(email);
+      user = await this._doctorRepo.findByEmail(email);
       role = "doctors";
     }
     if (!user) {
@@ -220,13 +224,13 @@ export class AuthService implements IService {
     }
 
     const otp = generateOTP();
-    console.log('forgot opt is',otp);
+
     const otpExpire = new Date(Date.now() + 60 * 1000);
 
     if (role === "patients") {
-      await this.PatientRepo.upsertWithOTP(email, otp, otpExpire);
+      await this._patientRepo.upsertWithOTP(email, otp, otpExpire);
     } else {
-      await this.doctorRepo.upsertWithOTP(email, otp, otpExpire);
+      await this._doctorRepo.upsertWithOTP(email, otp, otpExpire);
     }
     const mailService = new MailService();
     await mailService.sendMail(
@@ -239,10 +243,10 @@ export class AuthService implements IService {
   }
   async verifyEmailOTP(email: string, otp: string): Promise<any> {
     let user = null;
-    user = await this.PatientRepo.findByEmail(email);
+    user = await this._patientRepo.findByEmail(email);
     let role = "patients";
     if (!user) {
-      user = await this.doctorRepo.findByEmail(email);
+      user = await this._doctorRepo.findByEmail(email);
       role = "doctors";
     }
 
@@ -251,37 +255,40 @@ export class AuthService implements IService {
     }
 
     if (role === "patients") {
-      await this.PatientRepo.verifyOtp(email, otp);
+      await this._patientRepo.verifyOtp(email, otp);
     } else {
-      await this.doctorRepo.verifyOtp(email, otp);
+      await this._doctorRepo.verifyOtp(email, otp);
     }
 
     return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS };
   }
-  async forgotPassword(email: string, newPassword: string): Promise<{ msg: string }> {
-  let user = await this.PatientRepo.findByEmail(email);
-  let role = "patients";
+  async forgotPassword(
+    email: string,
+    newPassword: string
+  ): Promise<{ msg: string }> {
+    let user = await this._patientRepo.findByEmail(email);
+    let role = "patients";
 
-  if (!user) {
-    user = await this.doctorRepo.findByEmail(email);
-    role = "doctors";
+    if (!user) {
+      user = await this._doctorRepo.findByEmail(email);
+      role = "doctors";
+    }
+
+    if (!user) {
+      throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    if (role === "patients") {
+      await this._patientRepo.updatePasswordWithEmail(email, {
+        password: hashedPassword,
+      });
+    } else {
+    }
+
+    return { msg: SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
   }
-
-  if (!user) {
-    throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
-  }
-
-  const hashedPassword = await hashPassword(newPassword);
-   console.log('hashed password',hashedPassword);
-  if (role === "patients") {
-    await this.PatientRepo.updatePasswordWithEmail(email, { password: hashedPassword });
-  } else {
-    console.log('1')
-    await this.doctorRepo.updatePasswordWithEmail(email,{ password: hashedPassword });
-  }
-
-  return { msg: SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
-}
 
   async refreshAccessToken(req: any, res: any): Promise<any> {
     const refreshToken = req.cookies?.refreshToken;
@@ -291,7 +298,7 @@ export class AuthService implements IService {
       return;
     }
     const decoded = verifyRefreshToken(refreshToken);
-    
+
     if (!decoded) {
       res.clearCookie("accessToken");
       res.clearCookie("refreshToken");
@@ -300,11 +307,11 @@ export class AuthService implements IService {
 
     let user: any;
     if (decoded.role === "patients") {
-      user = await this.PatientRepo.findById(decoded.id);
+      user = await this._patientRepo.findById(decoded.id);
     } else if (decoded.role === "doctors") {
-      user = await this.doctorRepo.findById(decoded.id);
+      user = await this._doctorRepo.findById(decoded.id);
     } else if (decoded.role === "admin") {
-      user = await this.adminRepo.findById(decoded.id);
+      user = await this._adminRepo.findById(decoded.id);
     }
     const payload: TokenPayload = {
       id: user._id.toString(),
@@ -329,6 +336,6 @@ export class AuthService implements IService {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-   return res.status(HttpStatus.OK).json({ msg: "token refreshed" });
+    return res.status(HttpStatus.OK).json({ msg: "token refreshed" });
   }
 }

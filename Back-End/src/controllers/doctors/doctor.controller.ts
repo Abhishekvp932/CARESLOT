@@ -7,20 +7,20 @@ import { QualificationInput } from "../../interface/doctor/doctor.service.interf
 import { IDoctor } from "../../interface/doctor/doctor.service.interface";
 import { IDoctor as IDoctorData } from "../../models/interface/IDoctor";
 export class DoctorController implements IDoctorController {
-  constructor(private doctorService: IDoctor) {}
+  constructor(private _doctorService: IDoctor) {}
 
   async uploadDocuments(req: Request, res: Response): Promise<void> {
-    console.log("controller recived");
+     
     try {
       const files = req.files as {
         educationCertificate?: Express.Multer.File[];
         experienceCertificate?: Express.Multer.File[];
         profileImage?: Express.Multer.File[];
       };
-      console.log("files", files);
+       
       const { id: doctorId } = req.params;
 
-      console.log("doctor id is showing", doctorId);
+       
       const {
         degree,
         institution,
@@ -32,7 +32,7 @@ export class DoctorController implements IDoctorController {
         fees,
         lisence,
       } = req.body;
-      console.log("qualifications", req.body);
+       
       const input: QualificationInput = {
         degree,
         institution,
@@ -47,7 +47,7 @@ export class DoctorController implements IDoctorController {
         experienceCertificate: files.experienceCertificate?.[0]?.path || "",
       };
       const profileImage = files.profileImage?.[0]?.path || "";
-      const result = await this.doctorService.uploadDocument(
+      const result = await this._doctorService.uploadDocument(
         doctorId,
         input,
         profileImage
@@ -64,7 +64,7 @@ export class DoctorController implements IDoctorController {
     try {
       const { id: doctorId } = req.params;
 
-      const result = await this.doctorService.getDoctorProfile(doctorId);
+      const result = await this._doctorService.getDoctorProfile(doctorId);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;
@@ -75,14 +75,14 @@ export class DoctorController implements IDoctorController {
   async editDoctorProfile(req: Request, res: Response): Promise<void> {
     try {
       const {id:doctorId} = req.params;
-      console.log('doctor id',doctorId);
+       
       const files = req.files as {
         profileImage?: Express.Multer.File[];
         educationCertificate?: Express.Multer.File[];
         experienceCertificate?: Express.Multer.File[];
       };
 
-      const result = await this.doctorService.editDoctorProfile(
+      const result = await this._doctorService.editDoctorProfile(
         doctorId,
         req.body,
         files

@@ -71,7 +71,7 @@ const KYC = () => {
   );
   const { doctor } = useSelector((state: RootState) => state.doctor);
   const dispatch = useDispatch();
-  console.log("doctor id", doctor);
+   
 
   useEffect(() => {
     if (!doctor) {
@@ -117,12 +117,12 @@ const KYC = () => {
         profileImage : form.profileImage!,
       }).unwrap();
       dispatch(updateDoctorInfo(res.doctor));
-      console.log("doctor details", res);
+       
       dispatch(setKycStatus(true));
       toast.success(res.msg);
       navigate("/kyc-success");
     } catch (error) {
-      console.log("form submiting error", error);
+       
       toast.error("document upload error");
     }
   };

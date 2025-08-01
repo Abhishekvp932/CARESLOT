@@ -22,15 +22,15 @@ const VerificationList = () => {
   },[]);
   const handleApproveDoctor = async (doctorId: string) => {
     try {
-      console.log("1");
-      console.log("doctor id is", doctorId);
+       
+       
       const res = await doctorApprove({ doctorId }).unwrap();
 
-      console.log(res);
+       
       toast.success(res.msg);
       refetch();
     } catch (error: any) {
-      console.log(error);
+       
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
@@ -42,10 +42,10 @@ const VerificationList = () => {
   const handleReject = async (doctorId: string) => {
     try {
       const res = await doctorReject({ doctorId }).unwrap();
-      console.log("res", res);
+       
       refetch();
     } catch (error:any) {
-       console.log(error);
+        
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
@@ -56,7 +56,7 @@ const VerificationList = () => {
 
 
   const handleDetailsPage = (doctorId:string)=>{
-    console.log('doctor id is',doctorId);
+     
     navigate(`/admin/verification-details/${doctorId}`)
   }
 

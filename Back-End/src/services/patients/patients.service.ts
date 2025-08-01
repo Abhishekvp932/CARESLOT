@@ -1,15 +1,20 @@
 import { IPatientService } from "../../interface/patients/IPatient.service";
-import { PatientRepository } from "../../repositories/auth/auth.repository";
+
 import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
-import { DoctorAuthRepository } from "../../repositories/doctors/doctor.auth.repository";
+
+import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interface";
+import { IpatientRepository } from "../../interface/auth/auth.interface";
 import { IDoctor } from "../../models/interface/IDoctor";
+import { ISlots } from "../../models/interface/ISlots";
+import { ISlotRepository } from "../../interface/Slots/slotRepository.interface";
 export class PatientService implements IPatientService {
   constructor(
-    private patientRepo: PatientRepository,
-    private doctorRepo: DoctorAuthRepository
+    private _patientRepo: IpatientRepository,
+    private _doctorRepo: IDoctorAuthRepository,
+    private _slotsRepo:ISlotRepository,
   ) {}
   async getResendAppoinments(): Promise<any> {
-    const doctors = await this.doctorRepo.findAllWithFilter({
+    const doctors = await this._doctorRepo.findAllWithFilter({
       isApproved: true,
     });
 
@@ -24,12 +29,12 @@ export class PatientService implements IPatientService {
     userId: string,
     profileImg?: string
   ): Promise<any> {
-    const user = await this.patientRepo.findById(userId);
+    const user = await this._patientRepo.findById(userId);
 
     if (!user) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
-    await this.patientRepo.updateById(userId, {
+    await this._patientRepo.updateById(userId, {
       ...formData,
       profile_img: profileImg,
     });
@@ -37,7 +42,7 @@ export class PatientService implements IPatientService {
     return { msg: "profile updated successfully" };
   }
   async getUserData(userId: string): Promise<any> {
-    const users = await this.patientRepo.findById(userId);
+    const users = await this._patientRepo.findById(userId);
 
     if (!users) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
@@ -45,8 +50,7 @@ export class PatientService implements IPatientService {
     return { msg: "user data fetched successfully", users };
   }
   async getAllDoctors(): Promise<IDoctor[]> {
-    console.log("1");
-    const doctors = await this.doctorRepo.findAllWithFilter({
+    const doctors = await this._doctorRepo.findAllWithFilter({
       isApproved: true,
     });
     if (!doctors) {
@@ -55,11 +59,21 @@ export class PatientService implements IPatientService {
     return doctors;
   }
   async getDoctorDetails(doctorId: string): Promise<IDoctor> {
-    const doctor = await this.doctorRepo.findById(doctorId);
+    const doctor = await this._doctorRepo.findById(doctorId);
 
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
     return doctor;
+  }
+  async getDoctorSlots(doctorId: string): Promise<ISlots[]> {
+    const doctor = await this._doctorRepo.findById(doctorId);
+    if(!doctor){
+      throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
+    }
+    const slots = await this._slotsRepo.findByDoctorId(doctor?._id);
+
+
+    return slots
   }
 }

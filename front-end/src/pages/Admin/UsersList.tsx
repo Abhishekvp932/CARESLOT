@@ -25,7 +25,7 @@ const UsersList = () => {
       toast.success(res.msg);
       refetch();
     } catch (error: any) {
-      console.log(error);
+       
 
       if (error?.data?.msg) {
         toast.error(error.data.msg);
@@ -36,9 +36,9 @@ const UsersList = () => {
   };
 
   const handleSave = async (updateUser, userId: string) => {
-    console.log("updated user id is", userId);
+     
 
-    console.log("updateuser", updateUser);
+     
     const formData = new FormData();
     formData.append("name", updateUser.name);
 
@@ -47,17 +47,17 @@ const UsersList = () => {
     formData.append("gender", updateUser.gender);
     formData.append("dob", updateUser.DOB);
     formData.append("profileImage", updateUser.profileImg);
-    console.log("user id is", users._id);
+     
     try {
       const res = await updateUserData({
         formData,
         userId: userId,
       }).unwrap();
-      console.log(res);
+       
       toast.success(res.msg);
       refetch();
     } catch (error: any) {
-      console.log(error);
+       
 
       if (error?.data?.msg) {
         toast.error(error.data.msg);
@@ -83,11 +83,11 @@ const UsersList = () => {
 
     const res = await addUser({ formData }).unwrap();
     toast.success("user addedd successfully");
-    console.log(res);
+     
     setIsAddModalOpen(false);
     refetch();
   } catch (error: any) {
-      console.log(error);
+       
 
       if (error?.data?.msg) {
         toast.error(error.data.msg);

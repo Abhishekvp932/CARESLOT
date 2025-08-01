@@ -47,9 +47,9 @@ app.use('/api/slots',slotRoute)
 const PORT = process.env.PORT 
 connectDB().then(()=>{
   app.listen(PORT,()=>{
-    console.log(`server is running in port ${PORT}`);
+     
   })
 }).catch((err)=>{
-   console.log('faild to connect mongo db',err);
+    
    process.exit(1);
 })

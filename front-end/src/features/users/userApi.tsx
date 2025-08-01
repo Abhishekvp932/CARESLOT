@@ -31,7 +31,7 @@ export const userApi = api.injectEndpoints({
         method:"GET"
       }),
        transformResponse: (response) => {
-        console.log('response from user api',response.doctors);
+         
         return response.doctors;
       },
     }),
@@ -41,14 +41,20 @@ export const userApi = api.injectEndpoints({
         method:"GET",
       }),
        transformResponse: (response) => {
-        console.log('response from user api',response.doctor);
+         console.log('response',response.doctor);
         return response.doctor;
       },
     }),
     getDoctorSlot:builder.query({
       query:(doctorId)=>({
         url:`/patinet/doctor/${doctorId}`
-      })
+      }),
+    }),
+    getSlots:builder.query({
+      query:(doctorId)=>({
+        url:`/patient/slots/${doctorId}`
+      }),
+      transformResponse: (response) => response.slots,
     })
   }),
 });
@@ -60,5 +66,6 @@ export const {
    useGetAllApprovedDoctorsQuery,
    useGetDoctorDetailPageQuery,
    useGetDoctorSlotQuery,
+   useGetSlotsQuery,  
   }
    = userApi;

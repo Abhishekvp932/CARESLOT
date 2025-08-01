@@ -18,16 +18,28 @@ import { z } from "zod";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.auth.token);
+  // const user = useSelector((state: RootState) => state.auth.token);
   const [signup, { isLoading }] = useSignupMutation();
 
+ const admin = useSelector((state: RootState) => state.admin);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const doctor = useSelector((state: RootState) => state.doctor.doctor);
+
+  // const [isAuthorized, setIsAuthorized] = useState(false);
+
   useEffect(() => {
-    if (user) {
+    if (admin?.role === "admin") {
+     navigate('/admin')
+    } else if (user) {
       navigate("/");
+    } else if (doctor) {
+      navigate("/doctor");
     } else {
       navigate("/signup");
     }
-  }, []);
+  }, [admin, user, doctor, navigate]);
+
+  // if (!isAuthorized) return null; 
 
   type formType = {
     name: string;

@@ -1,20 +1,31 @@
 import { format } from "date-fns";
 
-interface Column {
+interface Column<T> {
   label: string;
   accessor: string;
+  render?:(item:T)=> React.ReactNode
 }
 
 interface CommonTableProps<T> {
   data: T[];
-  columns: Column[];
+  columns: Column<T>[];
   title?: string;
+  rowsPerPages?: number;
+  withPagination?: boolean;
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export const CommonTableView = <T,>({
   data,
   columns,
   title,
+  withPagination = false,
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange,
+
 }: CommonTableProps<T>) => {
   return (
     <div className="hidden md:block overflow-x-auto rounded-lg shadow">
@@ -47,7 +58,7 @@ export const CommonTableView = <T,>({
               }
             >
               {columns.map((col) => {
-                const rawValue = item[col.accessor];
+                const rawValue = item[col?.accessor];
                 const isDate =
                   col.accessor.toLowerCase().includes("date") ||
                   col.accessor.toLowerCase().includes("created");
@@ -69,6 +80,27 @@ export const CommonTableView = <T,>({
           ))}
         </tbody>
       </table>
+
+     {withPagination && (
+  <div className="flex justify-end gap-2 mt-4">
+    <button
+      disabled={currentPage === 1}
+      onClick={() => onPageChange && onPageChange(currentPage - 1)}
+    >
+      Previous
+    </button>
+    <span>
+      Page {currentPage} of {totalPages}
+    </span>
+    <button
+      disabled={currentPage === totalPages}
+      onClick={() => onPageChange && onPageChange(currentPage + 1)}
+    >
+      Next
+    </button>
+  </div>
+)}
+
     </div>
   );
 };

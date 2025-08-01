@@ -26,6 +26,10 @@ import DoctorProfile from "./pages/Doctor/DoctorProfile"
 import TimeShedule from "./pages/Doctor/TimeShedule"
 import DoctorList from "./pages/User/DoctorList"
 import UserDoctorDetailsPage from "./pages/User/DoctorDetailsPage"
+
+// import PublicOnlyRoute from "./protectRoute/PublicOnlyRoute"
+
+
 function App() {
   return (
     <div>
