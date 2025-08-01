@@ -22,13 +22,13 @@ const SendOTPPage = ()=>{
     // console.log('2')
   const res = await verifyEmail({ email }).unwrap();  
   // console.log('3')
-  // console.log('response:', res);                      
+  //  
   toast.success(res.msg);                             
     setTimeout(()=>{
       navigate('/verify-email', { state: { email } });
     },2000);
 } catch (error: any) {
-  // console.log("OTP Error", error);
+  //  
 
   if (error?.data?.msg) {
     toast.error(error.data.msg);

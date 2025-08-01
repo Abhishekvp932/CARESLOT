@@ -5,9 +5,11 @@ import { PatientController } from "../controllers/patients/patients.controller";
 import { PatientService } from "../services/patients/patients.service";
 import { DoctorAuthRepository } from "../repositories/doctors/doctor.auth.repository";
 import { multiFileUpload } from '../middleware/multer.middleware';
+import { SlotRepository } from "../repositories/Slots/slot.repository";
 const patientRepo = new PatientRepository()
 const doctorRepo = new DoctorAuthRepository()
-const patientService = new PatientService(patientRepo,doctorRepo);
+const slotRepo = new SlotRepository()
+const patientService = new PatientService(patientRepo,doctorRepo,slotRepo);
 const patientController = new PatientController(patientService);
 
 const router = express.Router();
@@ -24,4 +26,7 @@ router.route('/doctors')
 router.route('/doctor/:id').
 get(protect,patientController.getDoctorDetails.bind(patientController));
 
+
+router.route('/slots/:id')
+.get(protect,patientController.getDoctorSlots.bind(patientController));
 export default router;

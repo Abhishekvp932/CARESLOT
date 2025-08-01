@@ -24,7 +24,7 @@ export const customBaseQuery: BaseQueryFn<
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    console.log("Access token expired. Trying refresh...");
+     
 
     const refreshResult = await baseQuery(
       {
@@ -34,18 +34,18 @@ export const customBaseQuery: BaseQueryFn<
       api,
       extraOptions
     );
-    console.log('refresh result is',refreshResult);
+     
 
     if (refreshResult?.data) {
-      console.log("Refresh successful. Retrying original request.");
+       
 
       result = await baseQuery(args, api, extraOptions);
 
     } else {
-      console.log("Refresh failed. Logging out.");
+       
 
       const state: any = api.getState();
-      console.log('state is',state);
+       
       if (state?.auth?.token) {
         api.dispatch(userLogOut());
       } else if (state?.doctor?.token) {

@@ -1,19 +1,10 @@
 // src/pages/Admin/Dashboard.tsx
-import { useEffect, useState } from "react";
-// import { Plus } from "lucide-react";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/app/store";
-import { useNavigate } from "react-router-dom";
+import {useState } from "react";
+
 const Dashboard = () => {
-  const navigate = useNavigate();
+
   const [selectedPeriod, setSelectedPeriod] = useState("This Month");
-  const admin = useSelector((state:RootState)=> state.admin.admin);
-  console.log('admin is',admin)
-useEffect(()=>{
-  if(!admin){
-    navigate(-1);
-  }
-},[]);
+ 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between">

@@ -1,240 +1,211 @@
-"use client";
+import React, { useState } from 'react';
 
-import { useState } from "react";
-import { Star, MapPin, Clock, Phone, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import Header from "@/layout/Header";
-import Footer from "@/layout/Footer";
-import { useParams } from "react-router-dom";
-import { useGetDoctorDetailPageQuery } from "@/features/users/userApi";
-export default function UserDoctorDetailsPage() {
-  const [selectedTime, setSelectedTime] = useState("");
+import Footer from '@/layout/Footer';
+import Header from '@/layout/Header';
+import { useGetDoctorDetailPageQuery } from '@/features/users/userApi';
+import { useParams } from 'react-router-dom';
+import { useGetSlotsQuery } from '@/features/users/userApi';
 
-  const timeSlots = [
-    "9:00 AM",
-    "10:00 AM",
-    "11:00 AM",
-    "2:00 PM",
-    "3:00 PM",
-    "4:00 PM",
-  ];
-  const { doctorId } = useParams<{ doctorId: string }>();
-  console.log("doctor id is", doctorId);
-  const { data: doctors } = useGetDoctorDetailPageQuery(doctorId);
-  console.log("doctors", doctors);
+   import { format, parseISO } from 'date-fns';
+
+const UserDoctorDetailsPage = () => {
+   const {doctorId} = useParams<{doctorId:string}>()
+  console.log("doctorId",doctorId);
+   const {data:doctor} = useGetDoctorDetailPageQuery(doctorId);
+   console.log("doctor",doctor);
+
+   const {data:slots = []} = useGetSlotsQuery(doctorId)
+   console.log('slots',slots);
+
+
+
+type Slots = {
+  _id:string;
+  startTime: Date;
+  endTime: Date;
+  doctorId: string;
+  status: string;
+  date: Date;
+};
+
+const [selectedDate, setSelectedDate] = useState(null);
+const [selectedTime, setSelectedTime] = useState(null);
+
+const groupSlotsByDate = (slots: Slots[]) => {
+  const grouped: { [key: string]: Slots[] } = {};
+
+  slots.forEach((slot) => {
+    const dateStr = new Date(slot.date).toDateString(); 
+    if (!grouped[dateStr]) grouped[dateStr] = [];
+    grouped[dateStr].push(slot);
+  });
+
+  
+  return Object.entries(grouped).map(([date, slots]) => ({ date, slots }));
+};
+
+const groupedSlots = groupSlotsByDate(slots);
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="pt-20 pb-8">
-        <div className="max-w-4xl mx-auto px-4 space-y-6">
-          <Card className="shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-blue-100 mx-auto md:mx-0 flex-shrink-0">
-                  <img
-                    src={doctors?.profile_img}
-                    alt="Doctor"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
+        
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="flex flex-col lg:flex-row gap-6">
+           
+            <div className="flex-shrink-0">
+              <div className="w-32 h-32 flex items-center justify-center">
+                <span className="text-6xl"><img src={doctor?.profile_img} alt={doctor?.name} /></span>
+              </div>
+            </div>
 
-                <div className="flex-1 text-center md:text-left">
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    {doctors?.name}
-                  </h1>
-                  <p className="text-blue-600 font-medium text-lg mb-3">
-                    {doctors?.qualifications?.specialization}
-                  </p>
-
-                  {/* <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600 font-medium">
-                     0
-                    </span>
-                  </div> */}
-
-                  <div className="flex flex-wrap justify-center md:justify-start gap-2">
-                    <Badge variant="secondary">
-                      {doctors?.qualifications?.experince} years exp
-                    </Badge>
-                    <Badge variant="secondary">
-                      {doctors?.qualifications?.specialization}
-                    </Badge>
-                    <Badge variant="secondary">Board Certified</Badge>
-                  </div>
+          
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <h2 className="text-2xl font-bold text-gray-900">{doctor?.name}</h2>
+                <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs">✓</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              <p className="text-black font-medium mb-2">{doctor?.qualifications?.degree},{doctor?.qualifications?.specialization}</p>
+              <p className="text-gray-600 mb-2">Reviews(0)</p>
+              <p className="text-gray-700 mb-4 max-w-2xl">
+              {doctor?.qualifications?.about}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium">Appointment Fee:</span> ₹{doctor?.qualifications?.fees}
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-xl">About Doctor</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-gray-700 leading-relaxed">
-                  {doctors?.qualifications?.about}
-                </p>
+            
+            <div className="flex-shrink-0">
+              <button className="bg-blue-100 text-black p-3 rounded-full hover:bg-blue-200">
+                <span className="text-xl">💬</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">
-                      {doctors?.phone}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">
-                      Mon-Fri: 9AM-5PM
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Calendar className="w-5 h-5" />
-                  Book Appointment
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="text-center bg-blue-50 p-4 rounded-lg">
-                  <p className="text-3xl font-bold text-blue-600">₹{doctors?.qualifications?.fees}</p>
-                  <p className="text-sm text-gray-600">Consultation Fee</p>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-3 text-gray-900">
-                    Available Today
-                  </h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {timeSlots.map((time) => (
-                      <Button
-                        key={time}
-                        variant={selectedTime === time ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSelectedTime(time)}
-                        className="h-10"
-                      >
-                        {time}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <Button
-                  className="w-full h-12 text-base font-semibold"
-                  size="lg"
-                  disabled={!selectedTime}
-                >
-                  {selectedTime
-                    ? `Book for ${selectedTime}`
-                    : "Select Time Slot"}
-                </Button>
-
-                <div className="text-center text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
-                  <p className="flex items-center justify-center gap-1">
-                    <span className="text-green-600">✓</span> Instant
-                    confirmation
-                  </p>
-                  <p className="flex items-center justify-center gap-1">
-                    <span className="text-green-600">✓</span> Free cancellation
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+        
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <h3 className="text-xl font-semibold mb-6">Booking slots</h3>
+          
+          
+          <div className="flex items-center justify-between mb-6">
+            <button className="p-2 hover:bg-gray-100 rounded-full">
+            </button>
+            <div className="flex gap-2 overflow-x-auto">
+              {groupedSlots.map((group) => (
+          <button
+            key={group.date}
+            onClick={() => setSelectedDate(group?.date)}
+            className={`flex flex-col items-center p-3 rounded-lg min-w-16 transition-all duration-200 ${
+              selectedDate === group.date ? 'bg-black text-white' : 'bg-gray-100 text-gray-800'
+            }`}
+          >
+            <span className="text-sm">{format(new Date(group.date), 'MMMM dd, yyyy')}</span>
+            <span className="font-semibold">{format(new Date(group.date), 'dd')}</span>
+          </button>
+        ))}
+            </div>
+            <button className="p-2 hover:bg-gray-100 rounded-full">
+            </button>
           </div>
 
-          {/* <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-xl">Patient Reviews</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-semibold text-gray-900">
-                      John Smith
-                    </span>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                        />
-                      ))}
-                    </div>
-                    <span className="text-xs text-gray-500">2 days ago</span>
-                  </div>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    "Excellent doctor! Very professional and explained
-                    everything clearly. Highly recommend."
-                  </p>
-                </div>
-
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-semibold text-gray-900">
-                      Maria Garcia
-                    </span>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                        />
-                      ))}
-                    </div>
-                    <span className="text-xs text-gray-500">1 week ago</span>
-                  </div>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    "Dr. Johnson is amazing. She took time to listen and
-                    provided great care."
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-semibold text-gray-900">
-                      David Lee
-                    </span>
-                    <div className="flex">
-                      {[...Array(4)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                        />
-                      ))}
-                      <Star className="w-4 h-4 text-gray-300" />
-                    </div>
-                    <span className="text-xs text-gray-500">2 weeks ago</span>
-                  </div>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    "Great experience overall. The appointment was on time and
-                    very helpful."
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
+        
+          {selectedDate && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
+          {groupedSlots
+            .find((g) => g.date === selectedDate)
+            ?.slots.map((slot) => (
+              <button
+                key={slot?._id}
+                onClick={() => setSelectedTime(slot?.startTime)}
+                className={`py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
+                  selectedTime === slot?.startTime
+                    ? 'bg-black text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+               {format(new Date(slot?.startTime), 'hh:mm a')} - {format(new Date(slot?.endTime  ), 'hh:mm a')}
+              </button>
+            ))}
         </div>
-      </div>
+      )}
+       
+       {selectedDate && selectedTime && (
+        <div className="text-center text-sm text-gray-700">
+          Selected: {format(new Date(selectedDate), 'PPP')} at  {format(new Date(selectedTime), 'hh:mm a')}
+        </div>
+      )}
+          
+          <button className="w-full bg-black text-white py-3 rounded-md font-medium hover:bg-black">
+            Book an Appointment
+          </button>
+        </div>
 
+        
+        {/* <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <h3 className="text-xl font-semibold mb-2">Related Doctors</h3>
+          <p className="text-gray-600 mb-6">Browse through our best doctors for you</p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {relatedDoctors.map((doctor, index) => (
+              <div key={index} className="text-center">
+                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-3xl">{doctor.image}</span>
+                </div>
+                <h4 className="font-medium text-gray-900 mb-1">{doctor.name}</h4>
+                <p className="text-sm text-gray-600">{doctor.specialty}</p>
+              </div>
+            ))}
+          </div>
+        </div> */}
+
+       
+        {/* <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <h3 className="text-xl font-semibold mb-2 text-center">What our patient say</h3>
+          <p className="text-gray-600 mb-8 text-center">World class care for everyone. Our health system offers unmatched expert health care.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className={`p-6 rounded-lg ${
+                  testimonial.featured ? 'bg-blue-500 text-white' : 'bg-gray-50'
+                }`}
+              >
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-2xl">{testimonial.avatar}</span>
+                  </div>
+                  <div>
+                    <h4 className={`font-medium ${testimonial.featured ? 'text-white' : 'text-gray-900'}`}>
+                      {testimonial.name}
+                    </h4>
+                    <div className="flex">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <p className={`text-sm ${testimonial.featured ? 'text-white' : 'text-gray-600'}`}>
+                  {testimonial.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div> */}
+
+
+      </div>
       <Footer />
     </div>
   );
-}
+};
+
+export default UserDoctorDetailsPage;

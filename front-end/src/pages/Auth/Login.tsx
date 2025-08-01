@@ -26,8 +26,8 @@ const Login = () => {
   const googleAuth = useGoogleAuth();
   const dispatch = useDispatch<AppDispatch>();
 
-  const admin = useSelector((state:RootState)=> state.admin.admin);
-  const user = useSelector((state:RootState)=> state.auth.user);
+  // const admin = useSelector((state:RootState)=> state.admin.admin);
+  // const user = useSelector((state:RootState)=> state.auth.user);
   const [login, { isLoading }] = useLoginMutation();
 
 
@@ -70,11 +70,11 @@ const Login = () => {
 
     try {
       const res = await login(form).unwrap();
-      console.log("response from the back-end", res);
+       
 
       toast.success(res.msg);
       const roles = res?.user?.role;
-      console.log("role is", roles);
+       
       if (roles === "patients") {
        dispatch(
         setCredentials({

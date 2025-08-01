@@ -77,7 +77,7 @@ type DoctorFormData = {
   const handleSave = async () => {
     try {
       const fd = new FormData();
-   console.log('form data',formData);
+    
       
       fd.append("name", formData.name || "");
       fd.append("email", formData.email || "");

@@ -1,5 +1,5 @@
 
-    import { IBaseRepository } from "../interface/base.repo.interface";
+    import { IBaseRepository} from "../interface/base.repo.interface";
     export class BaseRepository<T> implements IBaseRepository<T>{
         protected model : any;
         constructor (model:any){
@@ -19,8 +19,15 @@
         async findAllWithFilter(filter:any = []):Promise<T[]>{
             return this.model.find(filter);
         }
-        async findAll(): Promise<T | null> {
+        async findAll():Promise<T[]> {
             return await this.model.find()
+        }
+
+        async findAllWithPagination(filter:any,skip: number, limit: number): Promise<T[]> {
+            return this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean()
+        }
+        async countAll(): Promise<number> {
+            return this.model.countDocuments()
         }
         
     }

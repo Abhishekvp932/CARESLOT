@@ -91,7 +91,7 @@ export default function DoctorProfile() {
       ) {
         fd.append("experienceCertificate", q.experienceCertificate);
       }
-      console.log("submited doctor informations", formData);
+       
 
       const res = await editDoctorData({
         doctorId: formData?._id,

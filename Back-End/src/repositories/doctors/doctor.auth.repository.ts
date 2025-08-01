@@ -4,6 +4,7 @@ import { Profile } from "passport-google-oauth20";
 import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
 import { BaseRepository } from "../base.repository";
 import { IDoctor } from "../../models/interface/IDoctor";
+
 export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDoctorAuthRepository{
      
   constructor (){
@@ -58,4 +59,5 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
    async findByIdAndDelete(id: string): Promise<any> {
      return await this.model.findByIdAndDelete(id)
    }
+ 
 }

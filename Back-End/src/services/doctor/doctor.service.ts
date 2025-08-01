@@ -3,32 +3,34 @@ import {
   IDoctor,
   QualificationInput,
 } from "../../interface/doctor/doctor.service.interface";
-import { DoctorRepository } from "../../repositories/doctors/doctor.repository";
-import { PatientRepository } from "../../repositories/auth/auth.repository";
-import { DoctorAuthRepository } from "../../repositories/doctors/doctor.auth.repository";
+
 import { MailService } from "../mail.service";
 import { DoctorProfileInput } from "../../types/doctor";
 import { UploadedFiles } from "../../types/doctor";
+
+import { IDoctorRepository } from "../../interface/doctor/doctor.repo.interface";
+import { IpatientRepository } from "../../interface/auth/auth.interface";
+import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interface";
 import { IDoctor as IDoctorData } from "../../models/interface/IDoctor";
 
 export class DoctorService implements IDoctor {
   constructor(
-    private doctorRepo: DoctorRepository,
-    private patientRepo: PatientRepository,
-    private authDoctor: DoctorAuthRepository
+    private _doctorRepo: IDoctorRepository,
+    private _patientRepo: IpatientRepository,
+    private _authDoctor: IDoctorAuthRepository
   ) {}
   async uploadDocument(
     doctorId: string,
     input: QualificationInput,
     profileImage:string
   ): Promise<any> {
-    const doctor = await this.authDoctor.findById(doctorId);
-    console.log('profile image od doctor',profileImage,input);
+    const doctor = await this._authDoctor.findById(doctorId);
+     
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
 
-    await this.doctorRepo.uploadDocument(doctorId, {profile_img:profileImage,qualifications:input});
+    await this._doctorRepo.uploadDocument(doctorId, {profile_img:profileImage,qualifications:input});
     const mailService = new MailService();
 
     await mailService.sendMail(
@@ -54,7 +56,7 @@ The CareSlot Team`
   }
 
   async getDoctorProfile(doctorId:string): Promise<{msg:string,doctor:IDoctorData}> {
-    const doctor = await this.authDoctor.findById(doctorId);
+    const doctor = await this._authDoctor.findById(doctorId);
     if(!doctor){
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
@@ -62,7 +64,7 @@ The CareSlot Team`
     return {msg:"doctor Data fetched successfully",doctor}
   }
   async editDoctorProfile(doctorId: string, body:DoctorProfileInput, files: UploadedFiles): Promise<{ msg: string; }> {
-  const doctor = await this.authDoctor.findById(doctorId);
+  const doctor = await this._authDoctor.findById(doctorId);
   if (!doctor) throw new Error("Doctor not found");
 
   const {
@@ -112,7 +114,7 @@ The CareSlot Team`
       },
   };
 
-  await this.authDoctor.updateById(doctorId, updatedDoctor);
+  await this._authDoctor.updateById(doctorId, updatedDoctor);
     return {msg:'Profile updated'}
   }
 }

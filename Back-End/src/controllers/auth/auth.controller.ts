@@ -6,14 +6,14 @@ import { CONTROLLER_MESSAGE } from "../../utils/controllerMessage";
 import { verifyAccessToken } from "../../utils/jwt";
 import { IService } from "../../interface/auth/IService.interface";
  export class AuthController implements IAuthController{
-  constructor(private authService : IService) {}
+  constructor(private _authService : IService) {}
 
 
     async login(req: Request, res: Response): Promise<void> {
         try {
             const {email,password} = req.body;
              
-            const {user,accessToken,refreshToken,msg} = await this.authService.login(email,password)
+            const {user,accessToken,refreshToken,msg} = await this._authService.login(email,password)
             res.cookie('accessToken',accessToken,{
                 httpOnly:true,
                 secure:false,
@@ -39,12 +39,12 @@ import { IService } from "../../interface/auth/IService.interface";
     async signup(req: Request, res: Response): Promise<void> {
         try {
             const {name,email,password,dob,gender,phone,confirmPassword,role} = req.body
-            const result  = await this.authService.signup(name,email,password,phone,dob,gender,role)
+            const result  = await this._authService.signup(name,email,password,phone,dob,gender,role)
 
             res.status(HttpStatus.CREATED).json({success:true,msg:CONTROLLER_MESSAGE.OTP_SEND_MESSAGE})
         } catch (error) {
             const err = error as Error
-            console.log(err)
+           
             res.status(HttpStatus.BAD_REQUEST).json({msg:err.message})
         }
     }
@@ -52,8 +52,8 @@ import { IService } from "../../interface/auth/IService.interface";
         const {email,otp} = req.body
 
         try {
-            const result = await this.authService.verifyOtp(email,otp);
-           console.log('result is',result);
+            const result = await this._authService.verifyOtp(email,otp);
+            
             res.status(HttpStatus.OK).json(result);
         } catch (error) {
             const err = error as Error
@@ -74,7 +74,7 @@ import { IService } from "../../interface/auth/IService.interface";
    }
    async logOut(req: Request, res: Response): Promise<void> {
        try {
-        await this.authService.logOut();
+        await this._authService.logOut();
 
         res.clearCookie("token",{
             httpOnly:true,
@@ -92,7 +92,7 @@ import { IService } from "../../interface/auth/IService.interface";
        const {email} = req.body
 
        try {
-        const res = await this.authService.resendOTP(email)
+        const res = await this._authService.resendOTP(email)
         res.status(HttpStatus.OK).json(res)
        } catch (error) {
         res.status(HttpStatus.BAD_REQUEST).json('resend otp error');
@@ -101,8 +101,8 @@ import { IService } from "../../interface/auth/IService.interface";
    async verfiyEmail(req: Request, res: Response): Promise<void> {
        const {email} = req.body
        try {
-        const result = await this.authService.verifiyEmail(email)
-        console.log('res',result);
+        const result = await this._authService.verifiyEmail(email)
+         
         res.status(HttpStatus.OK).json(result)
        } catch (error) {
         const err = error as Error
@@ -113,7 +113,7 @@ import { IService } from "../../interface/auth/IService.interface";
        const {email,otp} = req.body
 
        try {
-        const result = await this.authService.verifyEmailOTP(email,otp);
+        const result = await this._authService.verifyEmailOTP(email,otp);
         res.status(HttpStatus.OK).json(result)
        } catch (error) {
         const err = error as Error
@@ -123,8 +123,8 @@ import { IService } from "../../interface/auth/IService.interface";
     async forgotPassword(req: Request, res: Response): Promise<void> {
     const {email,newPassword} = req.body
        try {
-          const result = await this.authService.forgotPassword(email,newPassword);
-              console.log(result)
+          const result = await this._authService.forgotPassword(email,newPassword);
+             
           res.status(HttpStatus.OK).json(result);
        } catch (error) {
         const err = error as Error
@@ -133,7 +133,7 @@ import { IService } from "../../interface/auth/IService.interface";
    }
    async refreshToken(req: Request, res: Response): Promise<void> {
        try {
-        const result = await this.authService.refreshAccessToken(req,res);
+        const result = await this._authService.refreshAccessToken(req,res);
         // res.status(HttpStatus.OK).json(result)
        } catch (error) {
         const err = error as Error

@@ -6,11 +6,11 @@ import { IAdminService } from "../../interface/admin/admin.serivce.interface";
 import { CONTROLLER_MESSAGE } from "../../utils/controllerMessage";
 import { IDoctor } from "../../models/interface/IDoctor";
 export class AdminController implements IAdminController {
-  constructor(private adminService: IAdminService) {}
+  constructor(private _adminService: IAdminService) {}
 
   async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
-      const result = await this.adminService.findAllUsers();
+      const result = await this._adminService.findAllUsers();
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;
@@ -19,9 +19,11 @@ export class AdminController implements IAdminController {
   }
   async getAllDoctors(req: Request, res: Response): Promise<void> {
     try {
-      const result = await this.adminService.findAllDoctors();
+     const page = parseInt(req.query.page as string) || 1;
+     const limit = parseInt(req.query.limit as string) || 10;
+      const result = await this._adminService.findAllDoctors(page,limit);
 
-      res.status(HttpStatus.OK).json(result);
+      res.status(HttpStatus.OK).json({data:result.doctors,currentPage:page,totalPages:Math.ceil(result.total/limit),totalItem:result.total});
     } catch (error) {
       const err = error as Error;
 
@@ -32,7 +34,7 @@ export class AdminController implements IAdminController {
     try {
       const { id: userId } = req.params;
       const { isBlocked } = req.body;
-      const result = await this.adminService.blockAndUnblockUsers(
+      const result = await this._adminService.blockAndUnblockUsers(
         userId,
         isBlocked
       );
@@ -50,7 +52,7 @@ export class AdminController implements IAdminController {
 
       const { isBlocked } = req.body;
 
-      const result = await this.adminService.blockAndUnblockDoctors(
+      const result = await this._adminService.blockAndUnblockDoctors(
         doctorId,
         isBlocked
       );
@@ -63,7 +65,7 @@ export class AdminController implements IAdminController {
   }
   async findUnprovedDoctors(req: Request, res: Response): Promise<void> {
     try {
-      const result = await this.adminService.findUnApprovedDoctors();
+      const result = await this._adminService.findUnApprovedDoctors();
 
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
@@ -75,8 +77,8 @@ export class AdminController implements IAdminController {
   async doctorApprove(req: Request, res: Response): Promise<void> {
     try {
       const { id: doctorId } = req.params;
-      console.log("approing doctor id is", doctorId);
-      const result = await this.adminService.doctorApprove(doctorId);
+
+      const result = await this._adminService.doctorApprove(doctorId);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;
@@ -88,7 +90,7 @@ export class AdminController implements IAdminController {
     try {
       const { id: doctorId } = req.params;
 
-      const result = await this.adminService.doctorReject(doctorId);
+      const result = await this._adminService.doctorReject(doctorId);
     } catch (error) {
       const err = error as Error;
 
@@ -101,10 +103,10 @@ export class AdminController implements IAdminController {
   ): Promise<void> {
     try {
       const { id: doctorId } = req.params;
-      const result = await this.adminService.getVerificationDoctorDetails(
+      const result = await this._adminService.getVerificationDoctorDetails(
         doctorId
       );
-      console.log(result);
+
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;
@@ -114,14 +116,14 @@ export class AdminController implements IAdminController {
   async updateUserData(req: Request, res: Response): Promise<void> {
     try {
       const { id: userId } = req.params;
-      console.log("updating user id is", userId);
+
       const formData = req.body;
 
       const imgData = (req.files as { [key: string]: Express.Multer.File[] })
         ?.profileImage?.[0];
       const profileImg = imgData?.path;
 
-      const result = await this.adminService.updateUserData(
+      const result = await this._adminService.updateUserData(
         formData,
         userId,
         profileImg
@@ -142,7 +144,7 @@ export class AdminController implements IAdminController {
         return;
       }
 
-      const result = await this.adminService.editDoctorData(doctorId);
+      const result = await this._adminService.editDoctorData(doctorId);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;
@@ -203,7 +205,7 @@ export class AdminController implements IAdminController {
           rawData.experienceCertificate;
       }
 
-      const result = await this.adminService.editDoctorProfile(doctorId, data);
+      const result = await this._adminService.editDoctorProfile(doctorId, data);
       res.status(200).json(result);
     } catch (error) {
       const err = error as Error;
@@ -216,8 +218,8 @@ export class AdminController implements IAdminController {
       const imgData = (req.files as { [key: string]: Express.Multer.File[] })
         ?.profileImage?.[0];
       const profileImg = imgData?.path;
-      console.log("profile url", profileImg);
-      const result = await this.adminService.addUser(
+
+      const result = await this._adminService.addUser(
         name,
         email,
         phone,
@@ -257,14 +259,14 @@ export class AdminController implements IAdminController {
         license,
         about,
       } = req.body;
-      const data:Partial<IDoctor>={
+      const data: Partial<IDoctor> = {
         name,
         email,
         phone,
         DOB,
         gender,
         profile_img: files.profileImage?.[0]?.path || "",
-        isApproved:true,
+        isApproved: true,
         qualifications: {
           degree,
           institution,
@@ -273,15 +275,15 @@ export class AdminController implements IAdminController {
           experince: Number(experince),
           graduationYear: Number(graduationYear),
           fees,
-          lisence:license,
+          lisence: license,
           about,
           educationCertificate: files.educationCertificate?.[0]?.path || "",
           experienceCertificate: files.experienceCertificate?.[0]?.path || "",
         },
       };
-      console.log('after edited doctor data',data)
-       const result = await this.adminService.addDoctor(data);
-       res.status(HttpStatus.CREATED).json(result); 
+
+      const result = await this._adminService.addDoctor(data);
+      res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
       const err = error as Error;
 

@@ -41,7 +41,7 @@ useEffect(()=>{
        navigate('/kyc-submit')
       }      
     } catch (error: any) {
-      console.log("OTP Error", error);
+       
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {

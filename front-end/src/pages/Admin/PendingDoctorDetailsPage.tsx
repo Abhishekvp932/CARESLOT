@@ -38,9 +38,9 @@ import { useGetDoctorDataQuery } from "@/features/admin/adminApi";
 const DoctorDetails = () => {
   const navigate = useNavigate();
   const { doctorId } = useParams<{ doctorId: string }>();
-  console.log("doctor id is", doctorId);
+   
   const { data: doctor } = useGetDoctorDataQuery(doctorId);
-  console.log("doctors", doctor);
+   
  const [doctorApprove] = useDoctorApproveMutation();
 const [doctorReject] = useDoctorRejectMutation();
   const handleApprove = async(doctorId:string)=>{
@@ -52,7 +52,7 @@ const [doctorReject] = useDoctorRejectMutation();
           navigate('/admin/doctors');
         },2000)
        } catch (error:any) {
-        console.log(error);
+         
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
@@ -69,7 +69,7 @@ const [doctorReject] = useDoctorRejectMutation();
           navigate(-1)
         },2000)
     } catch (error:any) {
-       console.log(error);
+        
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
