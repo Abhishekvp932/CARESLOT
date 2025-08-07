@@ -13,4 +13,10 @@ export class SlotRepository implements ISlotRepository{
  async findByDoctorId(doctorId: string): Promise<ISlots[]> {
      return await Slots.find({doctorId});
  }
+ async findByIdAndDelete(slotId: string): Promise<ISlots | null> {
+     return await Slots.findByIdAndDelete(slotId);
+ }
+ async findById(id: string): Promise<ISlots | null> {
+     return await Slots.findById(id);
+ }
 }

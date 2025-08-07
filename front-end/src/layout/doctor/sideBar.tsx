@@ -5,6 +5,7 @@ import type React from "react"
 import { Calendar, Clock, Home, Settings, User, Users, FileText, Bell, LogOut, Stethoscope } from "lucide-react"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/store"
+import { Link } from "react-router-dom"
 import {
   Sidebar,
   SidebarContent,
@@ -117,7 +118,7 @@ export function DoctorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={item.isActive}>
-                    <a href={item.url} className="flex items-center gap-2">
+                    <Link to={item.url} className="flex items-center gap-2">
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                       {item.badge && (
@@ -125,7 +126,7 @@ export function DoctorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                           {item.badge}
                         </Badge>
                       )}
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

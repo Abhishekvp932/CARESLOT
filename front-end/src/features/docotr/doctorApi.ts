@@ -45,7 +45,7 @@ export const doctorApi = api.injectEndpoints({
         url: `/doctor/profile/${doctorId}`,
         method: "GET",
       }),
-      transformResponse: (response: unknown) => response.doctor,
+      transformResponse: (response) => response.doctor,
     }),
     editDoctorData: builder.mutation({
       query: ({ doctorId, formData }) => ({
@@ -67,6 +67,12 @@ export const doctorApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    deleteSlot:builder.mutation({
+      query:(slotId:string)=>({
+        url:`/slots/slots/${slotId}`,
+        method:"DELETE"
+      }),
+    }),
   }),
 });
 
@@ -76,4 +82,5 @@ export const {
   useEditDoctorDataMutation,
   useSlotAddMutation,
   useGetDoctorSlotsQuery,
+  useDeleteSlotMutation
 } = doctorApi;

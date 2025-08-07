@@ -3,6 +3,7 @@ import { ISlots } from "../../models/interface/ISlots";
 import { ISlotRepository } from "../../interface/Slots/slotRepository.interface";
 import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interface";
 import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
+import { start } from "repl";
 export class SlotService implements ISlotService {
   constructor(
     private _slotRepo: ISlotRepository,
@@ -10,6 +11,25 @@ export class SlotService implements ISlotService {
   ) {}
 
   async addTimeSlot(data: Partial<ISlots>): Promise<{ msg: string }> {
+    const doctorId = data?.doctorId;
+
+    if (!doctorId) {
+      throw new Error("No Doctor id provided");
+    }
+
+    const slots = await this._slotRepo.findByDoctorId(doctorId.toString());
+
+    const duplicate = slots.some(
+      (slot) =>
+        new Date(slot.date).getTime() === new Date(data.date!).getTime() &&
+        new Date(slot.startTime).getTime() ===
+          new Date(data.startTime!).getTime() &&
+        new Date(slot.endTime).getTime() === new Date(data.endTime!).getTime()
+    );
+
+    if (duplicate) {
+      throw new Error(SERVICE_MESSAGE.DUPLICATE_SLOT_ERROR);
+    }
     await this._slotRepo.create(data);
     return { msg: "slot created successfully" };
   }
@@ -23,5 +43,13 @@ export class SlotService implements ISlotService {
     const slots = await this._slotRepo.findByDoctorId(doctor?._id);
 
     return slots;
+  }
+  async deleteSlot(slotId: string): Promise<{ msg: string }> {
+    const slot = await this._slotRepo.findById(slotId);
+    if (!slot) {
+      throw new Error(SERVICE_MESSAGE.SLOT_NOT_FOUND);
+    }
+    await this._slotRepo.findByIdAndDelete(slotId);
+    return { msg: "Slot deleted successfully" };
   }
 }

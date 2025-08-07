@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CalendarIcon,
   Clock,
-  Trash2,
   Plus,
   Timer,
   Calendar as CalendarSchedule,
+  TrashIcon
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
@@ -38,14 +38,20 @@ import { useSlotAddMutation } from "@/features/docotr/doctorApi";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 import { useGetDoctorSlotsQuery } from "@/features/docotr/doctorApi";
+import { useDeleteSlotMutation } from "@/features/docotr/doctorApi";
+
 interface TimeSlot {
   startTime: string;
   endTime: string;
   id: string;
 }
 
+import { useNavigate } from "react-router-dom";
+
 export default function TimeShedule() {
+  const navigate = useNavigate();
   const [slotAdd] = useSlotAddMutation();
+  const [deleteSlot] = useDeleteSlotMutation();
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([
     {
@@ -58,7 +64,6 @@ export default function TimeShedule() {
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
 
   const { data: slots = [], refetch } = useGetDoctorSlotsQuery(doctor?._id);
-   
 
   const updateTimeSlot = (
     id: string,
@@ -111,9 +116,43 @@ export default function TimeShedule() {
     }
   };
 
+  const availableSlotCount = slots.filter(
+    (slot) => slot.status === "Available"
+  ).length;
+  const bookedSlotCount = slots.filter(
+    (slot) => slot.status === "Booked"
+  ).length;
 
-  const availableSlotCount = slots.filter((slot) => slot.status === 'Available').length
-    const bookedSlotCount = slots.filter((slot) => slot.status === 'Booked').length
+  const admin = useSelector((state: RootState) => state.admin.admin);
+  const patient = useSelector((state: RootState) => state.auth.user);
+  const doctors = useSelector((state: RootState) => state.doctor);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (doctors?.role === "doctors") {
+      setIsAuthorized(true);
+    } else if (patient) {
+      navigate("/");
+    } else if (admin) {
+      navigate("/admin");
+    } else {
+      navigate("/login");
+    }
+  }, [admin, patient, doctors, navigate]);
+
+  if (!isAuthorized) return null;
+
+
+  const handleSlotDelete = async(slotId:string)=>{
+      try {
+        console.log('slot id',slotId);
+        const res = await deleteSlot(slotId).unwrap()
+        toast.success(res?.msg);
+        refetch()
+      } catch (error:any) {
+        toast.error(error?.data?.msg);
+      }
+  }
 
   return (
     <SidebarProvider>
@@ -342,23 +381,30 @@ export default function TimeShedule() {
                       {slots.map((slot) => (
                         <div
                           key={slot._id}
-                          className="p-4 border rounded-lg shadow-sm bg-white"
+                          className="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-start"
                         >
-                          <div className="text-sm text-gray-500">
-                            {format(new Date(slot.date), "eeee, MMMM do, yyyy")}
+                          <div className="flex-1">
+                            <div className="text-sm text-gray-500">
+                              {format(new Date(slot.date), "eeee, MMMM do, yyyy")}
+                            </div>
+                            <div className="text-lg font-semibold text-blue-600">
+                              {format(new Date(slot.startTime), "hh:mm a")} -{" "}
+                              {format(new Date(slot.endTime), "hh:mm a")}
+                            </div>
+                            <div
+                              className={`text-sm mt-1 ${
+                                slot.status === "Available"
+                                  ? "text-green-600"
+                                  : "text-red-500"
+                              }`}
+                            >
+                              {slot.status}
+                            </div>
                           </div>
-                          <div className="text-lg font-semibold text-blue-600">
-                            {format(new Date(slot.startTime), "hh:mm a")} -{" "}
-                            {format(new Date(slot.endTime), "hh:mm a")}
-                          </div>
-                          <div
-                            className={`text-sm mt-1 ${
-                              slot.status === "Available"
-                                ? "text-green-600"
-                                : "text-red-500"
-                            }`}
-                          >
-                            {slot.status}
+                          <div className="ml-4">
+                            <button className="text-sm text-red-500 hover:text-red-700 font-medium" onClick={()=> handleSlotDelete(slot._id)}>
+                              <TrashIcon size={20}/>
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -382,7 +428,7 @@ export default function TimeShedule() {
                       </div>
                       <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl">
                         <div className="text-2xl font-bold text-emerald-600 mb-1">
-                        {bookedSlotCount}
+                          {bookedSlotCount}
                         </div>
                         <div className="text-xs text-gray-600">Booked</div>
                       </div>

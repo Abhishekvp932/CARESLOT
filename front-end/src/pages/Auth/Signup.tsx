@@ -22,17 +22,17 @@ const Signup = () => {
   const [signup, { isLoading }] = useSignupMutation();
 
  const admin = useSelector((state: RootState) => state.admin);
-  const user = useSelector((state: RootState) => state.auth.user);
-  const doctor = useSelector((state: RootState) => state.doctor.doctor);
+  const user = useSelector((state: RootState) => state.auth);
+  const doctor = useSelector((state: RootState) => state.doctor);
 
   // const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
     if (admin?.role === "admin") {
      navigate('/admin')
-    } else if (user) {
+    } else if (user.role === 'patients') {
       navigate("/");
-    } else if (doctor) {
+    } else if (doctor.role ==='doctors') {
       navigate("/doctor");
     } else {
       navigate("/signup");

@@ -18,6 +18,7 @@ export class AdminService implements IAdminService {
     private _adminRepo: IAdminRepository,
     private _doctorAuthRepo: IDoctorAuthRepository
   ) {}
+  
   async findAllUsers(): Promise<any> {
     const users = await this._patientRepo.findAll();
     if (!users) {

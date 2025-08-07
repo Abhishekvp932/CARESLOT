@@ -44,10 +44,10 @@ app.use('/api/doctor',doctorRoute);
 app.use('/api/admin',adminRoute);
 app.use('/api/patient',patientRoute);
 app.use('/api/slots',slotRoute)
-const PORT = process.env.PORT 
+const PORT = process.env.PORT
 connectDB().then(()=>{
   app.listen(PORT,()=>{
-     
+     console.log(`server running in ${PORT}`);
   })
 }).catch((err)=>{
     

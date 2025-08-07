@@ -10,7 +10,7 @@ export class SlotController implements ISlotController {
     async addTimeSlot(req: Request, res: Response): Promise<void> {
        try {
        const data = req.body
-         
+         console.log(data);
        const result = await this._slotService.addTimeSlot(data);
        res.status(HttpStatus.CREATED).json(result);
        } catch (error) {
@@ -26,6 +26,16 @@ export class SlotController implements ISlotController {
             const result = await this._slotService.getDoctotSlot(doctorId);
             res.status(HttpStatus.OK).json(result);
              
+        } catch (error) {
+            const err = error as Error
+            res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
+        }
+    }
+    async deleteSlot(req: Request, res: Response): Promise<void> {
+        try {
+            const {id:slotId} = req.params
+            const result = await this._slotService.deleteSlot(slotId);
+            res.status(HttpStatus.OK).json(result);
         } catch (error) {
             const err = error as Error
             res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});

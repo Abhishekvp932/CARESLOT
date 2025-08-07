@@ -18,5 +18,6 @@ router.route('/slots')
 
 router.route('/slots/:id')
 .get(protect,slotController.getDoctorSlot.bind(slotController))
+.delete(protect,slotController.deleteSlot.bind(slotController));
 export default router
 

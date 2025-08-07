@@ -7,10 +7,32 @@ import { DoctorSidebar } from "@/layout/doctor/sideBar"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 
 import { Separator } from "@/components/ui/separator"
-// import { useState } from "react"
+import { useState,useEffect } from "react"
+import { useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import type { RootState } from "@/app/store"
 
 export default function DoctorDashboard() {
 //   const [activeSection, setActiveSection] = useState("dashboard")
+   const navigate = useNavigate();
+      const admin = useSelector((state:RootState)=> state.admin.admin);
+     const patient = useSelector((state:RootState)=> state.auth.user);
+     const doctors = useSelector((state:RootState)=> state.doctor);
+     const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (doctors?.role === "doctors") {
+      setIsAuthorized(true);
+    } else if (patient) {
+      navigate("/");
+    } else if (admin) {
+      navigate("/admin");
+    } else {
+      navigate("/login");
+    }
+  }, [admin, patient, doctors, navigate]);
+
+  if (!isAuthorized) return null; 
 
   
 

@@ -35,7 +35,7 @@ export const adminApi = api.injectEndpoints({
             url : '/admin/verification-list',
             method:"GET"
         }),
-        transformResponse: (response:any) => response.doctors,
+        transformResponse: (response) => response.doctors,
     }),
       doctorApprove : builder.mutation({
         query : ({doctorId})=>({
@@ -54,7 +54,7 @@ export const adminApi = api.injectEndpoints({
             url:`/admin/doctor-details/${doctorId}`,
             method:'GET',
         }),
-        transformResponse: (response: any) => response.doctor,
+        transformResponse: (response) => response.doctor,
       }),
       updateUserData:builder.mutation({
         query:({formData,userId})=>({
@@ -68,7 +68,7 @@ export const adminApi = api.injectEndpoints({
             url:`/admin/doctors/${doctorId}`,
             method:"GET",
         }),
-         transformResponse: (response: any) => response.doctor,
+         transformResponse: (response) => response.doctor,
       }),
       editDoctorData:builder.mutation<any,{formData:any,doctorId:string}>({
         query:({formData,doctorId})=>({
