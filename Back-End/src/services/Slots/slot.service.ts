@@ -3,7 +3,7 @@ import { ISlots } from "../../models/interface/ISlots";
 import { ISlotRepository } from "../../interface/Slots/slotRepository.interface";
 import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interface";
 import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
-import { start } from "repl";
+import logger from "../../utils/logger";
 export class SlotService implements ISlotService {
   constructor(
     private _slotRepo: ISlotRepository,
@@ -11,8 +11,10 @@ export class SlotService implements ISlotService {
   ) {}
 
   async addTimeSlot(data: Partial<ISlots>): Promise<{ msg: string }> {
-    const doctorId = data?.doctorId;
 
+    logger.info('time slot data is comming from the back end');
+    const doctorId = data?.doctorId;
+    
     if (!doctorId) {
       throw new Error("No Doctor id provided");
     }

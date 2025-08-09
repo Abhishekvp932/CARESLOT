@@ -24,28 +24,23 @@ export const customBaseQuery: BaseQueryFn<
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-     
+   
+    
 
     const refreshResult = await baseQuery(
       {
-        url: "/auth/refresh-token",
+        url: '/auth/refresh-token',
         method: "POST",
       },
       api,
       extraOptions
     );
-     
 
     if (refreshResult?.data) {
-       
-
       result = await baseQuery(args, api, extraOptions);
-
     } else {
-       
-
       const state: any = api.getState();
-       
+
       if (state?.auth?.token) {
         api.dispatch(userLogOut());
       } else if (state?.doctor?.token) {

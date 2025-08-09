@@ -194,7 +194,7 @@ export class AuthService implements IService {
     }
 
     const newOTp = generateOTP();
-
+    console.log('resend otp is',newOTp);
     const otpExpire = new Date(Date.now() + 60 * 1000);
     if (role === "patients") {
       await this._patientRepo.upsertWithOTP(email, newOTp, otpExpire);

@@ -8,5 +8,10 @@ export interface ISlots extends Document{
     doctorId:Types.ObjectId;
     status:"Booked" | "Available";
     date:Date
-    
+   recurrenceType?: "none" | "daily" | "weekly" | "custom";
+  daysOfWeek?: number[];
+  customDates?: Date[]; 
+  recurrenceStartDate?: Date;
+  recurrenceEndDate?: Date;
+  recurringSlotId?: Types.ObjectId;
 }

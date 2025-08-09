@@ -9,10 +9,14 @@ import {
 } from "@/features/admin/adminApi";
 import { Check, X,Eye} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const VerificationList = () => {
-  const { data: doctors = [], refetch } = useFindUnApprovedDoctorsQuery();
+  const [page,setPage] = useState(1);
+  const limit = 10
+  const { data = {}, refetch } = useFindUnApprovedDoctorsQuery({page,limit});
+  const doctors = data?.data;
+  const totalpages = data?.totalPages || 1
   const [doctorApprove] = useDoctorApproveMutation();
   const [doctorReject] = useDoctorRejectMutation();
   const navigate = useNavigate()
@@ -42,7 +46,7 @@ const VerificationList = () => {
   const handleReject = async (doctorId: string) => {
     try {
       const res = await doctorReject({ doctorId }).unwrap();
-       
+       toast.success(res?.msg);
       refetch();
     } catch (error:any) {
         
@@ -104,7 +108,15 @@ const VerificationList = () => {
 
   return (
     <div>
-      <CommonTableView title="Verification-List" data={doctors} columns={columns} />
+      <CommonTableView title="Verification-List" 
+      data={doctors}
+       columns={columns}
+       withPagination = {true}
+       currentPage={page}
+       totalPages={totalpages}
+       onPageChange={(newPage)=> setPage(newPage)}
+
+        />
 
       <CommonCardView
         data={doctors}

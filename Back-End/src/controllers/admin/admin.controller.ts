@@ -10,8 +10,12 @@ export class AdminController implements IAdminController {
 
   async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
-      const result = await this._adminService.findAllUsers();
-      res.status(HttpStatus.OK).json(result);
+      const page = parseInt(req.query.page as string);
+     
+      const limit = parseInt(req.query.limit as string);
+     
+      const result = await this._adminService.findAllUsers(page,limit);
+      res.status(HttpStatus.OK).json({data:result.users,currentPage:page,totalPages:Math.ceil(result.total/limit),totalItem:result.total})
     } catch (error) {
       const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
@@ -19,8 +23,10 @@ export class AdminController implements IAdminController {
   }
   async getAllDoctors(req: Request, res: Response): Promise<void> {
     try {
-     const page = parseInt(req.query.page as string) || 1;
-     const limit = parseInt(req.query.limit as string) || 10;
+     const page = parseInt(req.query.page as string);
+     
+     const limit = parseInt(req.query.limit as string);
+      
       const result = await this._adminService.findAllDoctors(page,limit);
 
       res.status(HttpStatus.OK).json({data:result.doctors,currentPage:page,totalPages:Math.ceil(result.total/limit),totalItem:result.total});
@@ -65,9 +71,12 @@ export class AdminController implements IAdminController {
   }
   async findUnprovedDoctors(req: Request, res: Response): Promise<void> {
     try {
-      const result = await this._adminService.findUnApprovedDoctors();
 
-      res.status(HttpStatus.OK).json(result);
+      const page = parseInt(req.query.page as string)
+      const limit = parseInt(req.query.limit as string);
+      const result = await this._adminService.findUnApprovedDoctors(page,limit);
+
+      res.status(HttpStatus.OK).json({data:result.doctors,currentPage:page,totalPages:Math.ceil(result.total/limit),totalItem:result.total});;
     } catch (error) {
       const err = error as Error;
 

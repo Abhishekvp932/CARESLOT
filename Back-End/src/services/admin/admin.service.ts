@@ -19,12 +19,31 @@ export class AdminService implements IAdminService {
     private _doctorAuthRepo: IDoctorAuthRepository
   ) {}
   
-  async findAllUsers(): Promise<any> {
-    const users = await this._patientRepo.findAll();
-    if (!users) {
+  async findAllUsers(page:number,limit:number): Promise<any> {
+    const skip = (page-1) * limit
+  
+    const [userList,total] = await Promise.all([
+      this._patientRepo.findAllWithPagination(skip,limit),
+      this._patientRepo.countAll(),
+     ])
+    if (!userList) {
       throw new Error("No user found");
     }
-    return { msg: "users fetched successfully", users };
+    const users = userList.map((user) => ({
+    _id: user?._id,
+    email: user?.email,
+    name: user?.name,
+    phone: user?.phone,
+    gender: user?.gender,
+    DOB: user?.DOB,
+    isBlocked:user?.isBlocked,
+    role:user?.role,
+    createdAt:user?.createdAt,
+    updatedAt:user?.updatedAt,
+    profile_img:user?.profile_img
+  }));
+
+    return {users,total};
   }
 
 
@@ -32,13 +51,39 @@ export class AdminService implements IAdminService {
     const skip = (page-1)*limit
  
 
-     const [doctors,total] = await Promise.all([
-      this._doctorAuthRepo.findAllWithPagination({isApproved:true},skip,limit),
+     const [doctorsList,total] = await Promise.all([
+      this._doctorAuthRepo.findAllWithPagination(skip,limit,{isApproved:true}),
       this._doctorAuthRepo.countAll(),
      ])
-    if (!doctors) {
+    if (!doctorsList) {
       throw new Error("No doctors found");
     }
+    const doctors = doctorsList.map((doctor)=>({
+      _id:doctor?._id,
+      email:doctor?.email,
+      isBlocked:doctor?.isBlocked,
+      isApproved:doctor?.isApproved,
+      name:doctor?.name,
+      DOB:doctor?.DOB,
+      gender:doctor?.gender,
+      role:doctor?.role,
+      updatedAt:doctor?.updatedAt,
+      createdAt:doctor?.createdAt,
+      profile_img:doctor?.profile_img,
+      qualifications:{
+       degree:doctor?.qualifications?.degree,
+       institution:doctor?.qualifications?.institution,
+       experince:doctor?.qualifications?.experince,
+       educationCertificate:doctor?.qualifications?.educationCertificate,
+       experienceCertificate:doctor?.qualifications?.experienceCertificate,
+       graduationYear:doctor?.qualifications?.graduationYear,
+       specialization:doctor?.qualifications?.specialization,
+       medicalSchool:doctor?.qualifications?.medicalSchool,
+       about:doctor?.qualifications?.about,
+       fees:doctor?.qualifications?.fees,
+       lisence:doctor?.qualifications?.lisence,
+      }
+    }))
      return {doctors,total};
   }
 
@@ -76,14 +121,42 @@ export class AdminService implements IAdminService {
   };
 }
 
-async findUnApprovedDoctors(): Promise<any> {
-     const doctors = await this._doctorAuthRepo.findAllWithFilter({isApproved:false})
-
-     if(!doctors){
-      throw new Error ("No doctor for verification");
-     }
-
-     return {msg:"verification list fetched successfully",doctors};
+async findUnApprovedDoctors(page:number,limit:number): Promise<any> {
+    const skip = (page -1)*limit
+     const [doctorsList,total] = await Promise.all([
+      this._doctorAuthRepo.findAllWithPagination(skip,limit,{isApproved:false}),
+      this._doctorAuthRepo.countAll(),
+     ])
+    if (!doctorsList) {
+      throw new Error("No doctors found");
+    }
+    const doctors = doctorsList.map((doctor)=>({
+      _id:doctor?._id,
+      email:doctor?.email,
+      isBlocked:doctor?.isBlocked,
+      isApproved:doctor?.isApproved,
+      name:doctor?.name,
+      DOB:doctor?.DOB,
+      gender:doctor?.gender,
+      role:doctor?.role,
+      updatedAt:doctor?.updatedAt,
+      createdAt:doctor?.createdAt,
+      profile_img:doctor?.profile_img,
+      qualifications:{
+       degree:doctor?.qualifications?.degree,
+       institution:doctor?.qualifications?.institution,
+       experince:doctor?.qualifications?.experince,
+       educationCertificate:doctor?.qualifications?.educationCertificate,
+       experienceCertificate:doctor?.qualifications?.experienceCertificate,
+       graduationYear:doctor?.qualifications?.graduationYear,
+       specialization:doctor?.qualifications?.specialization,
+       medicalSchool:doctor?.qualifications?.medicalSchool,
+       about:doctor?.qualifications?.about,
+       fees:doctor?.qualifications?.fees,
+       lisence:doctor?.qualifications?.lisence,
+      }
+    }))
+     return {doctors,total};
 }
  async doctorApprove(doctorId:string): Promise<any> {
       const doctors = await this._doctorAuthRepo.findById(doctorId); 

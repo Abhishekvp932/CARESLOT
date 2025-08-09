@@ -21,7 +21,7 @@ import {
   Filter,
   Heart,
   Award,
-  GraduationCap,
+  GraduationCap, 
   Stethoscope,
 } from "lucide-react";
 import Header from "@/layout/Header";

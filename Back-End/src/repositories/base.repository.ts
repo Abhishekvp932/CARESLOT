@@ -22,12 +22,5 @@
         async findAll():Promise<T[]> {
             return await this.model.find()
         }
-
-        async findAllWithPagination(filter:any,skip: number, limit: number): Promise<T[]> {
-            return this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean()
-        }
-        async countAll(): Promise<number> {
-            return this.model.countDocuments()
-        }
         
     }

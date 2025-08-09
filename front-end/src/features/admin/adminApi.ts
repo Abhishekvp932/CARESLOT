@@ -4,11 +4,10 @@ import { api } from "@/app/api";
 export const adminApi = api.injectEndpoints({
     endpoints : (builder)=>({
         getAllUsers : builder.query({
-            query : ()=>({
-                url:"/admin/users",
+            query : ({page,limit})=>({
+                url:`/admin/users?page=${page}&limit=${limit}`,
                 method:'GET'
             }),
-             transformResponse: (response) => response.users,
         }),
         getAllDoctors:builder.query({
             query: ({page,limit})=>({
@@ -31,11 +30,10 @@ export const adminApi = api.injectEndpoints({
         }),
     }),
     findUnApprovedDoctors : builder.query({
-        query:()=>({
-            url : '/admin/verification-list',
+        query:({page,limit})=>({
+            url : `/admin/verification-list?page=${page}&limit=${limit}`,
             method:"GET"
         }),
-        transformResponse: (response) => response.doctors,
     }),
       doctorApprove : builder.mutation({
         query : ({doctorId})=>({

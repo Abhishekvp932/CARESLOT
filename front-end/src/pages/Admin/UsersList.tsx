@@ -2,7 +2,7 @@ import { CommonCardView } from "@/components/common/commonCardView";
 import { CommonTableView } from "@/components/common/commonTableView";
 import { useGetAllUsersQuery } from "@/features/admin/adminApi";
 import ActionMenu from "@/components/common/actionMenu";
-import { Edit,Plus } from "lucide-react";
+import { Edit, Plus } from "lucide-react";
 import { useBlockUserMutation } from "@/features/admin/adminApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
@@ -13,20 +13,23 @@ import { useAddUserMutation } from "@/features/admin/adminApi";
 import AddUserModal from "./AddUser";
 import { useState } from "react";
 const UsersList = () => {
-  const { data: users= [], refetch } = useGetAllUsersQuery();
+  const [page, setPage] = useState(1);
+  const limit = 10;
+  const { data = {}, refetch } = useGetAllUsersQuery({ page, limit });
+  const users = data?.data;
+  const totalPages = data?.totalPages || 1;
   const [blockUser] = useBlockUserMutation();
   const [updateUserData] = useUpdateUserDataMutation();
   const [addUser] = useAddUserMutation();
-
-
+  useEffect(() => {
+    refetch();
+  }, []);
   const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
     try {
       const res = await blockUser({ userId, isBlocked: !isBlocked }).unwrap();
       toast.success(res.msg);
       refetch();
     } catch (error: any) {
-       
-
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
@@ -36,9 +39,6 @@ const UsersList = () => {
   };
 
   const handleSave = async (updateUser, userId: string) => {
-     
-
-     
     const formData = new FormData();
     formData.append("name", updateUser.name);
 
@@ -47,18 +47,16 @@ const UsersList = () => {
     formData.append("gender", updateUser.gender);
     formData.append("dob", updateUser.DOB);
     formData.append("profileImage", updateUser.profileImg);
-     
+
     try {
       const res = await updateUserData({
         formData,
         userId: userId,
       }).unwrap();
-       
+
       toast.success(res.msg);
       refetch();
     } catch (error: any) {
-       
-
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
@@ -69,37 +67,35 @@ const UsersList = () => {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
- const handleUser = async (newUser: UserFormData) => {
-  try {
-    const formData = new FormData();
-    formData.append("name", newUser.name);
-    formData.append("email", newUser.email);
-    formData.append("phone", newUser.phone);
-    formData.append("gender", newUser.gender);
-    formData.append("dob", newUser.DOB);
-    formData.append("profileImage", newUser.profileImg);
-    formData.append("password", newUser.password);
-    formData.append("role", newUser.role);
+  const handleUser = async (newUser: UserFormData) => {
+    try {
+      const formData = new FormData();
+      formData.append("name", newUser.name);
+      formData.append("email", newUser.email);
+      formData.append("phone", newUser.phone);
+      formData.append("gender", newUser.gender);
+      formData.append("dob", newUser.DOB);
+      formData.append("profileImage", newUser.profileImg);
+      formData.append("password", newUser.password);
+      formData.append("role", newUser.role);
 
-    const res = await addUser({ formData }).unwrap();
-    toast.success("user addedd successfully");
-     
-    setIsAddModalOpen(false);
-    refetch();
-  } catch (error: any) {
-       
+      const res = await addUser({ formData }).unwrap();
+      toast.success(res?.msg);
 
+      setIsAddModalOpen(false);
+      refetch();
+    } catch (error: any) {
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
         toast.error("User profile updating error");
       }
     }
-};
+  };
 
   useEffect(() => {
     refetch();
-  }, []);
+  }, [page]);
 
   const columns = [
     { label: "Name", accessor: "name" },
@@ -136,14 +132,29 @@ const UsersList = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800"></h2>
-        <Button className="bg-black text-white hover:bg-black" onClick={()=> setIsAddModalOpen(true)}>
-          <Plus size={16}/>
+        <Button
+          className="bg-black text-white hover:bg-black"
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          <Plus size={16} />
           Add User
         </Button>
-        <AddUserModal onSave={handleUser} open={isAddModalOpen} onOpenChange={setIsAddModalOpen}/>
+        <AddUserModal
+          onSave={handleUser}
+          open={isAddModalOpen}
+          onOpenChange={setIsAddModalOpen}
+        />
       </div>
 
-      <CommonTableView title="Users" data={users} columns={columns} />
+      <CommonTableView
+        title="Users"
+        data={users}
+        columns={columns}
+        withPagination={true}
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={(newPage) => setPage(newPage)}
+      />
 
       <CommonCardView
         data={users}

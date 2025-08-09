@@ -24,7 +24,17 @@ const slotsSchema = new Schema<ISlots>({
     date:{
       type: Date,
       required:true,
-    }
+    },
+    recurrenceType:{
+        type : String,
+        enum:["none","daily","weekly","custom"],
+        default:"none"
+    },
+    daysOfWeek:[{type:Number}],
+    customDates:[{type:Date}],
+    recurrenceStartDate:{type:Date},
+    recurrenceEndDate:{type:Date},
+    recurringSlotId:{type:mongoose.Schema.Types.ObjectId}
 },{timestamps:true});
 
 const Slots = mongoose.model<ISlots>("Slot",slotsSchema);

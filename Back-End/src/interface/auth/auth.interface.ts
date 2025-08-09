@@ -12,4 +12,6 @@ export interface IpatientRepository{
    createWithGoogle(profile:Profile):Promise<IPatient | null>
    updatePasswordWithEmail(email:string,update:Partial<any>):Promise<IPatient | null>
    findAll():Promise<IPatient []>
+   findAllWithPagination(skip:number,limit:number):Promise<IPatient[]>
+   countAll():Promise<number>
 }

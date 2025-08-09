@@ -4,13 +4,14 @@ import { ISlotController } from "../../interface/Slots/slotController.interface"
 import { ISlotService } from "../../interface/Slots/slotService.interface";
 import { emitWarning } from "process";
 import { HttpStatus } from "../../utils/httpStatus";
+import logger from "../../utils/logger";
 export class SlotController implements ISlotController {
     constructor (private _slotService:ISlotService){}
 
     async addTimeSlot(req: Request, res: Response): Promise<void> {
+        logger.info('creating new time slot......');
        try {
        const data = req.body
-         console.log(data);
        const result = await this._slotService.addTimeSlot(data);
        res.status(HttpStatus.CREATED).json(result);
        } catch (error) {

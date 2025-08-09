@@ -5,6 +5,4 @@ export interface IBaseRepository <T>{
        verifyOtp?(email:string,otp:string):Promise<boolean>
        findAllWithFilter(filter:any):Promise<T[]>;
        findAll():Promise<T[]>;
-        findAllWithPagination(filter:any,skip:number,limit:number):Promise<T[]>
-        countAll():Promise<number>
 }

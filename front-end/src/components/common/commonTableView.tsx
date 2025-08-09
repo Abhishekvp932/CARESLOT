@@ -3,7 +3,7 @@ import { format } from "date-fns";
 interface Column<T> {
   label: string;
   accessor: string;
-  render?:(item:T)=> React.ReactNode
+  render?: (item: T) => React.ReactNode;
 }
 
 interface CommonTableProps<T> {
@@ -25,7 +25,6 @@ export const CommonTableView = <T,>({
   currentPage = 1,
   totalPages = 1,
   onPageChange,
-
 }: CommonTableProps<T>) => {
   return (
     <div className="hidden md:block overflow-x-auto rounded-lg shadow">
@@ -81,26 +80,40 @@ export const CommonTableView = <T,>({
         </tbody>
       </table>
 
-     {withPagination && (
-  <div className="flex justify-end gap-2 mt-4">
-    <button
-      disabled={currentPage === 1}
-      onClick={() => onPageChange && onPageChange(currentPage - 1)}
-    >
-      Previous
-    </button>
-    <span>
-      Page {currentPage} of {totalPages}
-    </span>
-    <button
-      disabled={currentPage === totalPages}
-      onClick={() => onPageChange && onPageChange(currentPage + 1)}
-    >
-      Next
-    </button>
-  </div>
-)}
+      {withPagination && (
+        <div className="flex justify-end items-center gap-3 mt-4 text-sm">
+          <button
+            className={`px-4 py-2 rounded-lg border border-gray-300 transition 
+                  ${
+                    currentPage === 1
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-white hover:bg-gray-100 text-gray-700"
+                  }`}
+            disabled={currentPage === 1}
+            onClick={() => onPageChange && onPageChange(currentPage - 1)}
+          >
+            ◀ Previous
+          </button>
 
+          <span className="px-3 py-2 bg-gray-100 rounded-lg">
+            Page <span className="font-medium">{currentPage}</span> of{" "}
+            {totalPages}
+          </span>
+
+          <button
+            className={`px-4 py-2 rounded-lg border border-gray-300 transition 
+                  ${
+                    currentPage === totalPages
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-white hover:bg-gray-100 text-gray-700"
+                  }`}
+            disabled={currentPage === totalPages}
+            onClick={() => onPageChange && onPageChange(currentPage + 1)}
+          >
+            Next ▶
+          </button>
+        </div>
+      )}
     </div>
   );
 };

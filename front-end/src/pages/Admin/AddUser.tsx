@@ -14,8 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userSchema } from "@/validation/user.schema";
 import { z } from "zod";
-
-
+import { InputField } from "@/components/common/InputField";
 
 // Define inferred type from Zod schema
 type UserFormData = z.infer<typeof userSchema>;
@@ -66,8 +65,10 @@ const AddUserModal = ({
 
           <div className="grid gap-4 py-4">
             {/* Profile pic */}
-            <Input
+            <InputField
               type="file"
+              name = "profileImg"
+              label="Profile photo"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) setValue("profileImg", file);
@@ -82,16 +83,18 @@ const AddUserModal = ({
             )}
 
             {/* Name, Email, Phone */}
+            <label htmlFor="">Name</label>
             <Input placeholder="Enter name" {...register("name")} />
             {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-
+             <label htmlFor="">Email</label>
             <Input placeholder="Enter email" {...register("email")} />
             {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-
+             <label htmlFor="">Phone</label>
             <Input placeholder="Enter phone" {...register("phone")} />
             {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
 
             {/* Gender */}
+             <label htmlFor="">Select Gender</label>
             <select {...register("gender")} className="border p-2 rounded w-full">
               <option value="">Select gender</option>
               <option value="male">Male</option>
@@ -101,13 +104,15 @@ const AddUserModal = ({
             {errors.gender && <p className="text-red-500">{errors.gender.message}</p>}
 
             {/* DOB */}
+             <label htmlFor="">Date of birth</label>
             <Input type="date" {...register("DOB")} />
             {errors.DOB && <p className="text-red-500">{errors.DOB.message}</p>}
 
             {/* Password */}
+             <label htmlFor="">Password</label>
             <Input placeholder="Enter Password" {...register("password")} />
             {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-
+               <label htmlFor="">confirm Password</label>
             <Input placeholder="Confirm Password" {...register("confirmPassword")} />
             {errors.confirmPassword && (
               <p className="text-red-500">{errors.confirmPassword.message}</p>

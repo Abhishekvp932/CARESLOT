@@ -4,6 +4,7 @@ import { Profile } from "passport-google-oauth20";
 import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
 import { BaseRepository } from "../base.repository";
 import { IDoctor } from "../../models/interface/IDoctor";
+import { DoctorPagination } from "../../types/doctorFiltering";
 
 export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDoctorAuthRepository{
      
@@ -59,5 +60,12 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
    async findByIdAndDelete(id: string): Promise<any> {
      return await this.model.findByIdAndDelete(id)
    }
+
+   async findAllWithPagination(skip: number, limit: number, filter?: DoctorPagination): Promise<IDoctor[]> {
+      return this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean()
+   }
+        async countAll(): Promise<number> {
+            return this.model.countDocuments()
+        }
  
 }
