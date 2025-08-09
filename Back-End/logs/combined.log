@@ -220,3 +220,15 @@
 2025-08-09 09:12:48 [[35MHTTP[39M]: [35mPOST /api/slots/slots 201 35 - 16.548 ms[39m
 2025-08-09 09:12:48 [[35MHTTP[39M]: [35mGET /api/slots/slots/68944e66bd34817ccbaeca98 200 348 - 8.127 ms[39m
 2025-08-09 09:13:31 [[35MHTTP[39M]: [35mGET /api/slots/slots/68944e66bd34817ccbaeca98 304 - - 7.747 ms[39m
+2025-08-09 09:45:07 [[35MHTTP[39M]: [35mGET /api/slots/slots/68944e66bd34817ccbaeca98 401 32 - 1.959 ms[39m
+2025-08-09 09:45:07 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 18.033 ms[39m
+2025-08-09 09:45:07 [[35MHTTP[39M]: [35mGET /api/slots/slots/68944e66bd34817ccbaeca98 304 - - 13.583 ms[39m
+2025-08-09 09:45:15 [[32MINFO[39M]: [32mcreating new time slot......[39m
+2025-08-09 09:45:15 [[32MINFO[39M]: [32mtime slot data is comming from the back end[39m
+2025-08-09 09:45:15 [[35MHTTP[39M]: [35mPOST /api/slots/slots 400 38 - 3.058 ms[39m
+2025-08-09 09:45:16 [[35MHTTP[39M]: [35mDELETE /api/slots/slots/6896c3b8d90f7668c368c860 200 35 - 6.951 ms[39m
+2025-08-09 09:45:16 [[35MHTTP[39M]: [35mGET /api/slots/slots/68944e66bd34817ccbaeca98 200 2 - 3.195 ms[39m
+2025-08-09 09:45:17 [[32MINFO[39M]: [32mcreating new time slot......[39m
+2025-08-09 09:45:17 [[32MINFO[39M]: [32mtime slot data is comming from the back end[39m
+2025-08-09 09:45:17 [[35MHTTP[39M]: [35mPOST /api/slots/slots 201 35 - 11.576 ms[39m
+2025-08-09 09:45:17 [[35MHTTP[39M]: [35mGET /api/slots/slots/68944e66bd34817ccbaeca98 200 348 - 7.216 ms[39m
