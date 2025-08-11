@@ -1,20 +1,24 @@
 import { IDoctor } from "../doctor/doctor.service.interface";
-
+import { DoctorListResult } from '../../types/doctorListResult';
+import { UserListResult } from "../../types/userListsResult";
+import { doctorDetails } from "../../types/doctorDetails";
+import { IPatient } from "../../models/interface/IPatient";
 export interface IAdminService {
-  findAllUsers(page:number,limit:number): Promise<any>;
-  findAllDoctors(page:number,limit:number): Promise<any>;
-  blockAndUnblockUsers(userId: string, update: boolean): Promise<any>;
-  blockAndUnblockDoctors(doctorId: string, update: boolean): Promise<any>;
-  findUnApprovedDoctors(page:number,limit:number): Promise<any>;
-  doctorApprove(doctorId: string): Promise<any>;
-  doctorReject(doctorId: string): Promise<any>;
-  getVerificationDoctorDetails(doctorId: string): Promise<any>;
+  findAllUsers(page:number,limit:number,search:string): Promise<UserListResult>;
+  findAllDoctors(page:number,limit:number,search:string): Promise<DoctorListResult>;
+  blockAndUnblockUsers(userId: string, update: boolean): Promise<{msg:string}>;
+  blockAndUnblockDoctors(doctorId: string, update: boolean,reason:string): Promise<{msg:string}>;
+  findUnApprovedDoctors(page:number,limit:number,search:string): Promise<DoctorListResult>;
+  doctorApprove(doctorId: string): Promise<{msg:string}>;
+  doctorReject(doctorId: string,reason:string): Promise<{msg:string}>;
+  getVerificationDoctorDetails(doctorId: string): Promise<doctorDetails>;
   updateUserData(
-    formData: any,
+    formData: Partial<IPatient>,
     userId: string,
     profileImage?: string
-  ): Promise<any>;
-  editDoctorData(doctorId: string): Promise<any>;
+  ): Promise<{msg:string}>;
+  editDoctorData(doctorId: string): Promise<doctorDetails>;
+
   editDoctorProfile(
     doctorId: string,
     data: Partial<IDoctor>

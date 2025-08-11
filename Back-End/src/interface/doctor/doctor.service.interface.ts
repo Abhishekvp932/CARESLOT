@@ -16,7 +16,7 @@ degree: string;
 }
 
 export interface IDoctor{
-    uploadDocument(doctorId:string,input:QualificationInput,profileImage:string):Promise<any>
+    uploadDocument(doctorId:string,input:QualificationInput,profileImage:string):Promise<{msg:string}>
     getDoctorProfile(doctorId:string):Promise<{msg:string,doctor:IDoctorData}>
     editDoctorProfile(doctorId:string,body:DoctorProfileInput,files:UploadedFiles):Promise<{msg:string}>
 }

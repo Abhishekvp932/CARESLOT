@@ -26,14 +26,10 @@ export const userApi = api.injectEndpoints({
         transformResponse: (response) => response.users,
     }),
     getAllApprovedDoctors:builder.query({
-      query:()=>({
-        url:"/patient/doctors",
+      query:({page,limit,search,specialty})=>({
+        url:`/patient/doctors?page=${page}&limit=${limit}&search=${search}&specialty=${specialty}`,
         method:"GET"
       }),
-       transformResponse: (response) => {
-         
-        return response.doctors;
-      },
     }),
     getDoctorDetailPage :builder.query({
       query:(doctorId)=>({
@@ -55,7 +51,14 @@ export const userApi = api.injectEndpoints({
         url:`/patient/slots/${doctorId}`
       }),
       transformResponse: (response) => response.slots,
-    })
+    }),
+    getAllSpecializations:builder.query({
+      query:()=>({
+        url:"/patient/specializations",
+        method:"GET"
+      }),
+        transformResponse: (response) => response.specializations,
+    }),
   }),
 });
 
@@ -66,6 +69,7 @@ export const {
    useGetAllApprovedDoctorsQuery,
    useGetDoctorDetailPageQuery,
    useGetDoctorSlotQuery,
-   useGetSlotsQuery,  
+   useGetSlotsQuery, 
+   useGetAllSpecializationsQuery 
   }
    = userApi;

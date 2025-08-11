@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.route('/profile').get(protect,patientController.getResendAppoinment.bind(patientController));
 router.route('/profile/:id').put(protect,multiFileUpload,patientController.updateUserProfile.bind(patientController))
-.get(patientController.getUserData.bind(patientController));
+.get(protect,patientController.getUserData.bind(patientController));
 
 
 router.route('/doctors')
@@ -29,4 +29,7 @@ get(protect,patientController.getDoctorDetails.bind(patientController));
 
 router.route('/slots/:id')
 .get(protect,patientController.getDoctorSlots.bind(patientController));
+
+router.route('/specializations')
+.get(protect,patientController.getAllspecializations.bind(patientController));
 export default router;

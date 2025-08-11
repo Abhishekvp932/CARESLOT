@@ -14,10 +14,31 @@ import AddUserModal from "./AddUser";
 import { useState } from "react";
 const UsersList = () => {
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debounceSearch, setDebounce] = useState("");
+  const [loading, setLoading] = useState(false);
   const limit = 10;
-  const { data = {}, refetch } = useGetAllUsersQuery({ page, limit });
+
+  useEffect(() => {
+    setLoading(true);
+    const handler = setTimeout(() => {
+      setDebounce(searchTerm);
+      setLoading(false);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  const {
+    data = {},
+    refetch,
+    isFetching,
+  } = useGetAllUsersQuery({ page, limit, search: debounceSearch });
   const users = data?.data;
   const totalPages = data?.totalPages || 1;
+
+  const isLoading = loading || isFetching;
+
   const [blockUser] = useBlockUserMutation();
   const [updateUserData] = useUpdateUserDataMutation();
   const [addUser] = useAddUserMutation();
@@ -95,7 +116,7 @@ const UsersList = () => {
 
   useEffect(() => {
     refetch();
-  }, [page]);
+  }, []);
 
   const columns = [
     { label: "Name", accessor: "name" },
@@ -130,8 +151,34 @@ const UsersList = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800"></h2>
+      <div className="flex justify-between items-center mb-6">
+        <div className="relative w-72">
+          <input
+            type="text"
+            placeholder="Search doctors..."
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:border-black focus:ring-1 focus:ring-black transition text-sm"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+          />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
+            />
+          </svg>
+        </div>
+
         <Button
           className="bg-black text-white hover:bg-black"
           onClick={() => setIsAddModalOpen(true)}
@@ -146,47 +193,63 @@ const UsersList = () => {
         />
       </div>
 
-      <CommonTableView
-        title="Users"
-        data={users}
-        columns={columns}
-        withPagination={true}
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={(newPage) => setPage(newPage)}
-      />
+      {isLoading ? (
+        <div className="flex justify-center items-center mt-4">
+          {isLoading && (
+            <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+          )}
+        </div>
+      ) : (
+        <div>
+          <CommonTableView
+            title="Users"
+            data={users}
+            columns={columns}
+            withPagination={true}
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={(newPage) => setPage(newPage)}
+          />
 
-      <CommonCardView
-        data={users}
-        title="Users"
-        renderItem={(user: any) => (
-          <div className="flex justify-between items-start">
-            <div>
-              <p>
-                <strong>Name:</strong> {user?.name}
-              </p>
-              <p>
-                <strong>Email:</strong> {user?.email}
-              </p>
-              <p>
-                <strong>Role:</strong> {user?.role}
-              </p>
-              <p>
-                <strong>Join Date:</strong>{" "}
-                {new Date(user.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            <div className="md:hidden">
-              <ActionMenu
-                user={user}
-                onBlockToggle={() =>
-                  handleBlockAndUnblock(user._id, user.isBlocked)
-                }
-              />
-            </div>
-          </div>
+
+
+           {!isLoading && users?.length === 0 && (
+        <p className="text-center text-gray-500 mt-4">No users found</p>
         )}
-      />
+
+          <CommonCardView
+            data={users}
+            title="Users"
+            renderItem={(user: any) => (
+              <div className="flex justify-between items-start">
+                <div>
+                  <p>
+                    <strong>Name:</strong> {user?.name}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {user?.email}
+                  </p>
+                  <p>
+                    <strong>Role:</strong> {user?.role}
+                  </p>
+                  <p>
+                    <strong>Join Date:</strong>{" "}
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="md:hidden">
+                  <ActionMenu
+                    user={user}
+                    onBlockToggle={() =>
+                      handleBlockAndUnblock(user._id, user.isBlocked)
+                    }
+                  />
+                </div>
+              </div>
+            )}
+          />
+        </div>
+      )}
 
       <ToastContainer autoClose={2000} />
     </div>

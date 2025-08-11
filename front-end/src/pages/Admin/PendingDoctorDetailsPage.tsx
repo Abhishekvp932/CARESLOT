@@ -15,8 +15,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Star,
-
   Phone,
   Mail,
   Calendar,
@@ -34,23 +32,25 @@ import {
 } from "lucide-react";
 import BackButton from "@/layout/admin/backButton";
 import { useGetDoctorDataQuery } from "@/features/admin/adminApi";
-
+import { useState } from "react";
+import RejectionReasonModal from "@/components/common/admin/rejectionReasonModal";
 const DoctorDetails = () => {
   const navigate = useNavigate();
   const { doctorId } = useParams<{ doctorId: string }>();
-   
+   const [isOpen,setIsOpen] = useState(false);
+   const [selectedDoctorId,setSelectedDoctorId] = useState<string | null>(null);
   const { data: doctor } = useGetDoctorDataQuery(doctorId);
-   
+   console.log('doctors',doctor);
  const [doctorApprove] = useDoctorApproveMutation();
 const [doctorReject] = useDoctorRejectMutation();
+
   const handleApprove = async(doctorId:string)=>{
        try {
       const res = await doctorApprove({ doctorId }).unwrap();
         toast.success(res?.msg);
-         toast.success(res?.msg);
         setTimeout(()=>{
           navigate('/admin/doctors');
-        },2000)
+        },1000)
        } catch (error:any) {
          
       if (error?.data?.msg) {
@@ -61,13 +61,14 @@ const [doctorReject] = useDoctorRejectMutation();
        }
   }
 
-  const handleReject = async (doctorId:string)=>{
+  const handleReject = async (doctorId:string,reason:string)=>{
     try {
-      const res = await doctorReject({ doctorId }).unwrap();
+      const res = await doctorReject({ doctorId,reason }).unwrap();
+      console.log('res',res);
       toast.success(res?.msg);
         setTimeout(()=>{
-          navigate(-1)
-        },2000)
+          navigate('/admin/pending-verification');
+        },1000)
     } catch (error:any) {
         
       if (error?.data?.msg) {
@@ -85,7 +86,7 @@ const [doctorReject] = useDoctorRejectMutation();
       <BackButton />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Status Banner */}
+     
         {!doctor?.isApproved && (
           <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3">
             <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
@@ -97,9 +98,9 @@ const [doctorReject] = useDoctorRejectMutation();
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
+          
           <div className="lg:col-span-2 space-y-8">
-            {/* Doctor Profile Card */}
+           
             <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-r from-white to-blue-50/30">
               <div className="h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-teal-500"></div>
               <CardContent className="p-8">
@@ -152,7 +153,7 @@ const [doctorReject] = useDoctorRejectMutation();
               </CardContent>
             </Card>
 
-            {/* About Section */}
+          
             <Card className="border-0 shadow-lg">
               <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-t-lg">
                 <CardTitle className="text-2xl text-gray-800">
@@ -167,7 +168,7 @@ const [doctorReject] = useDoctorRejectMutation();
               </CardContent>
             </Card>
 
-            {/* Education & Certifications */}
+           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
@@ -219,8 +220,7 @@ const [doctorReject] = useDoctorRejectMutation();
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-6">
-                    {/* Education Certificate */}
-                    <div className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                     <div className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-semibold text-gray-800">Education Certificate</h4>
                         <Badge variant="outline" className="text-xs">
@@ -256,7 +256,7 @@ const [doctorReject] = useDoctorRejectMutation();
                       </Dialog>
                     </div>
 
-                    {/* Experience Certificate */}
+                   
                     <div className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-semibold text-gray-800">Experience Certificate</h4>
@@ -296,30 +296,10 @@ const [doctorReject] = useDoctorRejectMutation();
                 </CardContent>
               </Card>
             </div>
-
-            {/* Reviews Section - Only show if approved */}
-            {doctor?.isApproved && (
-              <Card className="border-0 shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-t-lg">
-                  <CardTitle className="text-2xl text-gray-800">
-                    <Star className="w-6 h-6 inline mr-3 text-yellow-500" />
-                    Patient Reviews
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <div className="text-center py-12">
-                    <Star className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 text-lg">No reviews available yet</p>
-                    <p className="text-gray-400">Reviews will appear here once patients start providing feedback</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
-          {/* Admin Panel - Schedule Management */}
+          
           <div className="space-y-8">
-            {/* Approval/Schedule Management Card */}
             <Card className="sticky top-6 border-0 shadow-xl">
  
              
@@ -334,10 +314,18 @@ const [doctorReject] = useDoctorRejectMutation();
                       <CheckCircle className="w-5 h-5 mr-2" />
                       Approve
                     </Button>
-                    <Button variant="destructive" className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg" onClick={()=> handleReject(doctor._id)}>
+                    <Button variant="destructive" className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg" onClick={()=>{
+                      setIsOpen(true);
+                      setSelectedDoctorId(doctor?._id);
+                    }}>
                       <XCircle className="w-5 h-5 mr-2" />
                       Reject
                     </Button>
+                    <RejectionReasonModal open={isOpen}  title="Rejection Reason" onOpenChange={setIsOpen} onSave={(reason)=>{
+                      if(selectedDoctorId){
+                        handleReject(selectedDoctorId,reason);
+                      }
+                    }}/>
                   </div>
                 </div>  
             

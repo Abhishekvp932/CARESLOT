@@ -46,6 +46,12 @@ const doctorSchema = new Schema<IDoctor>(
       enum: ["doctors"],
       default: "doctors",
     },
+    rejectionReason:{
+       type:String
+    },
+    blockReason:{
+       type:String
+    },
     qualifications: {
       degree: { type: String },
       institution: { type: String },

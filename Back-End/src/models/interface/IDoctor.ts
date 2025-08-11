@@ -29,5 +29,7 @@ export interface IDoctor extends Document {
   createdAt?: Date;
   updatedAt?: Date;
   otp?: string;
+  rejectionReason?:string;
+  blockReason?:string;
   otpExpire?: Date;
 }

@@ -1,16 +1,19 @@
 
 import { Profile } from "passport-google-oauth20";
 import { IBaseUser } from "../../utils/IBaseUser";
+import { IPatient } from "../../models/interface/IPatient";
+
+
 export interface IService{
      login(email:string,password:string) :Promise<{msg:string,user:IBaseUser,accessToken:string,refreshToken:string}>;
-     signup(name:string,email:string,password:string,phone:string,dob:Date,gender:string,role:string):Promise<any>;
-     verifyOtp(email:string,otp:string):Promise<any>;
-     findOrCreateGoogleUser(profile:Profile):Promise<any>;
-     findUserById(id: string):Promise<any>
+     signup(name:string,email:string,password:string,phone:string,dob:Date,gender:string,role:string):Promise<{msg:string}>;
+     verifyOtp(email:string,otp:string):Promise<{msg:string}>;
+     findOrCreateGoogleUser(profile:Profile):Promise<IPatient>;
+     findUserById(id: string):Promise<IPatient>
     logOut():Promise<string>
-    resendOTP(email:string):Promise<any>;
-    verifiyEmail(email:string) : Promise <any>;
-    verifyEmailOTP(email:string,otp:string):Promise<any>;
-    forgotPassword(email:string,newPassword:string):Promise<any>
+    resendOTP(email:string):Promise<{msg:string}>;
+    verifiyEmail(email:string) : Promise <{msg:string}>;
+    verifyEmailOTP(email:string,otp:string):Promise<{msg:string}>;
+    forgotPassword(email:string,newPassword:string):Promise<{msg:string}>
     refreshAccessToken(req:any,res:any):Promise<any>
 }

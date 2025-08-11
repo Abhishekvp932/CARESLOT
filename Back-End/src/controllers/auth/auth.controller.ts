@@ -5,29 +5,26 @@ import { HttpStatus } from "../../utils/httpStatus";
 import { CONTROLLER_MESSAGE } from "../../utils/controllerMessage";
 import { verifyAccessToken } from "../../utils/jwt";
 import { IService } from "../../interface/auth/IService.interface";
+import redisClient from "../../config/redisClient";
+import {v4 as uuidv4} from 'uuid'
  export class AuthController implements IAuthController{
   constructor(private _authService : IService) {}
-
-
     async login(req: Request, res: Response): Promise<void> {
         try {
             const {email,password} = req.body;
              
             const {user,accessToken,refreshToken,msg} = await this._authService.login(email,password)
-            res.cookie('accessToken',accessToken,{
+
+            const sessionId = uuidv4();
+            await redisClient.set(`access:${sessionId}`,accessToken,{EX:15*60});
+            await redisClient.set(`refresh:${sessionId}`,refreshToken,{EX:7*24*60*60});
+           
+            res.cookie('sessionId',sessionId,{
                 httpOnly:true,
                 secure:false,
                 sameSite:"lax",
-                maxAge: 15 * 60 * 1000,
+                maxAge:7*24*60*60*1000
             })
-
-              res.cookie("refreshToken",refreshToken,{
-                httpOnly:true,
-                secure:false,
-                sameSite:"lax",
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-              })
-
             res.status(HttpStatus.OK).json({msg,user:{id:user,email:user.email,role:user.role}});
             
         } catch (error) {
@@ -92,8 +89,8 @@ import { IService } from "../../interface/auth/IService.interface";
        const {email} = req.body
 
        try {
-        const res = await this._authService.resendOTP(email)
-        res.status(HttpStatus.OK).json(res)
+        const result = await this._authService.resendOTP(email)
+        res.status(HttpStatus.OK).json(result)
        } catch (error) {
         res.status(HttpStatus.BAD_REQUEST).json('resend otp error');
        }

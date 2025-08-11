@@ -61,11 +61,28 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
      return await this.model.findByIdAndDelete(id)
    }
 
-   async findAllWithPagination(skip: number, limit: number, filter?: DoctorPagination): Promise<IDoctor[]> {
-      return this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean()
+   async findAllWithPagination(skip: number, limit: number, filter?:Partial<IDoctor>): Promise<IDoctor[]> {
+      return this.model.find(filter)
+      .sort({createdAt:-1})
+      .skip(skip)
+      .limit(limit)
+      .lean()
    }
-        async countAll(): Promise<number> {
-            return this.model.countDocuments()
+        async countAll(filter?:Partial<IDoctor>):Promise<number> {
+            return this.model.countDocuments(filter)
         }
+
+         async uploadDocument(doctorId: string, data: any): Promise<any> {
+  return await Doctor.findByIdAndUpdate(
+    doctorId,
+    {
+      $set: {
+        profile_img: data.profile_img,
+        qualifications: data.qualifications,
+      },
+    },
+    { new: true }
+  );
+}
  
 }

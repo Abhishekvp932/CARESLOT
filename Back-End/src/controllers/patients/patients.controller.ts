@@ -3,6 +3,7 @@ import { IPatientController } from "../../interface/patients/IPatient.controller
 import { PatientService } from "../../services/patients/patients.service";
 import { IPatientService } from "../../interface/patients/IPatient.service";
 import { HttpStatus } from "../../utils/httpStatus";
+import logger from "../../utils/logger";
 export class PatientController implements IPatientController {
   
   constructor(private _patientService: IPatientService) {}
@@ -57,10 +58,12 @@ export class PatientController implements IPatientController {
   }
   async getAllDoctors(req: Request, res: Response): Promise<void> {
     try {
-      
-      const result = await this._patientService.getAllDoctors();
- 
-      res.status(HttpStatus.OK).json({ doctors: result });
+      const page = parseInt(req.query.page as string);
+      const limit = parseInt(req.query.limit as string);
+      const search = req.query.search as string;
+      const specialty = req.query.specialty as string;
+      const result = await this._patientService.getAllDoctors(page,limit,search,specialty);
+      res.status(HttpStatus.OK).json({data:result.doctors,currentPage:page,totalPages:Math.ceil(result.total/limit),totalItem:result.total,specializations:result.specializations});
     } catch (error) {
       const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
@@ -88,6 +91,16 @@ export class PatientController implements IPatientController {
     } catch (error) {
       const err = error as Error
       res.status(HttpStatus.BAD_REQUEST).json({msg:err.message})
+    }
+  }
+  async getAllspecializations(req: Request, res: Response): Promise<void> {
+    try {
+      const result = await this._patientService.getAllspecializations();
+      logger.debug(result);
+      res.status(HttpStatus.OK).json({specializations:result.specializations});
+    } catch (error) {
+      const err = error as Error
+      res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
     }
   }
 }

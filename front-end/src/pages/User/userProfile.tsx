@@ -11,12 +11,13 @@ import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: doctors, error, isLoading} = useGetResendAppoinmentsQuery();
-  const {data:users,refetch} = useGetUserDataQuery(user?._id);
+  const { data: doctors, error, isLoading,refetch:refetchAppoinments} = useGetResendAppoinmentsQuery();
+  const {data:users,refetch:refetchUserData} = useGetUserDataQuery(user?._id);
   const [updateUserData] = useUpdateUserDataMutation();
 
   useEffect(()=>{
-    refetch();
+    refetchAppoinments();
+    refetchUserData();
   },[]);
   if (isLoading) {
     return <div className="text-center mt-6 text-gray-600">Loading...</div>;
@@ -48,7 +49,7 @@ const UserProfile = () => {
         }).unwrap();
          
         toast.success(res.msg);
-       refetch()
+       refetchUserData()
       } catch (error: any) {
          
 

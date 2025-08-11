@@ -7,4 +7,5 @@ export interface IPatientController {
     getAllDoctors(req:Request,res:Response):Promise<void>
     getDoctorDetails(req:Request,res:Response):Promise<void>
     getDoctorSlots(req:Request,res:Response):Promise<void>
+    getAllspecializations(req:Request,res:Response):Promise<void>
 }

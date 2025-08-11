@@ -12,12 +12,16 @@ import {
 import { Profile } from "passport-google-oauth20";
 import { IService } from "../../interface/auth/IService.interface";
 import { MailService } from "../mail.service";
-
+import { IPatient } from "../../models/interface/IPatient";
 import { IBaseUser } from "../../utils/IBaseUser";
 import { HttpStatus } from "../../utils/httpStatus";
 import { IpatientRepository } from "../../interface/auth/auth.interface";
 import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interface";
 import { IAdminRepository } from "../../interface/admin/admin.repo.interface";
+import redisClient from "../../config/redisClient";
+import {v4 as uuidv4} from 'uuid'
+
+
 export class AuthService implements IService {
   constructor(
     private _patientRepo: IpatientRepository,
@@ -88,7 +92,7 @@ export class AuthService implements IService {
     dob: Date,
     gender: string,
     role: string
-  ): Promise<any> {
+  ): Promise<{msg:string}> {
     const otp = generateOTP();
 
     const otpExpire = new Date(Date.now() + 60 * 1000);
@@ -144,7 +148,7 @@ export class AuthService implements IService {
       `Hi ${name},\n\nYour OTP is : ${otp}\nIt will expire in 1 minit.`
     );
 
-    return;
+    return {msg:"otp send to your email id"};
   }
   async verifyOtp(email: string, otp: string): Promise<any> {
     let user = null;
@@ -168,20 +172,29 @@ export class AuthService implements IService {
     return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS, role, user: user._id };
   }
 
-  async findOrCreateGoogleUser(profile: Profile): Promise<any> {
-    const existingUser = await this._patientRepo.findByGoogleId(profile.id);
+  async findOrCreateGoogleUser(profile: Profile):Promise<IPatient> {
+    const existingUser : IPatient | null = await this._patientRepo.findByGoogleId(profile.id);
     if (existingUser) return existingUser;
     const newUser = await this._patientRepo.createWithGoogle(profile);
+    if(!newUser){
+      throw new Error('Failed to create user with Google profile');
+    }
     return newUser;
   }
-  async findUserById(id: string): Promise<any> {
-    return await this._patientRepo.findById(id);
+  async findUserById(id: string): Promise<IPatient> {
+    const users = await this._patientRepo.findById(id);
+   
+    if(!users){
+      throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+    }
+
+    return users
   }
 
   async logOut(): Promise<string> {
     return "Logout success";
   }
-  async resendOTP(email: string): Promise<any> {
+  async resendOTP(email: string): Promise<{msg:string}> {
     let user = null;
     user = await this._patientRepo.findByEmail(email);
     let role = "patients";
@@ -210,7 +223,8 @@ export class AuthService implements IService {
     );
     return { msg: SERVICE_MESSAGE.RESEND_OTP_SUCCESS };
   }
-  async verifiyEmail(email: string): Promise<any> {
+
+  async verifiyEmail(email: string): Promise<{msg:string}> {
     let user = null;
     user = await this._patientRepo.findByEmail(email);
     let role = "patients";
@@ -241,7 +255,8 @@ export class AuthService implements IService {
 
     return { msg: SERVICE_MESSAGE.OTP_SEND_SUCCESS };
   }
-  async verifyEmailOTP(email: string, otp: string): Promise<any> {
+  
+  async verifyEmailOTP(email: string, otp: string): Promise<{msg:string}> {
     let user = null;
     user = await this._patientRepo.findByEmail(email);
     let role = "patients";
@@ -290,52 +305,52 @@ export class AuthService implements IService {
     return { msg: SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
   }
 
-  async refreshAccessToken(req: any, res: any): Promise<any> {
-    const refreshToken = req.cookies?.refreshToken;
+    async refreshAccessToken(req: any, res: any): Promise<any> {
+      const sessionId = req.cookies?.sessionId;
 
-    if (!refreshToken) {
-      throw new Error("No refresh token provieded");
-      return;
+      if (!sessionId) {
+        throw new Error("No session id found");
+        return;
+      }
+
+      const storedRefreshToken = await redisClient.get(`refresh:${sessionId}`);
+    
+
+      if(!storedRefreshToken){
+        throw new Error('NO_REFRESH_TOKEN_OR_EXPIRED');
+      }
+       
+      const decoded = verifyRefreshToken(storedRefreshToken);
+
+      if (!decoded) {
+        res.clearCookie("sessionId");
+        return res.status(403).json({ msg: "Invalid or expired refresh token" });
+      }
+
+      let user: any;
+      if (decoded.role === "patients") {
+        user = await this._patientRepo.findById(decoded.id);
+      } else if (decoded.role === "doctors") {
+        user = await this._doctorRepo.findById(decoded.id);
+      } else if (decoded.role === "admin") {
+        user = await this._adminRepo.findById(decoded.id);
+      }
+
+      if(!user){
+        throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+      }
+
+      const payload: TokenPayload = {
+        id: user._id.toString(),
+        email: user.email,
+        role: user.role,
+      };
+
+      const newAccessToken = generateAccessToken(payload);
+      const newRefreshToken = generateRefreshToken(payload);
+      await redisClient.set(`access:${sessionId}`,newAccessToken,{EX:15*60});
+      await redisClient.set(`refresh:${sessionId}`,newRefreshToken,{EX:7*24*60*60});
+
+      return res.status(HttpStatus.OK).json({ msg: "token refreshed" });
     }
-    const decoded = verifyRefreshToken(refreshToken);
-
-    if (!decoded) {
-      res.clearCookie("accessToken");
-      res.clearCookie("refreshToken");
-      return res.status(403).json({ msg: "Invalid or expired refresh token" });
-    }
-
-    let user: any;
-    if (decoded.role === "patients") {
-      user = await this._patientRepo.findById(decoded.id);
-    } else if (decoded.role === "doctors") {
-      user = await this._doctorRepo.findById(decoded.id);
-    } else if (decoded.role === "admin") {
-      user = await this._adminRepo.findById(decoded.id);
-    }
-    const payload: TokenPayload = {
-      id: user._id.toString(),
-      email: user.email,
-      role: user.role,
-    };
-
-    const newAccessToken = generateAccessToken(payload);
-    const newRefreshToken = generateRefreshToken(payload);
-
-    res.cookie("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
-    });
-
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    return res.status(HttpStatus.OK).json({ msg: "token refreshed" });
   }
-}

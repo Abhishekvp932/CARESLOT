@@ -1,17 +1,17 @@
     import express from 'express'
 import { AdminController } from '../controllers/admin/admin.controller'
 import { AdminRepository } from '../repositories/admin/admin.repository'
-import { DoctorRepository } from '../repositories/doctors/doctor.repository'
+
 import { PatientRepository } from '../repositories/auth/auth.repository'
 import { AdminService } from '../services/admin/admin.service'
 import { DoctorAuthRepository } from '../repositories/doctors/doctor.auth.repository'
 import { protect } from '../middleware/auth.middleware'
 import { multiFileUpload } from '../middleware/multer.middleware'
 const patientRepo = new PatientRepository()
-const doctorRepo = new DoctorRepository()
+
 const adminRepo = new AdminRepository()
 const doctorAuthRepo = new DoctorAuthRepository()
-const adminService = new AdminService(patientRepo,doctorRepo,adminRepo,doctorAuthRepo); 
+const adminService = new AdminService(patientRepo,adminRepo,doctorAuthRepo); 
 const adminController = new AdminController(adminService);
 
 const router = express.Router()
@@ -39,7 +39,7 @@ put(protect,multiFileUpload,adminController.editDoctorProfile.bind(adminControll
 
 
 router.route('/doctor/:id').patch(protect,adminController.doctorApprove.bind(adminController))
-.delete(adminController.doctorReject.bind(adminController))
+.put(adminController.doctorReject.bind(adminController))
 
 
 router.route('/verification-list').

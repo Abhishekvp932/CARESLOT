@@ -7,8 +7,8 @@ import { profile } from "console";
 import { generateAccessToken,generateRefreshToken } from "../utils/jwt";
 import { DoctorAuthRepository } from "../repositories/doctors/doctor.auth.repository";
 import { AdminRepository } from "../repositories/admin/admin.repository";
-
-
+import redisClient from "../config/redisClient";
+import {v4 as uuidv4} from 'uuid'
 const PatientRepo = new PatientRepository()
 const doctorRepo = new DoctorAuthRepository()
 const adminRepo = new AdminRepository()
@@ -44,20 +44,15 @@ router.get(
 
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
-
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000, 
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
-    });
+    const sessionId = uuidv4();
+    await redisClient.set(`access:${sessionId}`,accessToken,{EX:15*60});
+    await redisClient.set(`refresh:${sessionId}`,refreshToken,{EX:7*24*60*60});       
+    res.cookie('sessionId',sessionId,{
+                httpOnly:true,
+                secure:false,
+                sameSite:"lax",
+                maxAge:7*24*60*60*1000
+            })
 
     return res.redirect('http://localhost:2025/');
   }

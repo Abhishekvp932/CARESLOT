@@ -60,12 +60,12 @@ export class PatientRepository extends BaseRepository<IPatient> implements Ipati
     );``
   }
 
-   async findAllWithPagination(skip: number, limit: number): Promise<IPatient[]> {
-        return this.model.find().sort({createdAt:-1}).skip(skip).limit(limit).lean()
+   async findAllWithPagination(skip: number, limit: number,filter?:Partial<IPatient>): Promise<IPatient[]> {
+        return this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean()
      }
      
-          async countAll(): Promise<number> {
-              return this.model.countDocuments()
+          async countAll(filter?:Partial<IPatient>): Promise<number> {
+              return this.model.countDocuments(filter)
           }
    
 }

@@ -4,14 +4,14 @@ import { api } from "@/app/api";
 export const adminApi = api.injectEndpoints({
     endpoints : (builder)=>({
         getAllUsers : builder.query({
-            query : ({page,limit})=>({
-                url:`/admin/users?page=${page}&limit=${limit}`,
+            query : ({page,limit,search})=>({
+                url:`/admin/users?page=${page}&limit=${limit}&search=${search || ''}`,
                 method:'GET'
             }),
         }),
         getAllDoctors:builder.query({
-            query: ({page,limit})=>({
-                url:`/admin/doctors?page=${page}&limit=${limit}`,
+            query: ({page,limit,search})=>({
+                url:`/admin/doctors?page=${page}&limit=${limit}&search=${search || ''}`,
                 method:'GET'
             }),
         }),
@@ -23,15 +23,15 @@ export const adminApi = api.injectEndpoints({
        }),
     }),
     blockDoctor : builder.mutation({
-        query:({doctorId,isBlocked})=>({
+        query:({doctorId,isBlocked,reason})=>({
             url:`/admin/doctors/${doctorId}`,
             method:"PATCH",
-            body:{isBlocked}
+            body:{isBlocked,reason}
         }),
     }),
     findUnApprovedDoctors : builder.query({
-        query:({page,limit})=>({
-            url : `/admin/verification-list?page=${page}&limit=${limit}`,
+        query:({page,limit,search})=>({
+            url : `/admin/verification-list?page=${page}&limit=${limit}&search=${search || ''}`,
             method:"GET"
         }),
     }),
@@ -42,9 +42,10 @@ export const adminApi = api.injectEndpoints({
         }),
       }),
       doctorReject : builder.mutation({
-        query:({doctorId})=>({
+        query:({doctorId,reason})=>({
             url : `/admin/doctor/${doctorId}`,
-            method:"DELETE",
+            method:"PUT",
+            body:{reason},
         }),
       }),
       getDoctorData:builder.query({
