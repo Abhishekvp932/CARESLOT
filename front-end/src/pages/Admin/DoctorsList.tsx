@@ -83,6 +83,7 @@ const DoctorsList = () => {
   const handleDoctorDetailsPage = (doctorId: string) => {
     navigate(`/admin/doctor-details/${doctorId}`);
   };
+  
   const columns = [
     { label: "Name", accessor: "name" },
     { label: "Email", accessor: "email" },

@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useGetAllApprovedDoctorsQuery } from '@/features/users/userApi'
 const Index = () => {
- const {data:doctors = []} = useGetAllApprovedDoctorsQuery()
+ const {data:doctors = []} = useGetAllApprovedDoctorsQuery();
 
   const dispatch = useDispatch<AppDispatch>();
   

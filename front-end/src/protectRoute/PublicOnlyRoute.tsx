@@ -15,6 +15,7 @@ const PublicOnlyRoute = ({ children }) => {
     else if (admin?.role === "admin") navigate("/admin");
   }, [user, doctor, admin, navigate]);
 
+
   const isLoggedIn = user || doctor || admin;
 
   return !isLoggedIn ? children : null;

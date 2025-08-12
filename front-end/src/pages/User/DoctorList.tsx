@@ -37,15 +37,15 @@ export default function DoctorList() {
 
   const limit = 10;
 
-  useEffect(() => {
-    setLoading(true);
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-      setLoading(false);
-    }, 500);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   const handler = setTimeout(() => {
+  //     setDebouncedSearch(searchTerm);
+  //     setLoading(false);
+  //   }, 500);
 
-    return () => clearTimeout(handler);
-  }, [searchTerm]);
+  //   return () => clearTimeout(handler);
+  // }, [searchTerm]);
 
   const { data = {}, isFetching } = useGetAllApprovedDoctorsQuery({
     page,
@@ -69,6 +69,9 @@ export default function DoctorList() {
       setPage(newPage);
     }
   };
+
+
+ 
   return (
     <>
       <div className="min-h-screen bg-gray-50">
@@ -108,15 +111,16 @@ export default function DoctorList() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Select 
+                    <Select
                       value={selectedSpecialty}
                       onValueChange={setSpecialty}
                     >
                       <SelectTrigger className="w-48">
                         <Filter className="w-4 h-4 mr-2" />
-                        <SelectValue placeholder="select category"/>
+                        <SelectValue placeholder="select category" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="All Specialties">All Specializations</SelectItem>
                         {specializations?.map((sp) => (
                           <SelectItem key={sp} value={sp}>
                             {sp}
@@ -145,10 +149,10 @@ export default function DoctorList() {
 
           {isLoading ? (
             <div className="flex justify-center items-center mt-4">
-          {isLoading && (
-            <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
-          )}
-        </div>
+              {isLoading && (
+                <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+              )}
+            </div>
           ) : (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

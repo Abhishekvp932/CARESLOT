@@ -4463,3 +4463,809 @@
 2025-08-11 20:21:26 [[34MDEBUG[39M]: [34msesssion id[39m
 2025-08-11 20:21:26 [[34MDEBUG[39M]: [34mdecoded[39m
 2025-08-11 20:21:26 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=%20find%20you%20doctor%20booking%20appoinment%20&specialty= 200 56 - 4.063 ms[39m
+2025-08-11 20:23:55 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 20:23:55 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 20:23:55 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 20:23:55 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 20:23:55 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 20:23:55 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 11.977 ms[39m
+2025-08-11 20:23:55 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 17.750 ms[39m
+2025-08-11 22:39:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:22 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 401 40 - 1.630 ms[39m
+2025-08-11 22:39:22 [[35MHTTP[39M]: [35mGET /api/patient/specializations 401 40 - 0.912 ms[39m
+2025-08-11 22:39:22 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 8.910 ms[39m
+2025-08-11 22:39:22 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 8.794 ms[39m
+2025-08-11 22:39:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:22 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:22 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:22 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 4.124 ms[39m
+2025-08-11 22:39:22 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:39:22 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 5.378 ms[39m
+2025-08-11 22:39:34 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:34 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:34 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:34 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:34 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 4.831 ms[39m
+2025-08-11 22:39:34 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:39:34 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 6.738 ms[39m
+2025-08-11 22:39:37 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:37 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:37 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:37 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:37 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 137.195 ms[39m
+2025-08-11 22:39:37 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:39:37 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 138.574 ms[39m
+2025-08-11 22:39:38 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:38 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:38 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:38 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:38 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:39:38 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 15.559 ms[39m
+2025-08-11 22:39:38 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 48.841 ms[39m
+2025-08-11 22:39:39 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:39 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:39 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:39 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:39 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:39:39 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 3.941 ms[39m
+2025-08-11 22:39:39 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 9.387 ms[39m
+2025-08-11 22:39:40 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:40 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:39:40 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:40 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:39:40 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 52.366 ms[39m
+2025-08-11 22:39:40 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:39:40 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 43.149 ms[39m
+2025-08-11 22:49:54 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:49:54 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:49:54 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:49:54 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:49:54 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 8.515 ms[39m
+2025-08-11 22:49:54 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:49:54 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 10.740 ms[39m
+2025-08-11 22:49:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:49:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:49:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:49:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:49:59 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 9.270 ms[39m
+2025-08-11 22:49:59 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:49:59 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 10.511 ms[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:50:00 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 12.056 ms[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:50:00 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 12.633 ms[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:50:00 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 59.972 ms[39m
+2025-08-11 22:50:00 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:50:00 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 73.197 ms[39m
+2025-08-11 22:50:02 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:50:02 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:50:02 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:50:02 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:50:02 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 14.722 ms[39m
+2025-08-11 22:50:02 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:50:02 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 19.285 ms[39m
+2025-08-11 22:52:41 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:41 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:41 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:41 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:41 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:52:41 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 6.984 ms[39m
+2025-08-11 22:52:41 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 10.330 ms[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:52:49 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 7.940 ms[39m
+2025-08-11 22:52:49 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 10.845 ms[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:49 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 7.968 ms[39m
+2025-08-11 22:52:49 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:52:49 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 12.108 ms[39m
+2025-08-11 22:52:50 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:50 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:50 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:50 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:50 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 10.849 ms[39m
+2025-08-11 22:52:50 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:52:50 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 12.857 ms[39m
+2025-08-11 22:52:51 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:51 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 22:52:51 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:51 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 22:52:51 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 5.218 ms[39m
+2025-08-11 22:52:51 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 22:52:51 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 4.823 ms[39m
+2025-08-11 22:54:33 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 2.484 ms[39m
+2025-08-11 22:54:33 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.528 ms[39m
+2025-08-11 22:54:37 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.338 ms[39m
+2025-08-11 22:54:37 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.287 ms[39m
+2025-08-11 22:54:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.360 ms[39m
+2025-08-11 22:54:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.282 ms[39m
+2025-08-11 22:54:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.349 ms[39m
+2025-08-11 22:54:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.351 ms[39m
+2025-08-11 22:54:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.437 ms[39m
+2025-08-11 22:54:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.345 ms[39m
+2025-08-11 22:54:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.516 ms[39m
+2025-08-11 22:54:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.544 ms[39m
+2025-08-11 22:54:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.020 ms[39m
+2025-08-11 22:54:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.777 ms[39m
+2025-08-11 22:54:41 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.501 ms[39m
+2025-08-11 22:54:41 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.537 ms[39m
+2025-08-11 22:57:06 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 3.472 ms[39m
+2025-08-11 22:57:06 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.392 ms[39m
+2025-08-11 22:59:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.415 ms[39m
+2025-08-11 22:59:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.319 ms[39m
+2025-08-11 22:59:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.465 ms[39m
+2025-08-11 22:59:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.304 ms[39m
+2025-08-11 22:59:48 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.557 ms[39m
+2025-08-11 22:59:48 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.550 ms[39m
+2025-08-11 22:59:49 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.714 ms[39m
+2025-08-11 22:59:49 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.640 ms[39m
+2025-08-11 22:59:49 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.684 ms[39m
+2025-08-11 22:59:49 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.348 ms[39m
+2025-08-11 22:59:50 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.968 ms[39m
+2025-08-11 22:59:50 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.699 ms[39m
+2025-08-11 22:59:50 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.950 ms[39m
+2025-08-11 22:59:50 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.670 ms[39m
+2025-08-11 22:59:50 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.318 ms[39m
+2025-08-11 22:59:50 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.579 ms[39m
+2025-08-11 22:59:51 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.323 ms[39m
+2025-08-11 22:59:51 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.326 ms[39m
+2025-08-11 22:59:51 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.883 ms[39m
+2025-08-11 22:59:51 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.633 ms[39m
+2025-08-11 22:59:54 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.352 ms[39m
+2025-08-11 22:59:55 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.821 ms[39m
+2025-08-11 23:06:06 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.498 ms[39m
+2025-08-11 23:06:06 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.390 ms[39m
+2025-08-11 23:06:10 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.923 ms[39m
+2025-08-11 23:06:10 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.627 ms[39m
+2025-08-11 23:06:10 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.519 ms[39m
+2025-08-11 23:06:10 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.658 ms[39m
+2025-08-11 23:06:11 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.590 ms[39m
+2025-08-11 23:06:11 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.373 ms[39m
+2025-08-11 23:06:12 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.718 ms[39m
+2025-08-11 23:06:12 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.542 ms[39m
+2025-08-11 23:06:13 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.409 ms[39m
+2025-08-11 23:06:13 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.309 ms[39m
+2025-08-11 23:06:18 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.439 ms[39m
+2025-08-11 23:06:18 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 8.566 ms[39m
+2025-08-11 23:06:20 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 51.694 ms[39m
+2025-08-11 23:06:20 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 22.188 ms[39m
+2025-08-11 23:07:20 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.429 ms[39m
+2025-08-11 23:07:20 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.326 ms[39m
+2025-08-11 23:07:24 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.370 ms[39m
+2025-08-11 23:07:24 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.544 ms[39m
+2025-08-11 23:07:25 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.775 ms[39m
+2025-08-11 23:07:25 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.671 ms[39m
+2025-08-11 23:07:25 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.557 ms[39m
+2025-08-11 23:07:25 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.749 ms[39m
+2025-08-11 23:07:26 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.485 ms[39m
+2025-08-11 23:07:26 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.473 ms[39m
+2025-08-11 23:07:26 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.593 ms[39m
+2025-08-11 23:07:26 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.738 ms[39m
+2025-08-11 23:07:27 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.802 ms[39m
+2025-08-11 23:07:27 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.542 ms[39m
+2025-08-11 23:07:28 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.295 ms[39m
+2025-08-11 23:07:28 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.333 ms[39m
+2025-08-11 23:07:29 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.205 ms[39m
+2025-08-11 23:07:29 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.653 ms[39m
+2025-08-11 23:19:54 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.547 ms[39m
+2025-08-11 23:19:54 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.502 ms[39m
+2025-08-11 23:19:58 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.748 ms[39m
+2025-08-11 23:19:58 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.783 ms[39m
+2025-08-11 23:19:59 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.544 ms[39m
+2025-08-11 23:19:59 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.473 ms[39m
+2025-08-11 23:19:59 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.047 ms[39m
+2025-08-11 23:19:59 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.200 ms[39m
+2025-08-11 23:20:00 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.372 ms[39m
+2025-08-11 23:20:00 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.567 ms[39m
+2025-08-11 23:20:02 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.739 ms[39m
+2025-08-11 23:20:02 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.718 ms[39m
+2025-08-11 23:20:03 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.802 ms[39m
+2025-08-11 23:20:03 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.985 ms[39m
+2025-08-11 23:20:04 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.369 ms[39m
+2025-08-11 23:20:04 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.403 ms[39m
+2025-08-11 23:24:24 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.645 ms[39m
+2025-08-11 23:24:24 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.665 ms[39m
+2025-08-11 23:24:27 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:24:27 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:24:27 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 401 40 - 54.530 ms[39m
+2025-08-11 23:24:27 [[35MHTTP[39M]: [35mGET /api/patient/specializations 401 40 - 15.689 ms[39m
+2025-08-11 23:24:27 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 154.046 ms[39m
+2025-08-11 23:24:27 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 161.089 ms[39m
+2025-08-11 23:24:27 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:24:27 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:24:27 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 23:24:27 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 23:24:27 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 23:24:27 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 35.209 ms[39m
+2025-08-11 23:24:27 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 40.552 ms[39m
+2025-08-11 23:25:55 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:25:55 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:25:55 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 23:25:55 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 23:25:55 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 23:25:55 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 121.790 ms[39m
+2025-08-11 23:25:55 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 137.114 ms[39m
+2025-08-11 23:25:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:25:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:25:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 23:25:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 23:25:59 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 23:25:59 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 144.307 ms[39m
+2025-08-11 23:25:59 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 129.568 ms[39m
+2025-08-11 23:26:00 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:26:00 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-11 23:26:00 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 23:26:00 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-11 23:26:00 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 280.370 ms[39m
+2025-08-11 23:26:00 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-11 23:26:00 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 308.611 ms[39m
+2025-08-11 23:28:18 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.712 ms[39m
+2025-08-11 23:28:18 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.682 ms[39m
+2025-08-11 23:28:22 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.299 ms[39m
+2025-08-11 23:28:22 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.661 ms[39m
+2025-08-11 23:28:23 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.669 ms[39m
+2025-08-11 23:28:23 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.672 ms[39m
+2025-08-11 23:28:24 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.529 ms[39m
+2025-08-11 23:28:24 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.812 ms[39m
+2025-08-11 23:28:24 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.852 ms[39m
+2025-08-11 23:28:24 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.586 ms[39m
+2025-08-11 23:28:26 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.483 ms[39m
+2025-08-11 23:28:26 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.535 ms[39m
+2025-08-11 23:28:32 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.762 ms[39m
+2025-08-11 23:28:32 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.136 ms[39m
+2025-08-11 23:28:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.888 ms[39m
+2025-08-11 23:28:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.923 ms[39m
+2025-08-11 23:28:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.567 ms[39m
+2025-08-11 23:28:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.314 ms[39m
+2025-08-11 23:28:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.458 ms[39m
+2025-08-11 23:28:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.908 ms[39m
+2025-08-11 23:28:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.522 ms[39m
+2025-08-11 23:28:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.049 ms[39m
+2025-08-11 23:28:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.369 ms[39m
+2025-08-11 23:28:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.316 ms[39m
+2025-08-11 23:28:40 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.029 ms[39m
+2025-08-11 23:28:40 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.498 ms[39m
+2025-08-11 23:28:40 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.350 ms[39m
+2025-08-11 23:28:40 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.755 ms[39m
+2025-08-11 23:28:41 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.369 ms[39m
+2025-08-11 23:28:41 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.358 ms[39m
+2025-08-11 23:29:27 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.304 ms[39m
+2025-08-11 23:29:27 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.386 ms[39m
+2025-08-11 23:29:29 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.882 ms[39m
+2025-08-11 23:29:29 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.374 ms[39m
+2025-08-11 23:29:29 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.428 ms[39m
+2025-08-11 23:29:29 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.443 ms[39m
+2025-08-11 23:29:30 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.329 ms[39m
+2025-08-11 23:29:30 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 1.523 ms[39m
+2025-08-11 23:29:30 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.791 ms[39m
+2025-08-11 23:29:30 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.615 ms[39m
+2025-08-11 23:29:30 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.516 ms[39m
+2025-08-11 23:29:30 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.971 ms[39m
+2025-08-11 23:29:30 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.488 ms[39m
+2025-08-11 23:29:30 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.641 ms[39m
+2025-08-11 23:29:32 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.636 ms[39m
+2025-08-11 23:29:32 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.315 ms[39m
+2025-08-11 23:29:34 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.432 ms[39m
+2025-08-11 23:29:34 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.402 ms[39m
+2025-08-12 09:33:05 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 2.070 ms[39m
+2025-08-12 09:33:05 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.321 ms[39m
+2025-08-12 09:33:07 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:33:07 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:33:07 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 401 40 - 20.473 ms[39m
+2025-08-12 09:33:07 [[35MHTTP[39M]: [35mGET /api/patient/specializations 401 40 - 9.486 ms[39m
+2025-08-12 09:33:07 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 68.471 ms[39m
+2025-08-12 09:33:07 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 70.453 ms[39m
+2025-08-12 09:33:07 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:33:07 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:33:07 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:33:07 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:33:07 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:33:07 [[35MHTTP[39M]: [35mGET /api/patient/specializations 200 48 - 25.530 ms[39m
+2025-08-12 09:33:07 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 200 1931 - 33.768 ms[39m
+2025-08-12 09:33:19 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:33:19 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:33:19 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:33:19 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:33:19 [[35MHTTP[39M]: [35mGET /api/patient/doctor/68998f23fc2d0d9cb1ad44a2 304 - - 31.735 ms[39m
+2025-08-12 09:33:19 [[35MHTTP[39M]: [35mGET /api/patient/slots/68998f23fc2d0d9cb1ad44a2 304 - - 38.716 ms[39m
+2025-08-12 09:33:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:33:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:33:22 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:33:22 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:33:22 [[35MHTTP[39M]: [35mGET /api/patient/doctor/6889a5e9b589b346a4129712 304 - - 9.121 ms[39m
+2025-08-12 09:33:22 [[35MHTTP[39M]: [35mGET /api/patient/slots/6889a5e9b589b346a4129712 304 - - 46.528 ms[39m
+2025-08-12 09:36:49 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.812 ms[39m
+2025-08-12 09:36:49 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.377 ms[39m
+2025-08-12 09:37:47 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:37:47 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:37:47 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:37:47 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:37:47 [[35MHTTP[39M]: [35mGET /api/patient/doctor/6889a5e9b589b346a4129712 304 - - 8.148 ms[39m
+2025-08-12 09:37:47 [[35MHTTP[39M]: [35mGET /api/patient/slots/6889a5e9b589b346a4129712 304 - - 15.700 ms[39m
+2025-08-12 09:38:04 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:04 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:04 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:04 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:04 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 14.697 ms[39m
+2025-08-12 09:38:04 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:38:04 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 15.819 ms[39m
+2025-08-12 09:38:09 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:09 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:09 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Gynecology 304 - - 24.563 ms[39m
+2025-08-12 09:38:10 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:10 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:10 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Dermatology 304 - - 4.847 ms[39m
+2025-08-12 09:38:30 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:30 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:30 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=sutu&specialty=Dermatology 200 56 - 24.115 ms[39m
+2025-08-12 09:38:34 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:34 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:34 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:34 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 6.381 ms[39m
+2025-08-12 09:38:34 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:34 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:38:34 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 9.805 ms[39m
+2025-08-12 09:38:40 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:40 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:40 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=nida&specialty= 304 - - 7.301 ms[39m
+2025-08-12 09:38:45 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:45 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:45 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Dermatology 304 - - 11.612 ms[39m
+2025-08-12 09:38:48 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:48 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:48 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=abhise&specialty=Dermatology 200 56 - 16.273 ms[39m
+2025-08-12 09:38:50 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:50 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:50 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=abhi&specialty=Dermatology 200 56 - 18.567 ms[39m
+2025-08-12 09:38:52 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:52 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:52 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=abhishek&specialty=Dermatology 200 56 - 17.006 ms[39m
+2025-08-12 09:38:55 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:38:55 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:38:55 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Gynecology 304 - - 18.054 ms[39m
+2025-08-12 09:39:27 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:39:27 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:39:27 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:39:27 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:39:27 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 11.312 ms[39m
+2025-08-12 09:39:27 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:39:27 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 14.459 ms[39m
+2025-08-12 09:39:28 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:39:28 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:39:28 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:39:28 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:39:29 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:39:29 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 14.069 ms[39m
+2025-08-12 09:39:29 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 17.003 ms[39m
+2025-08-12 09:40:43 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:43 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:43 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:43 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:43 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:40:43 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 60.372 ms[39m
+2025-08-12 09:40:43 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialization 200 56 - 69.966 ms[39m
+2025-08-12 09:40:46 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:46 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:46 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:46 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:46 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialization 304 - - 13.817 ms[39m
+2025-08-12 09:40:46 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:40:46 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 14.573 ms[39m
+2025-08-12 09:40:49 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:49 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:49 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:49 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:49 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialization 304 - - 11.414 ms[39m
+2025-08-12 09:40:49 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:40:49 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 12.919 ms[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:54 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialization 304 - - 11.684 ms[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:40:54 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 13.141 ms[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:40:54 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:40:54 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 11.026 ms[39m
+2025-08-12 09:40:54 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialization 304 - - 13.532 ms[39m
+2025-08-12 09:41:18 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:41:18 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:41:18 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:41:18 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:41:18 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 200 1931 - 7.882 ms[39m
+2025-08-12 09:41:18 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:41:18 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 9.832 ms[39m
+2025-08-12 09:41:20 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:41:20 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:41:20 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:41:20 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:41:20 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 304 - - 12.583 ms[39m
+2025-08-12 09:41:20 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:41:20 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 13.047 ms[39m
+2025-08-12 09:41:23 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:41:23 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:41:23 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Dermatology 304 - - 4.275 ms[39m
+2025-08-12 09:41:25 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:41:25 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:41:25 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Gynecology 304 - - 4.317 ms[39m
+2025-08-12 09:41:30 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:41:30 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:41:30 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:41:30 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 304 - - 8.825 ms[39m
+2025-08-12 09:41:30 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:41:30 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:41:30 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 16.249 ms[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:44:15 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 9.321 ms[39m
+2025-08-12 09:44:15 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 304 - - 13.094 ms[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:15 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 304 - - 7.526 ms[39m
+2025-08-12 09:44:15 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:44:15 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 7.853 ms[39m
+2025-08-12 09:44:23 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:23 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:23 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:23 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:23 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 10.547 ms[39m
+2025-08-12 09:44:23 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:44:23 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 13.589 ms[39m
+2025-08-12 09:44:30 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:30 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:30 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:30 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:30 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:44:30 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 11.722 ms[39m
+2025-08-12 09:44:30 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 15.894 ms[39m
+2025-08-12 09:44:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:32 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:32 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:32 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 12.940 ms[39m
+2025-08-12 09:44:32 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:44:32 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 14.409 ms[39m
+2025-08-12 09:44:34 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:34 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:34 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Gynecology 304 - - 3.748 ms[39m
+2025-08-12 09:44:36 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:36 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:36 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 304 - - 4.886 ms[39m
+2025-08-12 09:44:37 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:44:37 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:44:37 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Dermatology 304 - - 4.314 ms[39m
+2025-08-12 09:44:57 [[35MHTTP[39M]: [35mGET /api/auth/logout 304 - - 17.674 ms[39m
+2025-08-12 09:46:03 [[35MHTTP[39M]: [35mPOST /api/auth/signup 201 47 - 4129.032 ms[39m
+2025-08-12 09:46:20 [[35MHTTP[39M]: [35mPOST /api/auth/verify-otp 200 73 - 21.581 ms[39m
+2025-08-12 09:47:17 [[35MHTTP[39M]: [35mPOST /api/doctor/kycSubmit/689abfff2887a992c8f65ee3 201 40 - 8161.393 ms[39m
+2025-08-12 09:47:29 [[35MHTTP[39M]: [35mPOST /api/auth/login 200 181 - 12.869 ms[39m
+2025-08-12 09:47:34 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:47:34 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:47:34 [[35MHTTP[39M]: [35mGET /api/admin/verification-list?page=1&limit=10&search= 200 1044 - 11.145 ms[39m
+2025-08-12 09:47:36 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:47:36 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:47:36 [[35MHTTP[39M]: [35mGET /api/doctor/profile/689abfff2887a992c8f65ee3 200 1143 - 5.957 ms[39m
+2025-08-12 09:47:37 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:47:37 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:47:41 [[35MHTTP[39M]: [35mPATCH /api/admin/doctor/689abfff2887a992c8f65ee3 200 39 - 3947.095 ms[39m
+2025-08-12 09:47:42 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:47:42 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:47:42 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 200 2919 - 9.110 ms[39m
+2025-08-12 09:48:00 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:00 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:03 [[35MHTTP[39M]: [35mPATCH /api/admin/doctors/689abfff2887a992c8f65ee3 200 37 - 3160.059 ms[39m
+2025-08-12 09:48:03 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:03 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:03 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 200 2918 - 6.388 ms[39m
+2025-08-12 09:48:21 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:21 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:24 [[35MHTTP[39M]: [35mPATCH /api/admin/doctors/689abfff2887a992c8f65ee3 200 39 - 3153.048 ms[39m
+2025-08-12 09:48:24 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:24 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:24 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 200 2919 - 3.499 ms[39m
+2025-08-12 09:48:40 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:40 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:40 [[32MINFO[39M]: [32msearch filter result[39m
+2025-08-12 09:48:40 [[35MHTTP[39M]: [35mGET /api/admin/users?page=1&limit=10&search= 200 703 - 6.631 ms[39m
+2025-08-12 09:48:44 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:44 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:44 [[32MINFO[39M]: [32msearch filter result[39m
+2025-08-12 09:48:44 [[35MHTTP[39M]: [35mGET /api/admin/users?page=1&limit=10&search= 304 - - 5.093 ms[39m
+2025-08-12 09:48:46 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:46 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:46 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 4.186 ms[39m
+2025-08-12 09:48:48 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:48 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:48 [[32MINFO[39M]: [32msearch filter result[39m
+2025-08-12 09:48:48 [[35MHTTP[39M]: [35mGET /api/admin/users?page=1&limit=10&search= 304 - - 17.699 ms[39m
+2025-08-12 09:48:56 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:56 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:56 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 5.802 ms[39m
+2025-08-12 09:48:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:48:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:48:59 [[35MHTTP[39M]: [35mGET /api/admin/verification-list?page=1&limit=10&search= 200 56 - 16.070 ms[39m
+2025-08-12 09:49:06 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:49:06 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:49:06 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 6.299 ms[39m
+2025-08-12 09:49:08 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:49:08 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:49:08 [[32MINFO[39M]: [32msearch filter result[39m
+2025-08-12 09:49:08 [[35MHTTP[39M]: [35mGET /api/admin/users?page=1&limit=10&search= 304 - - 7.759 ms[39m
+2025-08-12 09:49:15 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:49:15 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:49:15 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:49:15 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:49:15 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 200 2919 - 12.811 ms[39m
+2025-08-12 09:49:15 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 09:49:15 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 18.631 ms[39m
+2025-08-12 09:49:19 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:49:19 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:49:19 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Dermatology 200 1996 - 5.089 ms[39m
+2025-08-12 09:49:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:49:22 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:49:22 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Gynecology 304 - - 19.097 ms[39m
+2025-08-12 09:49:24 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:49:24 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:49:24 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 200 2919 - 5.225 ms[39m
+2025-08-12 09:55:02 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:02 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:02 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Gynecology 304 - - 4.479 ms[39m
+2025-08-12 09:55:03 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:03 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:03 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Dermatology 304 - - 17.483 ms[39m
+2025-08-12 09:55:08 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:08 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:08 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Asmi&specialty=All%20Specialties 200 56 - 17.876 ms[39m
+2025-08-12 09:55:10 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:10 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:10 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Asm&specialty=All%20Specialties 200 56 - 4.895 ms[39m
+2025-08-12 09:55:11 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:11 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:11 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=As&specialty=All%20Specialties 200 1043 - 5.450 ms[39m
+2025-08-12 09:55:12 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:12 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:12 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Ashm&specialty=All%20Specialties 200 1043 - 12.990 ms[39m
+2025-08-12 09:55:13 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:13 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:13 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Ashmil&specialty=All%20Specialties 200 1043 - 4.857 ms[39m
+2025-08-12 09:55:20 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:20 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:20 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=a&specialty=All%20Specialties 200 2919 - 7.258 ms[39m
+2025-08-12 09:55:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:22 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:22 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=***&specialty=All%20Specialties 400 85 - 27.990 ms[39m
+2025-08-12 09:55:24 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:24 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:24 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=*******&specialty=All%20Specialties 400 85 - 17.586 ms[39m
+2025-08-12 09:55:26 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:26 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:26 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=************&specialty=All%20Specialties 400 85 - 17.214 ms[39m
+2025-08-12 09:55:31 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:31 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:31 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=1&specialty=All%20Specialties 200 56 - 20.047 ms[39m
+2025-08-12 09:55:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:32 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:32 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=122&specialty=All%20Specialties 200 56 - 4.167 ms[39m
+2025-08-12 09:55:35 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:35 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:35 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search= 200 2919 - 3.690 ms[39m
+2025-08-12 09:55:57 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:57 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:57 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:57 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:57 [[35MHTTP[39M]: [35mGET /api/patient/doctor/68998f23fc2d0d9cb1ad44a2 304 - - 7.442 ms[39m
+2025-08-12 09:55:57 [[35MHTTP[39M]: [35mGET /api/patient/slots/68998f23fc2d0d9cb1ad44a2 304 - - 15.791 ms[39m
+2025-08-12 09:55:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:55:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:55:59 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 10.161 ms[39m
+2025-08-12 09:56:01 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:56:01 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 09:56:01 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:56:01 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 09:56:01 [[35MHTTP[39M]: [35mGET /api/patient/doctor/6889a5e9b589b346a4129712 304 - - 10.588 ms[39m
+2025-08-12 09:56:01 [[35MHTTP[39M]: [35mGET /api/patient/slots/6889a5e9b589b346a4129712 304 - - 14.177 ms[39m
+2025-08-12 10:25:19 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:19 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:19 [[35MHTTP[39M]: [35mGET /api/patient/doctor/6889a5e9b589b346a4129712 401 40 - 103.759 ms[39m
+2025-08-12 10:25:19 [[35MHTTP[39M]: [35mGET /api/patient/slots/6889a5e9b589b346a4129712 401 40 - 26.791 ms[39m
+2025-08-12 10:25:19 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 134.739 ms[39m
+2025-08-12 10:25:19 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 129.223 ms[39m
+2025-08-12 10:25:19 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:19 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:19 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:19 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:19 [[35MHTTP[39M]: [35mGET /api/patient/doctor/6889a5e9b589b346a4129712 304 - - 35.368 ms[39m
+2025-08-12 10:25:19 [[35MHTTP[39M]: [35mGET /api/patient/slots/6889a5e9b589b346a4129712 304 - - 56.271 ms[39m
+2025-08-12 10:25:21 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:21 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:21 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:21 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:21 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 10:25:21 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 23.158 ms[39m
+2025-08-12 10:25:21 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 33.876 ms[39m
+2025-08-12 10:25:23 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:23 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:23 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Dermatology 304 - - 4.798 ms[39m
+2025-08-12 10:25:25 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:25 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:25 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 304 - - 5.632 ms[39m
+2025-08-12 10:25:27 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:27 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:27 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=Gynecology 304 - - 5.164 ms[39m
+2025-08-12 10:25:35 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:35 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:35 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Abhshe&specialty=Gynecology 200 56 - 21.619 ms[39m
+2025-08-12 10:25:36 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:36 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:36 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Abhsh&specialty=Gynecology 200 56 - 4.863 ms[39m
+2025-08-12 10:25:37 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:37 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:37 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Abhs&specialty=Gynecology 200 56 - 3.812 ms[39m
+2025-08-12 10:25:38 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:38 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:38 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Abh&specialty=Gynecology 200 978 - 4.703 ms[39m
+2025-08-12 10:25:39 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:39 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:39 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Abhishe&specialty=Gynecology 200 978 - 16.880 ms[39m
+2025-08-12 10:25:41 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:25:41 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:25:41 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=Abhisheq&specialty=Gynecology 200 56 - 5.581 ms[39m
+2025-08-12 10:54:31 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:54:31 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 401 40 - 2.432 ms[39m
+2025-08-12 10:54:31 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 7.087 ms[39m
+2025-08-12 10:54:31 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:54:31 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:54:31 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty=All%20Specialties 304 - - 7.195 ms[39m
+2025-08-12 10:58:46 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:58:46 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:58:46 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:58:46 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:58:46 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 10:58:46 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 282.727 ms[39m
+2025-08-12 10:58:46 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 151.174 ms[39m
+2025-08-12 10:58:47 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:58:47 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:58:47 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:58:47 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:58:47 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 200 2919 - 11.279 ms[39m
+2025-08-12 10:58:47 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 10:58:47 [[35MHTTP[39M]: [35mGET /api/patient/specializations 200 48 - 16.008 ms[39m
+2025-08-12 10:58:53 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:58:53 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:58:53 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:58:53 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:58:53 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 6.621 ms[39m
+2025-08-12 10:58:53 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 10:58:53 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 8.730 ms[39m
+2025-08-12 10:59:06 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:59:06 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:59:06 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:59:06 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 10:59:06 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 20.869 ms[39m
+2025-08-12 10:59:06 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:59:06 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 91.520 ms[39m
+2025-08-12 10:59:09 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:59:09 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:59:09 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:59:09 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:59:09 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 17.663 ms[39m
+2025-08-12 10:59:09 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 10:59:09 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 18.625 ms[39m
+2025-08-12 10:59:11 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:59:11 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 10:59:11 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:59:11 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 10:59:11 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 10:59:11 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 8.217 ms[39m
+2025-08-12 10:59:11 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 27.765 ms[39m
+2025-08-12 11:02:06 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:02:06 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:02:06 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:02:06 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:02:06 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 11.511 ms[39m
+2025-08-12 11:02:06 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 11:02:06 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 9.850 ms[39m
+2025-08-12 11:02:08 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:02:08 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:02:08 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:02:08 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:02:08 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 9.211 ms[39m
+2025-08-12 11:02:08 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 11:02:08 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 9.720 ms[39m
+2025-08-12 11:02:10 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:02:10 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:02:10 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:02:10 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:02:10 [[35MHTTP[39M]: [35mGET /api/patient/doctor/68998f23fc2d0d9cb1ad44a2 304 - - 26.332 ms[39m
+2025-08-12 11:02:10 [[35MHTTP[39M]: [35mGET /api/patient/slots/68998f23fc2d0d9cb1ad44a2 304 - - 28.306 ms[39m
+2025-08-12 11:36:20 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:20 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:20 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 401 40 - 5.884 ms[39m
+2025-08-12 11:36:20 [[35MHTTP[39M]: [35mGET /api/patient/specializations 401 40 - 3.851 ms[39m
+2025-08-12 11:36:20 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 26.922 ms[39m
+2025-08-12 11:36:20 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 20.423 ms[39m
+2025-08-12 11:36:20 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:20 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:20 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:36:20 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:36:20 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 10.855 ms[39m
+2025-08-12 11:36:20 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 11:36:20 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 13.402 ms[39m
+2025-08-12 11:36:49 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:49 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:49 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:36:49 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:36:49 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 10.502 ms[39m
+2025-08-12 11:36:49 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 11:36:49 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 11.574 ms[39m
+2025-08-12 11:36:52 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:52 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:52 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:36:52 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:36:52 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 11:36:52 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 111.650 ms[39m
+2025-08-12 11:36:52 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 135.982 ms[39m
+2025-08-12 11:36:53 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:53 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:53 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:36:53 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:36:53 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 17.478 ms[39m
+2025-08-12 11:36:53 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 11:36:53 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 18.178 ms[39m
+2025-08-12 11:36:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:36:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:36:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:37:00 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 485.893 ms[39m
+2025-08-12 11:37:00 [[34MDEBUG[39M]: [34m{ specializations: [ 'Gynecology', 'Dermatology' ] }[39m
+2025-08-12 11:37:00 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 496.090 ms[39m
+2025-08-12 11:39:34 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.741 ms[39m
+2025-08-12 11:39:34 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.634 ms[39m
+2025-08-12 11:40:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 2.434 ms[39m
+2025-08-12 11:40:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.597 ms[39m
+2025-08-12 11:40:46 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.713 ms[39m
+2025-08-12 11:40:46 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.721 ms[39m
+2025-08-12 11:42:51 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.575 ms[39m
+2025-08-12 11:42:51 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.404 ms[39m
+2025-08-12 11:43:10 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.819 ms[39m
+2025-08-12 11:43:10 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.639 ms[39m
+2025-08-12 11:43:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.840 ms[39m
+2025-08-12 11:43:38 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.377 ms[39m
+2025-08-12 11:46:09 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.465 ms[39m
+2025-08-12 11:46:09 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.745 ms[39m
+2025-08-12 11:46:35 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.746 ms[39m
+2025-08-12 11:46:35 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:46:35 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:46:35 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.394 ms[39m
+2025-08-12 11:46:35 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=undefined&limit=undefined&search=undefined&specialty=undefined 200 62 - 22.950 ms[39m
+2025-08-12 11:46:37 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.634 ms[39m
+2025-08-12 11:46:37 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.590 ms[39m
+2025-08-12 11:46:37 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-12 11:46:37 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-12 11:46:37 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=undefined&limit=undefined&search=undefined&specialty=undefined 304 - - 7.621 ms[39m
+2025-08-12 11:46:50 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.557 ms[39m
+2025-08-12 11:46:50 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 0.345 ms[39m

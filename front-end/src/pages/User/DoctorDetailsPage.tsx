@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import Footer from '@/layout/Footer';
 import Header from '@/layout/Header';
 import { useGetDoctorDetailPageQuery } from '@/features/users/userApi';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useGetSlotsQuery } from '@/features/users/userApi';
 
    import { format, parseISO } from 'date-fns';
 
 const UserDoctorDetailsPage = () => {
    const {doctorId} = useParams<{doctorId:string}>()
+   const navigate = useNavigate();
   console.log("doctorId",doctorId);
    const {data:doctor} = useGetDoctorDetailPageQuery(doctorId);
    console.log("doctor",doctor);
@@ -46,7 +47,9 @@ const groupSlotsByDate = (slots: Slots[]) => {
 
 const groupedSlots = groupSlotsByDate(slots);
 
-
+const handleCheckout = ()=>{
+  navigate('/checkout-page');
+}
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -142,7 +145,7 @@ const groupedSlots = groupSlotsByDate(slots);
         </div>
       )}
           
-          <button className="w-full bg-black text-white py-3 rounded-md font-medium hover:bg-black">
+          <button className="w-full bg-black text-white py-3 rounded-md font-medium hover:bg-black" onClick={handleCheckout}>
             Book an Appointment
           </button>
         </div>

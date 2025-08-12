@@ -26,7 +26,7 @@ import DoctorProfile from "./pages/Doctor/DoctorProfile"
 import TimeShedule from "./pages/Doctor/TimeShedule"
 import DoctorList from "./pages/User/DoctorList"
 import UserDoctorDetailsPage from "./pages/User/DoctorDetailsPage"
-
+import CheckoutPage from "./pages/User/checkoutPage"
 // import PublicOnlyRoute from "./protectRoute/PublicOnlyRoute"
 
 
@@ -45,6 +45,7 @@ function App() {
         <Route path="/profile" element = {<UserLayout><UserProfile/></UserLayout>}/>
         <Route path="/doctors" element = {<DoctorList/>}/>
         <Route path = "/doctor-details/:doctorId" element = {<UserDoctorDetailsPage/>}/>
+        <Route path = "/checkout-page" element = {<CheckoutPage/>}/>
         <Route path="/kyc-submit" element ={
           <KYC/>
           }
