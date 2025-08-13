@@ -37,15 +37,15 @@ export default function DoctorList() {
 
   const limit = 10;
 
-  // useEffect(() => {
-  //   setLoading(true);
-  //   const handler = setTimeout(() => {
-  //     setDebouncedSearch(searchTerm);
-  //     setLoading(false);
-  //   }, 500);
+  useEffect(() => {
+    setLoading(true);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setLoading(false);
+    }, 500);
 
-  //   return () => clearTimeout(handler);
-  // }, [searchTerm]);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   const { data = {}, isFetching } = useGetAllApprovedDoctorsQuery({
     page,
@@ -262,7 +262,7 @@ export default function DoctorList() {
           )}
         </div>
 
-        <Footer />
+        <Footer  />
       </div>
     </>
   );

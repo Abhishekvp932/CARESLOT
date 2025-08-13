@@ -5,13 +5,15 @@ import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
 import { BaseRepository } from "../base.repository";
 import { IDoctor } from "../../models/interface/IDoctor";
 import { DoctorPagination } from "../../types/doctorFiltering";
+import { QualificationInput } from "../../interface/doctor/doctor.service.interface";
+import { doctorDetails } from "../../types/doctorDetails";
 
 export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDoctorAuthRepository{
      
   constructor (){
     super(Doctor);
   }
-  async updateById(id: string, update: Partial<any>) {
+  async updateById(id: string, update: Partial<any>):Promise<IDoctor | null> {
     return await this.model.findByIdAndUpdate(id, update, { new: true });
   }
   async upsertWithOTP(email: string, otp: string, otpExpire: Date) {
@@ -21,7 +23,7 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
       { upsert: true, new: true }
     );
   }
-  async verifyOtp(email: string, otp: string) {
+  async verifyOtp(email: string, otp: string):Promise<boolean>{
     const doctor = await this.findByEmail(email);
 
     if (
@@ -39,10 +41,10 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
     return true;
   }
 
-  async findByGoogleId(googleId: string) {
+  async findByGoogleId(googleId: string):Promise<IDoctor | null>{
     return await this.model.findOne({ googleId });
   }
-  async createWithGoogle(profile: Profile) {
+  async createWithGoogle(profile: Profile):Promise<IDoctor | null>{
     const doctor = new Doctor({
       googleId: profile.id,
       name: profile.displayName,
@@ -50,14 +52,14 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
     });
     return await doctor.save();
   }
-  async updatePasswordWithEmail(email: string, update:any) {
+  async updatePasswordWithEmail(email: string, update:any):Promise<IDoctor | null> {
     return  await this.model.findOneAndUpdate(
       {email},
       {$set:{password:update.password}},
       {new:true}
     );
   }
-   async findByIdAndDelete(id: string): Promise<any> {
+   async findByIdAndDelete(id: string):Promise<IDoctor | null>{
      return await this.model.findByIdAndDelete(id)
    }
 
@@ -72,7 +74,9 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
             return this.model.countDocuments(filter)
         }
 
-         async uploadDocument(doctorId: string, data: any): Promise<any> {
+
+
+    async uploadDocument(doctorId: string, data:any): Promise<IDoctor | null> {
   return await Doctor.findByIdAndUpdate(
     doctorId,
     {
@@ -83,6 +87,17 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
     },
     { new: true }
   );
+}
+
+async findRelatedDoctors(specialization: string, excludeId: string, limit = 5): Promise<IDoctor[]> {
+  return await Doctor.find({
+    'qualifications.specialization': specialization,
+    _id: { $ne: excludeId }
+  }).limit(limit).exec();
+}
+
+async findAllWithFilter(filter: any): Promise<IDoctor[]> {
+  return Doctor.find(filter);
 }
  
 }

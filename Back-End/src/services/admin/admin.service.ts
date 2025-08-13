@@ -188,11 +188,10 @@ export class AdminService implements IAdminService {
     The CARESLOT Team`
       );
     } else {
-      
-     await this._doctorAuthRepo.updateById(doctorId, {
-      $unset: { blockReason: "" },
-      $set: { isBlocked:false},
-    });
+      await this._doctorAuthRepo.updateById(doctorId, {
+        $unset: { blockReason: "" },
+        $set: { isBlocked: false },
+      });
       await mailService.sendMail(
         doctor?.email,
         "Account Reinstatement Notification",
@@ -353,8 +352,45 @@ The CARESLOT Team`
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
+    const doctors: doctorDetails = {
+      _id: String(doctor._id),
+      email: doctor.email,
+      isBlocked: doctor.isBlocked ?? undefined,
+      isApproved: doctor.isApproved ?? undefined,
+      name: doctor.name,
+      DOB: doctor.DOB ? new Date(doctor.DOB) : undefined,
+      gender: doctor.gender ?? undefined,
+      role: doctor.role ?? "doctors",
+      updatedAt: doctor.updatedAt ? new Date(doctor.updatedAt) : undefined,
+      createdAt: doctor.createdAt ? new Date(doctor.createdAt) : undefined,
+      profile_img: doctor.profile_img ?? undefined,
+      qualifications: {
+        degree: doctor.qualifications?.degree ?? undefined,
+        institution: doctor.qualifications?.institution ?? undefined,
+        experince:
+          doctor.qualifications?.experince !== undefined
+            ? Number(doctor.qualifications.experince)
+            : undefined,
+        educationCertificate:
+          doctor.qualifications?.educationCertificate ?? undefined,
+        experienceCertificate:
+          doctor.qualifications?.experienceCertificate ?? undefined,
+        graduationYear:
+          doctor.qualifications?.graduationYear !== undefined
+            ? Number(doctor.qualifications.graduationYear)
+            : undefined,
+        specialization: doctor.qualifications?.specialization ?? undefined,
+        medicalSchool: doctor.qualifications?.medicalSchool ?? undefined,
+        about: doctor.qualifications?.about ?? undefined,
+        fees:
+          doctor.qualifications?.fees !== undefined
+            ? Number(doctor.qualifications.fees)
+            : undefined,
+        lisence: doctor.qualifications?.lisence ?? undefined,
+      },
+    };
 
-    return doctor;
+    return doctors;
   }
 
   async updateUserData(
@@ -380,7 +416,45 @@ The CARESLOT Team`
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
-    return doctor;
+    const doctors: doctorDetails = {
+      _id: String(doctor._id),
+      email: doctor.email,
+      isBlocked: doctor.isBlocked ?? undefined,
+      isApproved: doctor.isApproved ?? undefined,
+      name: doctor.name,
+      DOB: doctor.DOB ? new Date(doctor.DOB) : undefined,
+      gender: doctor.gender ?? undefined,
+      role: doctor.role ?? "doctors",
+      updatedAt: doctor.updatedAt ? new Date(doctor.updatedAt) : undefined,
+      createdAt: doctor.createdAt ? new Date(doctor.createdAt) : undefined,
+      profile_img: doctor.profile_img ?? undefined,
+      qualifications: {
+        degree: doctor.qualifications?.degree ?? undefined,
+        institution: doctor.qualifications?.institution ?? undefined,
+        experince:
+          doctor.qualifications?.experince !== undefined
+            ? Number(doctor.qualifications.experince)
+            : undefined,
+        educationCertificate:
+          doctor.qualifications?.educationCertificate ?? undefined,
+        experienceCertificate:
+          doctor.qualifications?.experienceCertificate ?? undefined,
+        graduationYear:
+          doctor.qualifications?.graduationYear !== undefined
+            ? Number(doctor.qualifications.graduationYear)
+            : undefined,
+        specialization: doctor.qualifications?.specialization ?? undefined,
+        medicalSchool: doctor.qualifications?.medicalSchool ?? undefined,
+        about: doctor.qualifications?.about ?? undefined,
+        fees:
+          doctor.qualifications?.fees !== undefined
+            ? Number(doctor.qualifications.fees)
+            : undefined,
+        lisence: doctor.qualifications?.lisence ?? undefined,
+      },
+    };
+
+    return doctors;
   }
   async editDoctorProfile(
     doctorId: string,

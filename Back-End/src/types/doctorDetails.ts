@@ -2,12 +2,12 @@
 export interface doctorDetails {
   _id: string;
   email: string;
-  isBlocked: boolean;
-  isApproved: boolean;
+  isBlocked?: boolean;
+  isApproved?: boolean;
   name: string;
-  DOB: Date;
-  gender: 'male' | 'female' | 'others';
-  role: 'doctors';
+  DOB?: Date;
+  gender?: 'male' | 'female' | 'others';
+  role?: 'doctors';
   updatedAt?: Date;
   createdAt?: Date;
   profile_img?: string;

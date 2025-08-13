@@ -12,5 +12,6 @@ export enum SERVICE_MESSAGE  {
     USER_NOT_VERIFYIED = "user not verifyd",
     DOCTOR_NOT_FOUND = 'Doctor not found',
     SLOT_NOT_FOUND = "SLOT NOT FOUND",
-    DUPLICATE_SLOT_ERROR = 'This slot is already created'
+    DUPLICATE_SLOT_ERROR = 'This slot is already created',
+    OLD_PASSWORD_INCORRECT = "Old password is incorrect"
 }

@@ -8,4 +8,7 @@ export interface IPatientController {
     getDoctorDetails(req:Request,res:Response):Promise<void>
     getDoctorSlots(req:Request,res:Response):Promise<void>
     getAllspecializations(req:Request,res:Response):Promise<void>
+    getDoctorAndSlot(req:Request,res:Response):Promise<void>
+    getRelatedDoctor(req:Request,res:Response):Promise<void>
+    changePassword(req:Request,res:Response):Promise<void>
 }

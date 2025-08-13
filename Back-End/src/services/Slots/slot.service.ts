@@ -42,7 +42,7 @@ export class SlotService implements ISlotService {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
 
-    const slots = await this._slotRepo.findByDoctorId(doctor?._id);
+    const slots = await this._slotRepo.findByDoctorId(doctorId);
 
     return slots;
   }

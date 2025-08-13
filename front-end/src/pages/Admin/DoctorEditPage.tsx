@@ -10,7 +10,7 @@ import isEqual from "lodash.isequal";
 const DoctorEditProfile = () => {
   const [activeSection, setActiveSection] = useState("personal");
   const { doctorId } = useParams<{ doctorId: string }>();
-  const { data: doctor } = useGetEditDoctorDataQuery(doctorId);
+  const { data: doctor,refetch} = useGetEditDoctorDataQuery(doctorId);
   const [formData, setFormData] = useState<typeof doctor | null>(null);
   const [original,setOriginal] = useState<typeof doctor | null>(null);
   const [editDoctorData] = useEditDoctorDataMutation();
@@ -20,6 +20,7 @@ const DoctorEditProfile = () => {
     if (doctor){
       setFormData(doctor)
       setOriginal(doctor);
+      refetch()
     };
   }, [doctor]);
 

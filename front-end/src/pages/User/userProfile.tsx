@@ -2,23 +2,34 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings, CalendarCheck2, Clock3, XCircle } from "lucide-react";
-import { useGetUserDataQuery,useGetResendAppoinmentsQuery } from "@/features/users/userApi";
+import {
+  useGetUserDataQuery,
+  useGetResendAppoinmentsQuery,
+} from "@/features/users/userApi";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 import EditUserModal from "@/components/common/EditUserModal";
 import { useUpdateUserDataMutation } from "@/features/users/userApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: doctors, error, isLoading,refetch:refetchAppoinments} = useGetResendAppoinmentsQuery();
-  const {data:users,refetch:refetchUserData} = useGetUserDataQuery(user?._id);
+  const {
+    data: doctors,
+    error,
+    isLoading,
+    refetch: refetchAppoinments,
+  } = useGetResendAppoinmentsQuery({});
+  const { data: users, refetch: refetchUserData } = useGetUserDataQuery(
+    user?._id
+  );
   const [updateUserData] = useUpdateUserDataMutation();
-
-  useEffect(()=>{
+ const navigate = useNavigate()
+  useEffect(() => {
     refetchAppoinments();
     refetchUserData();
-  },[]);
+  }, []);
   if (isLoading) {
     return <div className="text-center mt-6 text-gray-600">Loading...</div>;
   }
@@ -31,57 +42,62 @@ const UserProfile = () => {
     );
   }
 
-    const handleSave = async (upadateUser) => {
-       
-      const formData = new FormData();
-      formData.append("name", upadateUser.name);
+  const handleSave = async (upadateUser) => {
+    const formData = new FormData();
+    formData.append("name", upadateUser.name);
 
-      formData.append("email", upadateUser.email);
-      formData.append("phoen", upadateUser.phone);
-      formData.append("gender", upadateUser.gender);
-      formData.append("dob", upadateUser.DOB);
-      formData.append("profileImage", upadateUser.profileImg);
+    formData.append("email", upadateUser.email);
+    formData.append("phoen", upadateUser.phone);
+    formData.append("gender", upadateUser.gender);
+    formData.append("dob", upadateUser.DOB);
+    formData.append("profileImage", upadateUser.profileImg);
 
-      try {
-        const res = await updateUserData({
-          formData,
-          userId: user?._id,
-        }).unwrap();
-         
-        toast.success(res.msg);
-       refetchUserData()
-      } catch (error: any) {
-         
+    try {
+      const res = await updateUserData({
+        formData,
+        userId: user?._id,
+      }).unwrap();
 
-        if (error?.data?.msg) {
-          toast.error(error.data.msg);
-        } else {
-          toast.error("OTP verification error");
-        }
+      toast.success(res.msg);
+      refetchUserData();
+    } catch (error: any) {
+      if (error?.data?.msg) {
+        toast.error(error.data.msg);
+      } else {
+        toast.error("OTP verification error");
       }
-    };
+    }
+  };
+
+  const handleChangePassword = (userId:string)=>{
+     navigate(`/change-password/${userId}`)
+  }
 
   return (
     <div className="space-y-6">
-      {/* Profile Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-4">
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
             <AvatarImage src={users?.profile_img} />
-            <AvatarFallback>{users?.name?.charAt(0) || "U"}</AvatarFallback>
+            <AvatarFallback>
+              {users?.name?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
           </Avatar>
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{users?.name}</h2>
             <p className="text-gray-600">{users?.email}</p>
           </div>
         </div>
-        <Button variant="outline" className="gap-2">
-          <Settings className="h-4 w-4" />
-          <EditUserModal user={users} onSave={handleSave} />
-        </Button>
+
+        <div className="flex gap-4">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            <EditUserModal user={users} onSave={handleSave} />
+          </Button>
+          <Button onClick={()=>handleChangePassword(users?._id)}>Change Password</Button>
+        </div>
       </div>
 
-      {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -134,7 +150,7 @@ const UserProfile = () => {
               <div className="flex flex-col sm:flex-row justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={apt?.avatar} />
+                    <AvatarImage src={apt?.profile_img} />
                     <AvatarFallback>{apt?.name?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>
@@ -142,7 +158,7 @@ const UserProfile = () => {
                       {apt?.name}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {new Date(apt.createdAt).toLocaleDateString()}
+                      {new Date(apt?.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>

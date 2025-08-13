@@ -59,6 +59,25 @@ export const userApi = api.injectEndpoints({
       }),
         transformResponse: (response) => response.specializations,
     }),
+    getDoctorAndSlot:builder.query({
+      query:({doctorId,slotId})=>({
+        url:`/patient/checkout/${doctorId}?slotId=${slotId}`,
+        method:"GET"
+      }),
+    }),
+    getRelatedDoctor:builder.query({
+      query:({doctorId,specialization})=>({
+        url:`/patient/related-doctors?specialization=${specialization}&doctorId=${doctorId}`,
+        method:"GET",
+      }),
+    }),
+    changePassword:builder.mutation({
+      query:({formData,userId})=>({
+        url:`/patient/change-password/${userId}`,
+        method:"PATCH",
+        body:formData
+      })
+    })
   }),
 });
 
@@ -70,6 +89,9 @@ export const {
    useGetDoctorDetailPageQuery,
    useGetDoctorSlotQuery,
    useGetSlotsQuery, 
-   useGetAllSpecializationsQuery 
+   useGetAllSpecializationsQuery ,
+   useGetDoctorAndSlotQuery,
+   useGetRelatedDoctorQuery,
+   useChangePasswordMutation
   }
    = userApi;

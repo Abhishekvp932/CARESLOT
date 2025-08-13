@@ -57,7 +57,9 @@ const AddUserModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent   className="max-w-md w-full"
+  style={{ maxHeight: "80vh", overflowY: "auto" }}>
+    
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Add New User</DialogTitle>

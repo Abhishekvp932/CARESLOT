@@ -32,4 +32,14 @@ router.route('/slots/:id')
 
 router.route('/specializations')
 .get(protect,patientController.getAllspecializations.bind(patientController));
+
+router.route('/checkout/:id').
+get(patientController.getDoctorAndSlot.bind(patientController));
+
+router.route('/related-doctors')
+.get(patientController.getRelatedDoctor.bind(patientController));
+
+
+router.route('/change-password/:id')
+.patch(protect,patientController.changePassword.bind(patientController));
 export default router;

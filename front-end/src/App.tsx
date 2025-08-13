@@ -28,7 +28,7 @@ import DoctorList from "./pages/User/DoctorList"
 import UserDoctorDetailsPage from "./pages/User/DoctorDetailsPage"
 import CheckoutPage from "./pages/User/checkoutPage"
 // import PublicOnlyRoute from "./protectRoute/PublicOnlyRoute"
-
+import ChangePasswordPage from "./pages/User/changePasswordPage"
 
 function App() {
   return (
@@ -46,6 +46,7 @@ function App() {
         <Route path="/doctors" element = {<DoctorList/>}/>
         <Route path = "/doctor-details/:doctorId" element = {<UserDoctorDetailsPage/>}/>
         <Route path = "/checkout-page" element = {<CheckoutPage/>}/>
+        <Route path="/change-password/:userId" element={<ChangePasswordPage/>}/>
         <Route path="/kyc-submit" element ={
           <KYC/>
           }

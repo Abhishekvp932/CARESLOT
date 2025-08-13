@@ -20,6 +20,8 @@ import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interf
 import { IAdminRepository } from "../../interface/admin/admin.repo.interface";
 import redisClient from "../../config/redisClient";
 import {v4 as uuidv4} from 'uuid'
+import { IDoctor } from "../../models/interface/IDoctor";
+import { IAdmin } from "../../models/interface/IAdmin";
 
 
 export class AuthService implements IService {
@@ -257,7 +259,8 @@ export class AuthService implements IService {
   }
   
   async verifyEmailOTP(email: string, otp: string): Promise<{msg:string}> {
-    let user = null;
+    let user: IPatient | IDoctor | IAdmin| null;
+
     user = await this._patientRepo.findByEmail(email);
     let role = "patients";
     if (!user) {
@@ -277,11 +280,15 @@ export class AuthService implements IService {
 
     return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS };
   }
+
+
+
   async forgotPassword(
     email: string,
     newPassword: string
   ): Promise<{ msg: string }> {
-    let user = await this._patientRepo.findByEmail(email);
+  let user: IPatient | IDoctor | IAdmin | null;
+     user = await this._patientRepo.findByEmail(email);
     let role = "patients";
 
     if (!user) {
