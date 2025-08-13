@@ -5847,3 +5847,9 @@
 2025-08-13 16:24:00 [[34MDEBUG[39M]: [34msesssion id[39m
 2025-08-13 16:24:00 [[34MDEBUG[39M]: [34mdecoded[39m
 2025-08-13 16:24:00 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 22.833 ms[39m
+2025-08-13 16:31:41 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-13 16:31:41 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-13 16:31:41 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 13.611 ms[39m
+2025-08-13 16:31:42 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-13 16:31:42 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-13 16:31:42 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 10.366 ms[39m

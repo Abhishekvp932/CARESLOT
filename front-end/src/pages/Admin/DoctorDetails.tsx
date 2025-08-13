@@ -187,7 +187,10 @@ export default function DoctorDetailsPage() {
 
               {/* Overview Tab */}
               <TabsContent value="overview" className="space-y-6">
-                {/* Professional Information */}
+                {/* Professional Information */}   
+
+
+                
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
