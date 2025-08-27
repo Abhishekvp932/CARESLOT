@@ -3,57 +3,54 @@
 import '../../css/Home.css'
 import Footer from '../../layout/Footer'
 import Header from '../../layout/Header'
-import Dcotor_one from '../../assets/d1.jpg'
-import Doctor_two from '../../assets/d2.jpg'
-import Doctor_three from '../../assets/d3.jpg'
-import Doctor_four from '../../assets/WhatsApp Image 2025-07-15 at 18.34.52_bd39d868.jpg'
+// import Dcotor_one from '../../assets/d1.jpg'
+// import Doctor_two from '../../assets/d2.jpg'
+// import Doctor_three from '../../assets/d3.jpg'
+// import Doctor_four from '../../assets/WhatsApp Image 2025-07-15 at 18.34.52_bd39d868.jpg'
 import { useEffect } from 'react'
-import { useDispatch,useSelector} from 'react-redux'
+import { useDispatch} from 'react-redux'
 import { setCredentials } from '@/features/auth/authSlice'
 import type { AppDispatch } from '@/app/store'
-import type { RootState } from '@/app/store'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+// import type { RootState } from '@/app/store'
+// import { useNavigate } from 'react-router-dom'
+// import axios from 'axios'
 import { useGetAllApprovedDoctorsQuery } from '@/features/users/userApi'
+import { useGetMeQuery } from '@/features/auth/authApi'
+
 const Index = () => {
  const {data:doctors = []} = useGetAllApprovedDoctorsQuery();
+  const {data,refetch}  = useGetMeQuery();
 
+  const user = data?.user 
+  console.log('rtk user data',user);
   const dispatch = useDispatch<AppDispatch>();
   
-  const admin = useSelector((state:RootState)=> state.admin.admin);
-  const navigate = useNavigate()
+  // const admin = useSelector((state:RootState)=> state.admin.admin);
+  // const navigate = useNavigate()
     
   
-interface userInfo{
-  token : string,
-  user:{
-    id:string;
-    email:string;
-    role:string;
+// interface userInfo{
+//   user:{
+//     id:string;
+//     email:string;
+//     role:string;
+//   }
+// }
+
+
+useEffect(() => {
+  if (user) {
+    dispatch(setCredentials({
+      user: user,
+      role: user?.role,
+    }));
   }
-}
+}, [user, dispatch]);
 
-  useEffect(()=>{
-    const getUserData = async()=>{
+useEffect(() => {
+  refetch();
+}, [refetch]);
 
-      try {
-        const res = await axios.get<userInfo>('http://localhost:3000/api/auth/me',{
-          withCredentials:true
-        });
-       
-        const  {token,user} = res.data;
-        dispatch(setCredentials({
-          user:user.id,
-          role:user?.role,
-          token:token
-        }))
-      } catch (error) {
-        console.error('error fetching ',error)
-        
-      }
-    }
-    getUserData()
-     },[]);
     
   return (
     <div className="home-page">

@@ -1,11 +1,11 @@
-import jwt from "jsonwebtoken";
-import dotenv from 'dotenv'
-dotenv.config()
-const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET || '035299e15d0ee0da0711d724761bb198'
-const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET || '33333035299e15d0ee0da0711d724761bb198'
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
+const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET || '035299e15d0ee0da0711d724761bb198';
+const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET || '33333035299e15d0ee0da0711d724761bb198';
 
-const ACCESS_EXPIRE = "15m";   
-const REFRESH_EXPIRE = "7d";   
+const ACCESS_EXPIRE = '15m';   
+const REFRESH_EXPIRE = '7d';   
 
 export interface TokenPayload {
   id: string;

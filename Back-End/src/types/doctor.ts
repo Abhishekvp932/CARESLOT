@@ -1,5 +1,5 @@
 
-type Gender = "male" | "female" | "others";
+type Gender = 'male' | 'female' | 'others';
 export type DoctorProfileInput = {
   name?: string;
   email?: string;

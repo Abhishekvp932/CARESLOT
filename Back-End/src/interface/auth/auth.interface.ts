@@ -1,4 +1,4 @@
-import {Profile} from 'passport-google-oauth20'
+import {Profile} from 'passport-google-oauth20';
 import { IPatient } from '../../models/interface/IPatient';
 
 export interface IpatientRepository{
@@ -13,5 +13,6 @@ export interface IpatientRepository{
    updatePasswordWithEmail(email:string,update:Partial<any>):Promise<IPatient | null>
    findAll():Promise<IPatient []>
    findAllWithPagination(skip:number,limit:number,filter?:Partial<IPatient>):Promise<IPatient[]>
-   countAll(filter?:Partial<IPatient>):Promise<number>
+   countAll(filter?:Partial<IPatient>):Promise<number>;
+
 }

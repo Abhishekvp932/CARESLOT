@@ -46,7 +46,7 @@ const [doctorReject] = useDoctorRejectMutation();
 
   const handleApprove = async(doctorId:string)=>{
        try {
-      const res = await doctorApprove({ doctorId }).unwrap();
+      const res = await doctorApprove(doctorId).unwrap();
         toast.success(res?.msg);
         setTimeout(()=>{
           navigate('/admin/doctors');
@@ -302,7 +302,8 @@ const [doctorReject] = useDoctorRejectMutation();
           <div className="space-y-8">
             <Card className="sticky top-6 border-0 shadow-xl">
  
-             
+             {!doctor?.isRejected ? (
+              
                 <div className="p-6">
                   <div className="text-center mb-6">
                     <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
@@ -329,6 +330,9 @@ const [doctorReject] = useDoctorRejectMutation();
                   </div>
                 </div>  
             
+             ):(
+                <h1 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1">Rejected</h1>
+             )}
             </Card>
 
             {/* Contact Info Card */}

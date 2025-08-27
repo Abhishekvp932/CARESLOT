@@ -1,5 +1,5 @@
-import mongoose,{Schema} from "mongoose";
-import { IAdmin } from "../interface/IAdmin";
+import mongoose,{Schema} from 'mongoose';
+import { IAdmin } from '../interface/IAdmin';
 const adminSchema = new Schema<IAdmin>({
     email:{
         type:String,
@@ -14,7 +14,7 @@ const adminSchema = new Schema<IAdmin>({
         enum:['admin'],
         default:'admin'
     }
-},{timestamps:true}) 
+},{timestamps:true}); 
 
 const Admin =  mongoose.model<IAdmin>('Admin',adminSchema);
 

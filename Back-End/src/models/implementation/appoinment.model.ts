@@ -1,25 +1,37 @@
-import mongoose,{Schema} from "mongoose";
-import { IAppoinment } from "../interface/IAppoinments";
+import mongoose,{Schema} from 'mongoose';
+import { IAppoinment } from '../interface/IAppoinments';
+import Doctor from './doctor.model';
 
 const appoinmentSchema = new Schema<(IAppoinment)>({
     doctorId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Doctor",
+        ref:'Doctor',
         required:true,
     },
     patientId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Patient",
+        ref:'Patient',
         required:true
     },
-    slotId:{
-         type:mongoose.Schema.Types.ObjectId,
-        ref:"Slot",
-        required:true
+    slot:{
+        date:String,
+        startTime:String,
+        endTime:String
     },
     transactionId:{
-         type:mongoose.Schema.Types.ObjectId,
-        ref:"Transaction",
-        required:true
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Transaction',
+        required:false
+    },
+    amount:{
+      type:String,
+    },
+    status:{
+         type:String,
+         enum:['pending' , 'confirmed' , 'completed' , 'cancelled' , 'rescheduled'],
+        default:'pending',
     }
-})
+},{timestamps:true});
+
+const Appoinment = mongoose.model<IAppoinment>('Appoinment',appoinmentSchema);
+export default Appoinment;

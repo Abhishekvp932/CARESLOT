@@ -41,13 +41,14 @@ export const customBaseQuery: BaseQueryFn<
     } else {
       const state: any = api.getState();
 
-      if (state?.auth?.token) {
-        api.dispatch(userLogOut());
-      } else if (state?.doctor?.token) {
-        api.dispatch(doctorLogOut());
-      } else if (state?.admin?.token) {
-        api.dispatch(adminLogOut());
-      }
+if (state?.auth?.user) {
+  api.dispatch(userLogOut());
+} else if (state?.doctor?.user) {
+  api.dispatch(doctorLogOut());
+} else if (state?.admin?.user) {
+  api.dispatch(adminLogOut());
+}
+
     }
   }
 

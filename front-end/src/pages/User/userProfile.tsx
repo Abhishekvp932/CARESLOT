@@ -15,14 +15,19 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user);
+  const userId = user?._id;
+
   const {
-    data: doctors,
+    data = {},
     error,
     isLoading,
-    refetch: refetchAppoinments,
-  } = useGetResendAppoinmentsQuery({});
+    refetch: refetchAppoinments
+  } = useGetResendAppoinmentsQuery({patientId:userId});
+   const doctors = data?.doctors;
+   const appoinments = data?.appoinments
+
   const { data: users, refetch: refetchUserData } = useGetUserDataQuery(
-    user?._id
+    userId
   );
   const [updateUserData] = useUpdateUserDataMutation();
  const navigate = useNavigate()
@@ -41,6 +46,8 @@ const UserProfile = () => {
       </div>
     );
   }
+
+  const pendingAppoinment = appoinments.filter(data => data.status === 'pending').length
 
   const handleSave = async (upadateUser) => {
     const formData = new FormData();
@@ -71,6 +78,11 @@ const UserProfile = () => {
 
   const handleChangePassword = (userId:string)=>{
      navigate(`/change-password/${userId}`)
+  }
+
+
+  const handleDetailsPage = (doctorId:string)=>{
+    navigate(`/doctor-details/${doctorId}`);
   }
 
   return (
@@ -119,7 +131,7 @@ const UserProfile = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {doctors?.filter((d) => d.status === "Pending").length}
+              {pendingAppoinment}
             </div>
             <p className="text-xs text-gray-500">Waiting confirmation</p>
           </CardContent>
@@ -174,7 +186,7 @@ const UserProfile = () => {
                   >
                     {apt?.status}
                   </span>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={()=>handleDetailsPage(apt?._id)}>
                     View
                   </Button>
                 </div>

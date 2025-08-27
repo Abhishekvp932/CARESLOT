@@ -1,23 +1,25 @@
-import { SlotService } from "../services/Slots/slot.service";
-import { SlotController } from "../controllers/Slots/slot.controller";
-import express from 'express'
-import { SlotRepository } from "../repositories/Slots/slot.repository";
-import { protect } from "../middleware/auth.middleware";
-import { DoctorAuthRepository } from "../repositories/doctors/doctor.auth.repository";
-const doctorRepo = new DoctorAuthRepository()
-const slotRepo = new SlotRepository()
+import { SlotService } from '../services/Slots/slot.service';
+import { SlotController } from '../controllers/Slots/slot.controller';
+import express from 'express';
+import { SlotRepository } from '../repositories/Slots/slot.repository';
+import { AuthMiddleware } from '../middleware/auth.middleware';
+import { DoctorAuthRepository } from '../repositories/doctors/doctor.auth.repository';
+import { PatientRepository } from '../repositories/auth/auth.repository';
+const doctorRepo = new DoctorAuthRepository();
+const slotRepo = new SlotRepository();
+const patientRepo = new PatientRepository();
 const slotService = new SlotService(slotRepo,doctorRepo);
 const slotController = new SlotController(slotService);
-
+const authMiddleware = new AuthMiddleware(patientRepo,doctorRepo);
 
 const router = express.Router();
 
 router.route('/slots')
-.post(protect,slotController.addTimeSlot.bind(slotController));
+.post(authMiddleware.protect,slotController.addTimeSlot.bind(slotController));
 
 
 router.route('/slots/:id')
-.get(protect,slotController.getDoctorSlot.bind(slotController))
-.delete(protect,slotController.deleteSlot.bind(slotController));
-export default router
+.get(authMiddleware.protect,slotController.getDoctorSlot.bind(slotController))
+.delete(authMiddleware.protect,slotController.deleteSlot.bind(slotController));
+export default router;
 

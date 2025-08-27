@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document } from 'mongoose';
 
 export interface IDoctor extends Document {
   phone: string;
@@ -7,6 +7,7 @@ export interface IDoctor extends Document {
   isBlocked: boolean;
   profile_img?: string;
   isApproved: boolean;
+  isRejected:boolean;
   name: string;
   qualifications?: {
     degree:string;
@@ -24,8 +25,8 @@ export interface IDoctor extends Document {
   };
   
   DOB: Date;
-  gender: "male" | "female" | "others";
-  role: "doctors";
+  gender: 'male' | 'female' | 'others';
+  role: 'doctors';
   createdAt?: Date;
   updatedAt?: Date;
   otp?: string;

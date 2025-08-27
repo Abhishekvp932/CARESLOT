@@ -36,7 +36,7 @@ export const adminApi = api.injectEndpoints({
         }),
     }),
       doctorApprove : builder.mutation({
-        query : ({doctorId})=>({
+        query : (doctorId)=>({
             url : `/admin/doctor/${doctorId}`,
             method:"PATCH",
         }),

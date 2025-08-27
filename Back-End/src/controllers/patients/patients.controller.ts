@@ -1,17 +1,18 @@
-import { Request, Response } from "express";
-import { IPatientController } from "../../interface/patients/IPatient.controller";
-import { PatientService } from "../../services/patients/patients.service";
-import { IPatientService } from "../../interface/patients/IPatient.service";
-import { HttpStatus } from "../../utils/httpStatus";
-import logger from "../../utils/logger";
+import { Request, Response } from 'express';
+import { IPatientController } from '../../interface/patients/IPatient.controller';
+import { PatientService } from '../../services/patients/patients.service';
+import { IPatientService } from '../../interface/patients/IPatient.service';
+import { HttpStatus } from '../../utils/httpStatus';
+import logger from '../../utils/logger';
 export class PatientController implements IPatientController {
   
   constructor(private _patientService: IPatientService) {}
   async getResendAppoinment(req: Request, res: Response): Promise<void> {
     
     try {
-      const result = await this._patientService.getResendAppoinments();
-
+      const {patientId} = req.params;
+      const result = await this._patientService.getResendAppoinments(patientId);
+    console.log('resultsssss',result);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;
@@ -41,7 +42,7 @@ export class PatientController implements IPatientController {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Failed to update profile" });
+      res.status(500).json({ message: 'Failed to update profile' });
     }
   }
   async getUserData(req: Request, res: Response): Promise<void> {
@@ -84,13 +85,13 @@ export class PatientController implements IPatientController {
   }
   async getDoctorSlots(req: Request, res: Response): Promise<void> {
     try {
-      const {id:doctorId} = req.params
+      const {id:doctorId} = req.params;
       const result = await this._patientService.getDoctorSlots(doctorId);
       console.log('result',result);
       res.status(HttpStatus.OK).json({slots:result});
     } catch (error) {
-      const err = error as Error
-      res.status(HttpStatus.BAD_REQUEST).json({msg:err.message})
+      const err = error as Error;
+      res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
     }
   }
   async getAllspecializations(req: Request, res: Response): Promise<void> {
@@ -99,7 +100,7 @@ export class PatientController implements IPatientController {
       logger.debug(result);
       res.status(HttpStatus.OK).json({specializations:result.specializations});
     } catch (error) {
-      const err = error as Error
+      const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
     }
   }
@@ -108,35 +109,34 @@ export class PatientController implements IPatientController {
 
       logger.info('request comming');
       const {id:doctorId} = req.params;
-      const slotId = req.query.slotId as string
       
-      const result = await this._patientService.getDoctorAndSlot(doctorId,slotId);
-      res.status(HttpStatus.OK).json({slot:result.slot,doctor:result.doctor});
+      const result = await this._patientService.getDoctorAndSlot(doctorId);
+      res.status(HttpStatus.OK).json({doctor:result.doctor});
      } catch (error) {
-      const err = error as Error
+      const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
      }
   }
   async getRelatedDoctor(req: Request, res: Response): Promise<void> {
     try {
-      const doctorId = req.query.doctorId as string
-      const specialization = req.query.specialization as string
+      const doctorId = req.query.doctorId as string;
+      const specialization = req.query.specialization as string;
       const result = await this._patientService.getRelatedDoctor(doctorId,specialization);
       res.status(HttpStatus.OK).json({relatedDoctor:result});
     } catch (error) {
-      const err = error as Error
+      const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
     }
   }
   async changePassword(req: Request, res: Response): Promise<void> {
     try {
-      const {id:patientId} = req.params
-      const {oldPassword,newPassword} = req.body
+      const {id:patientId} = req.params;
+      const {oldPassword,newPassword} = req.body;
 
       const result = await this._patientService.changePassword(patientId,oldPassword,newPassword);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error
+      const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
     }
   }

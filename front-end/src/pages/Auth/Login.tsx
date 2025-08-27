@@ -71,7 +71,7 @@ const Login = () => {
     try {
       const res = await login(form).unwrap();
        
-
+     console.log('login response',res);
       toast.success(res.msg);
       const roles = res?.user?.role;
        
