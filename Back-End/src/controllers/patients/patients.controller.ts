@@ -12,7 +12,7 @@ export class PatientController implements IPatientController {
     try {
       const {patientId} = req.params;
       const result = await this._patientService.getResendAppoinments(patientId);
-    console.log('resultsssss',result);
+    
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;
@@ -70,6 +70,8 @@ export class PatientController implements IPatientController {
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
     }
   }
+
+  
   async getDoctorDetails(req: Request, res: Response): Promise<void> {
     
     try {
@@ -87,7 +89,7 @@ export class PatientController implements IPatientController {
     try {
       const {id:doctorId} = req.params;
       const result = await this._patientService.getDoctorSlots(doctorId);
-      console.log('result',result);
+    
       res.status(HttpStatus.OK).json({slots:result});
     } catch (error) {
       const err = error as Error;

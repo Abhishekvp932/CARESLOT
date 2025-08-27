@@ -29,7 +29,7 @@ export class PatientService implements IPatientService {
        
 
     const appoinments = await this._appoinmentRepo.findByPatientId(patientId);
-   console.log(appoinments);
+   
     if(!appoinments){
       throw new Error ('Appoinment not found');
     }
@@ -157,12 +157,7 @@ export class PatientService implements IPatientService {
     }
     const doctors: DoctorDTO[] = doctorList.map((doctor) => ({
       _id: String(doctor?._id),
-      email: doctor?.email,
-      isBlocked: doctor?.isBlocked,
-      isApproved: doctor?.isApproved,
       name: doctor?.name,
-      DOB: doctor?.DOB,
-      gender: doctor?.gender,
       role: doctor?.role,
       updatedAt: doctor?.updatedAt,
       createdAt: doctor?.createdAt,
@@ -203,7 +198,6 @@ export class PatientService implements IPatientService {
 
     const doctor: doctorDetails = {
       _id: String(doctors._id),
-      email: doctors.email,
       name: doctors.name,
       profile_img: doctors.profile_img ?? undefined,
       qualifications: {
@@ -241,7 +235,7 @@ export class PatientService implements IPatientService {
   endTime:appt?.slot?.endTime,
  }));
  
- console.log('booked slot',bookedSlot);
+ 
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -356,7 +350,7 @@ export class PatientService implements IPatientService {
     doctorId: string,
   ): Promise<{ doctor: doctorDetails | null}> {
     const doctor = await this._doctorRepo.findById(doctorId);
-    console.log('docc', doctor);
+   
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
@@ -397,15 +391,9 @@ export class PatientService implements IPatientService {
     }
     const doctors = doctorsList.map((doctor) => ({
       _id: String(doctor?._id),
-      email: doctor?.email,
-      isBlocked: doctor?.isBlocked,
-      isApproved: doctor?.isApproved,
       name: doctor?.name,
       DOB: doctor?.DOB,
-      gender: doctor?.gender,
       role: doctor?.role,
-      updatedAt: doctor?.updatedAt,
-      createdAt: doctor?.createdAt,
       profile_img: doctor?.profile_img,
       qualifications: {
         degree: doctor?.qualifications?.degree,

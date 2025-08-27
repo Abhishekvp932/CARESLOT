@@ -1,13 +1,13 @@
 
 export interface DoctorDTO {
   _id: string;
-  email: string;
-  isBlocked: boolean;
-  isApproved: boolean;
-  name: string;
-  DOB: Date;
-  gender: 'male' | 'female' | 'others';
-  role: 'doctors';
+  email?: string;
+  isBlocked?: boolean;
+  isApproved?: boolean;
+  name?: string;
+  DOB?: Date;
+  gender?: 'male' | 'female' | 'others';
+  role?: 'doctors';
   updatedAt?: Date;
   createdAt?: Date;
   profile_img?: string;

@@ -19232,3 +19232,327 @@
 2025-08-27 10:49:59 [[34MDEBUG[39M]: [34msesssion id[39m
 2025-08-27 10:49:59 [[34MDEBUG[39M]: [34mdecoded[39m
 2025-08-27 10:49:59 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 28.804 ms[39m
+2025-08-27 10:57:34 [[35MHTTP[39M]: [35mGET /api/auth/me 401 23 - 21.574 ms[39m
+2025-08-27 10:57:35 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 49.473 ms[39m
+2025-08-27 10:57:35 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 10:57:35 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 10:57:35 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 10:57:35 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 10:57:35 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 44.763 ms[39m
+2025-08-27 10:57:36 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 62.023 ms[39m
+2025-08-27 10:57:36 [[34MDEBUG[39M]: [34m{ specializations: [ 'Dermatology', 'Cardiology' ] }[39m
+2025-08-27 10:57:36 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 83.754 ms[39m
+2025-08-27 10:57:39 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 10:57:39 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 10:57:39 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 10:57:39 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 10:57:39 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 27.161 ms[39m
+2025-08-27 11:14:22 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 401 23 - 6.161 ms[39m
+2025-08-27 11:14:22 [[35MHTTP[39M]: [35mGET /api/patient/specializations 401 23 - 7.084 ms[39m
+2025-08-27 11:33:04 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 35.427 ms[39m
+2025-08-27 11:33:04 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 35.169 ms[39m
+2025-08-27 11:33:04 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 22.307 ms[39m
+2025-08-27 11:33:04 [[34MDEBUG[39M]: [34m{ specializations: [ 'Dermatology', 'Cardiology' ] }[39m
+2025-08-27 11:33:04 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 23.143 ms[39m
+2025-08-27 12:09:03 [[35MHTTP[39M]: [35mGET /api/patient/doctor/68998f23fc2d0d9cb1ad44a2 401 23 - 28.383 ms[39m
+2025-08-27 12:09:03 [[35MHTTP[39M]: [35mGET /api/patient/slots/68998f23fc2d0d9cb1ad44a2 401 23 - 14.457 ms[39m
+2025-08-27 12:09:03 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:09:03 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=undefined&doctorId=68998f23fc2d0d9cb1ad44a2 401 40 - 12.138 ms[39m
+2025-08-27 12:09:03 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 91.084 ms[39m
+2025-08-27 12:09:03 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 87.537 ms[39m
+2025-08-27 12:09:03 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 42.078 ms[39m
+2025-08-27 12:09:03 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:09:03 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:09:03 [[35MHTTP[39M]: [35mGET /api/patient/doctor/68998f23fc2d0d9cb1ad44a2 304 - - 58.402 ms[39m
+2025-08-27 12:09:03 [[35MHTTP[39M]: [35mGET /api/patient/slots/68998f23fc2d0d9cb1ad44a2 304 - - 84.044 ms[39m
+2025-08-27 12:09:04 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=undefined&doctorId=68998f23fc2d0d9cb1ad44a2 304 - - 121.505 ms[39m
+2025-08-27 12:09:04 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:09:04 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:09:04 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=Dermatology&doctorId=68998f23fc2d0d9cb1ad44a2 200 1007 - 38.565 ms[39m
+2025-08-27 12:11:03 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:11:03 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:11:03 [[35MHTTP[39M]: [35mGET /api/patient/doctor/68998f23fc2d0d9cb1ad44a2 304 - - 89.236 ms[39m
+2025-08-27 12:11:03 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=undefined&doctorId=68998f23fc2d0d9cb1ad44a2 304 - - 139.752 ms[39m
+2025-08-27 12:11:03 [[35MHTTP[39M]: [35mGET /api/patient/slots/68998f23fc2d0d9cb1ad44a2 304 - - 134.082 ms[39m
+2025-08-27 12:11:03 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:11:03 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:11:03 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=Dermatology&doctorId=68998f23fc2d0d9cb1ad44a2 304 - - 41.687 ms[39m
+2025-08-27 12:11:04 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 200 2544 - 52.670 ms[39m
+2025-08-27 12:11:04 [[34MDEBUG[39M]: [34m{ specializations: [ 'Dermatology', 'Cardiology' ] }[39m
+2025-08-27 12:11:04 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 66.583 ms[39m
+2025-08-27 12:11:17 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:11:17 [[35MHTTP[39M]: [35mGET /api/patient/doctor/689abfff2887a992c8f65ee3 304 - - 49.475 ms[39m
+2025-08-27 12:11:17 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:11:17 [[35MHTTP[39M]: [35mGET /api/patient/slots/689abfff2887a992c8f65ee3 304 - - 149.672 ms[39m
+2025-08-27 12:11:17 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:11:17 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=undefined&doctorId=689abfff2887a992c8f65ee3 304 - - 158.576 ms[39m
+2025-08-27 12:11:17 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:11:17 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=Dermatology&doctorId=689abfff2887a992c8f65ee3 304 - - 33.973 ms[39m
+2025-08-27 12:12:18 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:12:18 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:12:18 [[35MHTTP[39M]: [35mGET /api/patient/doctor/689abfff2887a992c8f65ee3 200 381 - 99.296 ms[39m
+2025-08-27 12:12:18 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=undefined&doctorId=689abfff2887a992c8f65ee3 304 - - 142.855 ms[39m
+2025-08-27 12:12:18 [[35MHTTP[39M]: [35mGET /api/patient/slots/689abfff2887a992c8f65ee3 304 - - 194.804 ms[39m
+2025-08-27 12:12:18 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:12:18 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:12:18 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=Dermatology&doctorId=689abfff2887a992c8f65ee3 304 - - 37.680 ms[39m
+2025-08-27 12:12:19 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 51.654 ms[39m
+2025-08-27 12:12:19 [[34MDEBUG[39M]: [34m{ specializations: [ 'Dermatology', 'Cardiology' ] }[39m
+2025-08-27 12:12:19 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 66.722 ms[39m
+2025-08-27 12:14:04 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:14:04 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:14:04 [[35MHTTP[39M]: [35mGET /api/patient/doctor/689abfff2887a992c8f65ee3 304 - - 134.071 ms[39m
+2025-08-27 12:14:04 [[35MHTTP[39M]: [35mGET /api/patient/slots/689abfff2887a992c8f65ee3 304 - - 225.995 ms[39m
+2025-08-27 12:14:04 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=undefined&doctorId=689abfff2887a992c8f65ee3 304 - - 254.023 ms[39m
+2025-08-27 12:14:04 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:14:04 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:14:05 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=Dermatology&doctorId=689abfff2887a992c8f65ee3 200 798 - 36.365 ms[39m
+2025-08-27 12:14:12 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:14:12 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:14:12 [[35MHTTP[39M]: [35mGET /api/patient/doctor/68998f23fc2d0d9cb1ad44a2 200 298 - 51.011 ms[39m
+2025-08-27 12:14:13 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=Dermatology&doctorId=68998f23fc2d0d9cb1ad44a2 200 842 - 85.054 ms[39m
+2025-08-27 12:14:13 [[35MHTTP[39M]: [35mGET /api/patient/slots/68998f23fc2d0d9cb1ad44a2 304 - - 85.532 ms[39m
+2025-08-27 12:15:41 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:15:41 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:15:41 [[35MHTTP[39M]: [35mGET /api/patient/doctor/689abfff2887a992c8f65ee3 304 - - 57.217 ms[39m
+2025-08-27 12:15:41 [[35MHTTP[39M]: [35mGET /api/patient/slots/689abfff2887a992c8f65ee3 304 - - 125.556 ms[39m
+2025-08-27 12:15:41 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=undefined&doctorId=689abfff2887a992c8f65ee3 304 - - 139.058 ms[39m
+2025-08-27 12:15:42 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:15:42 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:15:42 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=Dermatology&doctorId=689abfff2887a992c8f65ee3 304 - - 38.447 ms[39m
+2025-08-27 12:23:28 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 12:23:28 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 12:23:28 [[32MINFO[39M]: [32mrequest comming[39m
+2025-08-27 12:23:28 [[35MHTTP[39M]: [35mGET /api/patient/checkout/689abfff2887a992c8f65ee3 304 - - 43.217 ms[39m
+2025-08-27 12:23:47 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 45.753 ms[39m
+2025-08-27 12:23:47 [[34MDEBUG[39M]: [34m{ specializations: [ 'Dermatology', 'Cardiology' ] }[39m
+2025-08-27 12:23:47 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 52.154 ms[39m
+2025-08-27 13:06:23 [[35MHTTP[39M]: [35mGET /api/auth/me 401 23 - 3.487 ms[39m
+2025-08-27 13:06:23 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 36.834 ms[39m
+2025-08-27 13:06:23 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 13:06:23 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 13:06:23 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 13:06:23 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 13:06:23 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 36.937 ms[39m
+2025-08-27 13:06:26 [[34MDEBUG[39M]: [34m{ specializations: [ 'Dermatology', 'Cardiology' ] }[39m
+2025-08-27 13:06:26 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 32.316 ms[39m
+2025-08-27 13:06:26 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 41.766 ms[39m
+2025-08-27 14:48:41 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 401 23 - 6.408 ms[39m
+2025-08-27 14:48:41 [[35MHTTP[39M]: [35mGET /api/patient/specializations 401 23 - 4.719 ms[39m
+2025-08-27 14:48:42 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 18.845 ms[39m
+2025-08-27 14:48:42 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 16.311 ms[39m
+2025-08-27 14:48:42 [[35MHTTP[39M]: [35mGET /api/patient/doctors?page=1&limit=10&search=&specialty= 304 - - 59.096 ms[39m
+2025-08-27 14:48:42 [[34MDEBUG[39M]: [34m{ specializations: [ 'Dermatology', 'Cardiology' ] }[39m
+2025-08-27 14:48:42 [[35MHTTP[39M]: [35mGET /api/patient/specializations 304 - - 72.923 ms[39m
+2025-08-27 14:49:03 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 14:49:03 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 14:49:03 [[35MHTTP[39M]: [35mGET /api/patient/doctor/689abfff2887a992c8f65ee3 304 - - 33.527 ms[39m
+2025-08-27 14:49:03 [[35MHTTP[39M]: [35mGET /api/patient/slots/689abfff2887a992c8f65ee3 304 - - 107.017 ms[39m
+2025-08-27 14:49:03 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=undefined&doctorId=689abfff2887a992c8f65ee3 304 - - 115.453 ms[39m
+2025-08-27 14:49:04 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 14:49:04 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 14:49:04 [[35MHTTP[39M]: [35mGET /api/patient/related-doctors?specialization=Dermatology&doctorId=689abfff2887a992c8f65ee3 304 - - 29.332 ms[39m
+2025-08-27 14:52:56 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 14:52:56 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 14:52:56 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 14:52:56 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 14:52:56 [[35MHTTP[39M]: [35mGET /api/patient/profile/6891de87a60f4ac81f03e7df 304 - - 87.734 ms[39m
+2025-08-27 14:52:56 [[35MHTTP[39M]: [35mGET /api/patient/resend-appoinment/6891de87a60f4ac81f03e7df 200 1937 - 113.332 ms[39m
+2025-08-27 14:53:03 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 14:53:03 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 14:53:03 [[35MHTTP[39M]: [35mPUT /api/patient/profile/6891de87a60f4ac81f03e7df 200 38 - 89.668 ms[39m
+2025-08-27 14:53:03 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 14:53:03 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 14:53:03 [[35MHTTP[39M]: [35mGET /api/patient/profile/6891de87a60f4ac81f03e7df 200 428 - 22.288 ms[39m
+2025-08-27 15:09:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:09:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:09:32 [[35MHTTP[39M]: [35mGET /api/patient/resend-appoinment/6891de87a60f4ac81f03e7df 401 40 - 35.173 ms[39m
+2025-08-27 15:09:32 [[35MHTTP[39M]: [35mGET /api/patient/profile/6891de87a60f4ac81f03e7df 401 40 - 21.688 ms[39m
+2025-08-27 15:09:32 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 99.712 ms[39m
+2025-08-27 15:09:32 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 96.890 ms[39m
+2025-08-27 15:09:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:09:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:09:32 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:09:32 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:09:32 [[35MHTTP[39M]: [35mGET /api/patient/profile/6891de87a60f4ac81f03e7df 304 - - 46.731 ms[39m
+2025-08-27 15:09:32 [[35MHTTP[39M]: [35mGET /api/patient/resend-appoinment/6891de87a60f4ac81f03e7df 304 - - 108.378 ms[39m
+2025-08-27 15:09:46 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:09:46 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:09:46 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:09:46 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:09:46 [[35MHTTP[39M]: [35mGET /api/patient/profile/6891de87a60f4ac81f03e7df 304 - - 50.740 ms[39m
+2025-08-27 15:09:46 [[35MHTTP[39M]: [35mGET /api/patient/resend-appoinment/6891de87a60f4ac81f03e7df 304 - - 62.430 ms[39m
+2025-08-27 15:11:32 [[35MHTTP[39M]: [35mPOST /api/auth/logout 200 24 - 22.312 ms[39m
+2025-08-27 15:11:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:11:32 [[35MHTTP[39M]: [35mGET /api/patient/profile/undefined 401 27 - 2.329 ms[39m
+2025-08-27 15:11:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:11:32 [[35MHTTP[39M]: [35mGET /api/patient/resend-appoinment/undefined 401 27 - 1.465 ms[39m
+2025-08-27 15:11:32 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 400 29 - 4.241 ms[39m
+2025-08-27 15:11:32 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 400 29 - 4.062 ms[39m
+2025-08-27 15:11:38 [[35MHTTP[39M]: [35mPOST /api/auth/login 200 181 - 29.670 ms[39m
+2025-08-27 15:11:44 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:11:44 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:11:44 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 35.886 ms[39m
+2025-08-27 15:11:51 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:11:51 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:11:51 [[35MHTTP[39M]: [35mPATCH /api/admin/doctors/689b17bba05209f45846fe9a 200 37 - 38.897 ms[39m
+2025-08-27 15:11:51 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:11:51 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:11:51 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 200 2898 - 15.507 ms[39m
+2025-08-27 15:11:54 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:11:54 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:11:54 [[35MHTTP[39M]: [35mPATCH /api/admin/doctors/689b17bba05209f45846fe9a 200 39 - 26.171 ms[39m
+2025-08-27 15:11:54 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:11:54 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:11:54 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 200 2899 - 30.935 ms[39m
+2025-08-27 15:13:25 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:13:25 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:13:25 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 29.632 ms[39m
+2025-08-27 15:13:49 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:13:49 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:13:49 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 19.477 ms[39m
+2025-08-27 15:14:10 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:14:10 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:14:10 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 24.579 ms[39m
+2025-08-27 15:14:14 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:14:14 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:14:14 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 20.443 ms[39m
+2025-08-27 15:14:18 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:14:18 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:14:18 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 17.593 ms[39m
+2025-08-27 15:14:32 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:14:32 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:14:32 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 22.411 ms[39m
+2025-08-27 15:14:36 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:14:36 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:14:36 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 30.198 ms[39m
+2025-08-27 15:14:45 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:14:45 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:14:45 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 21.781 ms[39m
+2025-08-27 15:15:01 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:15:01 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:15:01 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 15.621 ms[39m
+2025-08-27 15:15:06 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:15:06 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:15:06 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 14.756 ms[39m
+2025-08-27 15:15:09 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:15:09 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:15:09 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 16.631 ms[39m
+2025-08-27 15:15:48 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:15:48 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:15:48 [[32MINFO[39M]: [32mdoctor id comming[39m
+2025-08-27 15:15:48 [[34MDEBUG[39M]: [34m{[39m
+[34m  _id: '689b17bba05209f45846fe9a',[39m
+[34m  email: 'midlajkasim1@gmail.com',[39m
+[34m  isBlocked: false,[39m
+[34m  isApproved: true,[39m
+[34m  name: 'midlaj',[39m
+[34m  DOB: 2025-08-01T00:00:00.000Z,[39m
+[34m  gender: 'male',[39m
+[34m  role: 'doctors',[39m
+[34m  updatedAt: 2025-08-27T09:41:54.280Z,[39m
+[34m  createdAt: 2025-08-12T10:30:19.970Z,[39m
+[34m  profile_img: 'https://res.cloudinary.com/dg01xxkod/image/upload/v1754994687/doctor_kyc/1754994682595-photo-collage.png.png.png',[39m
+[34m  qualifications: {[39m
+[34m    degree: 'MBBS',[39m
+[34m    institution: 'AIIMS Delhi',[39m
+[34m    experince: 2,[39m
+[34m    educationCertificate: 'https://res.cloudinary.com/dg01xxkod/image/upload/v1754994685/doctor_kyc/1754994682587-_.jpeg.jpg',[39m
+[34m    experienceCertificate: 'https://res.cloudinary.com/dg01xxkod/image/upload/v1755008484/doctor_kyc/1755008479173-WhatsApp%20Image%202025-08-02%20at%2012.12.19%20PM.jpeg.jpg',[39m
+[34m    graduationYear: 2022,[39m
+[34m    specialization: 'Cardiology',[39m
+[34m    medicalSchool: 'Alpha hospital',[39m
+[34m    about: 'hi im a good doctor in kerala',[39m
+[34m    fees: 250,[39m
+[34m    lisence: ''[39m
+[34m  }[39m
+[34m}[39m
+2025-08-27 15:15:48 [[35MHTTP[39M]: [35mGET /api/admin/doctors/689b17bba05209f45846fe9a 200 925 - 76.805 ms[39m
+2025-08-27 15:16:05 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:05 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:05 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 27.981 ms[39m
+2025-08-27 15:16:09 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:09 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:09 [[32MINFO[39M]: [32msearch filter result[39m
+2025-08-27 15:16:09 [[35MHTTP[39M]: [35mGET /api/admin/users?page=1&limit=10&search= 200 703 - 32.944 ms[39m
+2025-08-27 15:16:15 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:15 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:15 [[32MINFO[39M]: [32mdoctor id comming[39m
+2025-08-27 15:16:15 [[35MHTTP[39M]: [35mGET /api/admin/doctors/6891e0e2a60f4ac81f03e7e7 400 24 - 22.525 ms[39m
+2025-08-27 15:16:20 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:20 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:20 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 15.032 ms[39m
+2025-08-27 15:16:31 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:31 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:31 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 22.573 ms[39m
+2025-08-27 15:16:34 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:34 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:34 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 11.795 ms[39m
+2025-08-27 15:16:38 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:38 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:38 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 24.331 ms[39m
+2025-08-27 15:16:40 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:40 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:40 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 17.753 ms[39m
+2025-08-27 15:16:45 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:45 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:45 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 27.354 ms[39m
+2025-08-27 15:16:46 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:16:46 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:16:46 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 23.420 ms[39m
+2025-08-27 15:17:02 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:17:02 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:17:02 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 14.471 ms[39m
+2025-08-27 15:17:05 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:17:05 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:17:05 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 27.329 ms[39m
+2025-08-27 15:17:12 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:17:12 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:17:12 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 14.940 ms[39m
+2025-08-27 15:17:19 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:17:19 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:17:20 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 21.028 ms[39m
+2025-08-27 15:17:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:17:22 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:17:22 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 31.245 ms[39m
+2025-08-27 15:17:30 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:17:30 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:17:30 [[32MINFO[39M]: [32msearch filter result[39m
+2025-08-27 15:17:30 [[35MHTTP[39M]: [35mGET /api/admin/users?page=1&limit=10&search= 304 - - 18.501 ms[39m
+2025-08-27 15:18:50 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:18:50 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:18:50 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 15.246 ms[39m
+2025-08-27 15:18:55 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:18:55 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:18:55 [[35MHTTP[39M]: [35mPATCH /api/admin/doctors/689abfff2887a992c8f65ee3 200 37 - 28.488 ms[39m
+2025-08-27 15:18:55 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:18:55 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:18:55 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 200 2898 - 17.193 ms[39m
+2025-08-27 15:18:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:18:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:18:59 [[35MHTTP[39M]: [35mPATCH /api/admin/doctors/689abfff2887a992c8f65ee3 200 39 - 36.977 ms[39m
+2025-08-27 15:18:59 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:18:59 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:18:59 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 200 2899 - 11.643 ms[39m
+2025-08-27 15:19:08 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:19:08 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:19:08 [[35MHTTP[39M]: [35mGET /api/admin/verification-list?page=1&limit=10&search= 304 - - 19.338 ms[39m
+2025-08-27 15:19:16 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:19:16 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:19:16 [[35MHTTP[39M]: [35mGET /api/doctor/profile/68adb14d2a64e7098a71ebdd 304 - - 17.579 ms[39m
+2025-08-27 15:19:20 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:19:20 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:19:20 [[35MHTTP[39M]: [35mGET /api/admin/verification-list?page=1&limit=10&search= 304 - - 17.967 ms[39m
+2025-08-27 15:20:22 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:20:22 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:20:22 [[35MHTTP[39M]: [35mGET /api/doctor/profile/68adb14d2a64e7098a71ebdd 304 - - 10.034 ms[39m
+2025-08-27 15:20:39 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:20:39 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:20:39 [[35MHTTP[39M]: [35mGET /api/admin/verification-list?page=1&limit=10&search= 304 - - 13.792 ms[39m
+2025-08-27 15:20:40 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:20:40 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:20:40 [[35MHTTP[39M]: [35mGET /api/admin/doctors?page=1&limit=10&search= 304 - - 18.247 ms[39m
+2025-08-27 15:20:45 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-08-27 15:20:45 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-08-27 15:20:45 [[32MINFO[39M]: [32msearch filter result[39m
+2025-08-27 15:20:45 [[35MHTTP[39M]: [35mGET /api/admin/users?page=1&limit=10&search= 304 - - 25.196 ms[39m

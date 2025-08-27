@@ -39,7 +39,7 @@ export class AppoinmentService implements IAppoinmentService {
             },
             amount:fees
         };
-        console.log('new appoinment',newAppoinment);
+       
         await this._appoinmentRepo.create(newAppoinment);
        const response = {msg:'Appoinmnet booked success'};
 

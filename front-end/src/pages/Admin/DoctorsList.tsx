@@ -229,9 +229,17 @@ const DoctorsList = () => {
                     }
                   />
                 </div>
+                 <button
+            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+            onClick={() => handleDoctorDetailsPage(user?._id)}
+          >
+            <Eye size={16} />
+            view
+          </button>
               </div>
             )}
           />
+         
         </div>
       )}
       <ToastContainer autoClose={2000} />
