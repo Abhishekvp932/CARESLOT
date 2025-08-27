@@ -73,6 +73,13 @@ export const doctorApi = api.injectEndpoints({
         method:"DELETE"
       }),
     }),
+    reApplyData:builder.mutation({
+      query:({doctorId,formData})=>({
+        url:`/doctor/reApply/${doctorId}`,
+        method:"PUT",
+        body:formData,
+      }),
+    }),
   }),
 });
 
@@ -82,5 +89,6 @@ export const {
   useEditDoctorDataMutation,
   useSlotAddMutation,
   useGetDoctorSlotsQuery,
-  useDeleteSlotMutation
+  useDeleteSlotMutation,
+  useReApplyDataMutation,
 } = doctorApi;

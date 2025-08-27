@@ -1,4 +1,4 @@
-import {Profile} from 'passport-google-oauth20'
+import {Profile} from 'passport-google-oauth20';
 import { IDoctor } from '../../models/interface/IDoctor';
 import { DoctorPagination } from '../../types/doctorFiltering';
 import { QualificationInput } from './doctor.service.interface';
@@ -20,4 +20,5 @@ export interface IDoctorAuthRepository{
     countAll(filter?:Partial<IDoctor>):Promise<number>
     uploadDocument(doctorId: string, data:any): Promise<IDoctor | null>
     findRelatedDoctors(specialization:string,excludeId:string,limit?:number):Promise<IDoctor[]>
+    findAppoinmentDoctors(filter:any):Promise<IDoctor[]>;
 }

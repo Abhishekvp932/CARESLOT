@@ -1,9 +1,9 @@
-import Patient from "../../models/implementation/patient.model";
-import { IpatientRepository } from "../../interface/auth/auth.interface";
-import { Profile } from "passport-google-oauth20";
-import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
-import { BaseRepository } from "../base.repository";
-import { IPatient } from "../../models/interface/IPatient";
+import Patient from '../../models/implementation/patient.model';
+import { IpatientRepository } from '../../interface/auth/auth.interface';
+import { Profile } from 'passport-google-oauth20';
+import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
+import { BaseRepository } from '../base.repository';
+import { IPatient } from '../../models/interface/IPatient';
 
 export class PatientRepository extends BaseRepository<IPatient> implements IpatientRepository {
   constructor(){
@@ -57,15 +57,15 @@ export class PatientRepository extends BaseRepository<IPatient> implements Ipati
       {email},
       {$set:{password:update}},
       {new:true}
-    );``
+    );
   }
 
    async findAllWithPagination(skip: number, limit: number,filter?:Partial<IPatient>): Promise<IPatient[]> {
-        return this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean()
+        return this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean();
      }
      
           async countAll(filter?:Partial<IPatient>): Promise<number> {
-              return this.model.countDocuments(filter)
+              return this.model.countDocuments(filter);
           }
    
 }

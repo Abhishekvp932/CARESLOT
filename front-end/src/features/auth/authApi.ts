@@ -27,8 +27,7 @@ export const authApi = api.injectEndpoints({
     LogOut: builder.mutation<void, void>({
       query: () => ({
         url: "/auth/logout",
-        method: "GET",
-        credentials: "include",
+        method: "POST",
       }),
     }),
     resendOTP: builder.mutation({
@@ -59,6 +58,12 @@ export const authApi = api.injectEndpoints({
         body: payload,
       }),
     }),
+    getMe:builder.query({
+      query:()=>({
+        url:'/auth/me',
+        method:"GET",
+      }),
+    }),
   }),
 });
 
@@ -71,4 +76,5 @@ export const {
   useVerifyEmailMutation,
   useVerifyEmailOTPMutation,
   useForgotPasswordMutation,
+  useGetMeQuery,
 } = authApi;

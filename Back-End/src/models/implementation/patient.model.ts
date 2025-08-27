@@ -1,5 +1,5 @@
-import mongoose,{Schema} from "mongoose";
-import { IPatient } from "../interface/IPatient"
+import mongoose,{Schema} from 'mongoose';
+import { IPatient } from '../interface/IPatient';
 
 const patientSchema = new Schema<IPatient>({
     email:{
@@ -20,7 +20,7 @@ const patientSchema = new Schema<IPatient>({
         type:String,
         enum:['male','female','others'],
         required:false,
-        default:"male"
+        default:'male'
     },
     DOB:{
         type:Date,
@@ -59,9 +59,9 @@ const patientSchema = new Schema<IPatient>({
         unique:true
     }
 
-},{timestamps:true})
+},{timestamps:true});
 
 
 
 const Patient = mongoose.model<IPatient>('Patient',patientSchema);
-export default Patient
+export default Patient;

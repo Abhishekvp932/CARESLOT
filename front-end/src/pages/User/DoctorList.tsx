@@ -261,8 +261,10 @@ export default function DoctorList() {
             </div>
           )}
         </div>
-
-        <Footer  />
+        
+      </div>
+      <div>
+         <Footer  />
       </div>
     </>
   );

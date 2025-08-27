@@ -8,7 +8,6 @@ import { useGetSlotsQuery } from "@/features/users/userApi";
 import { useGetRelatedDoctorQuery } from "@/features/users/userApi";
 import { format } from "date-fns";
 
-
 const UserDoctorDetailsPage = () => {
   const { doctorId } = useParams<{ doctorId: string }>();
   const navigate = useNavigate();
@@ -24,45 +23,47 @@ const UserDoctorDetailsPage = () => {
   const { data: slots = [] } = useGetSlotsQuery(doctorId);
   console.log("slots", slots);
 
-  type Slots = {
+  type Slot = {
     _id: string;
-    startTime: Date;
-    endTime: Date;
     doctorId: string;
+    date: string;
+    dayOfWeek: string;
+    startTime: string;
+    endTime: string;
     status: string;
-    date: Date;
   };
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<Date | null>(null);
-  const [selectedSolot,setSelectedSlot] = useState<string | null>(null);
-  const groupSlotsByDate = (slots: Slots[]) => {
-    const grouped: { [key: string]: Slots[] } = {};
+  // const [selectedTime, setSelectedTime] = useState<Date | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
+
+  const groupSlotsByDate = (slots: Slot[]) => {
+    const grouped: { [key: string]: Slot[] } = {};
 
     slots.forEach((slot) => {
-      const dateStr = new Date(slot.date).toDateString();
-      if (!grouped[dateStr]) grouped[dateStr] = [];
-      grouped[dateStr].push(slot);
+      if (!grouped[slot.dayOfWeek]) grouped[slot.dayOfWeek] = [];
+      grouped[slot.dayOfWeek].push(slot);
     });
 
-    return Object.entries(grouped).map(([date, slots]) => ({ date, slots }));
+    return grouped;
   };
 
   const groupedSlots = groupSlotsByDate(slots);
-
-  const handleCheckout = (doctorId: string,slotId:string) => {
+  console.log('selected slot',selectedSlot);
+  console.log('selected',selectedDate); 
+  const handleCheckout = (doctorId: string) => {
     console.log("doctoottid", doctorId);
     navigate("/checkout-page", {
       state: {
         doctorId: doctorId,
-        slotId:slotId
+        slotTime:selectedSlot,
       },
     });
   };
 
-  const handleDoctorDetailsPage = (doctorId:string)=>{
-    navigate(`/doctor-details/${doctorId}`)
-  }
+  const handleDoctorDetailsPage = (doctorId: string) => {
+    navigate(`/doctor-details/${doctorId}`);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -115,22 +116,20 @@ const UserDoctorDetailsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <button className="p-2 hover:bg-gray-100 rounded-full"></button>
             <div className="flex gap-2 overflow-x-auto">
-              {groupedSlots.map((group) => (
+              {Object.keys(groupedSlots).map((day) => (
                 <button
-                  key={group.date}
-                  onClick={() => setSelectedDate(group?.date)}
+                  key={day}
+                  onClick={() => {
+                    setSelectedDate(day);
+                    setSelectedSlot(null);
+                  }}
                   className={`flex flex-col items-center p-3 rounded-lg min-w-16 transition-all duration-200 ${
-                    selectedDate === group.date
+                    selectedDate === day
                       ? "bg-black text-white"
                       : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  <span className="text-sm">
-                    {format(new Date(group.date), "MMMM dd, yyyy")}
-                  </span>
-                  <span className="font-semibold">
-                    {format(new Date(group.date), "dd")}
-                  </span>
+                  <span className="text-sm">{day}</span>
                 </button>
               ))}
             </div>
@@ -138,46 +137,37 @@ const UserDoctorDetailsPage = () => {
           </div>
 
           {selectedDate && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
-              {groupedSlots
-                .find((g) => g.date === selectedDate)
-                ?.slots.map((slot) => (
-                  <button
-                    key={slot?._id}
-                    onClick={() => {
-                      setSelectedTime(slot?.startTime);
-                      setSelectedSlot(slot?._id);
-                    }}
-                    className={`py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
-                      selectedTime === slot?.startTime
-                        ? "bg-black text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    {format(new Date(slot?.startTime), "hh:mm a")} -{" "}
-                    {format(new Date(slot?.endTime), "hh:mm a")}
-                  </button>
-                ))}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-4">
+              {groupedSlots[selectedDate]?.map((slot) => (
+              <button
+                key={`${slot.doctorId}-${slot.date}-${slot.startTime}`} 
+                onClick={() => setSelectedSlot(slot)}
+                className={`py-2 px-4 rounded-md text-sm font-medium ${
+                  selectedSlot &&
+                  selectedSlot.doctorId === slot.doctorId &&
+                  selectedSlot.date === slot.date &&
+                  selectedSlot.startTime === slot.startTime
+                    ? "bg-black text-white"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {slot.startTime} - {slot.endTime}
+              </button>
+
+              ))}
             </div>
           )}
 
-          {selectedDate && selectedTime && (
-            <div className="text-center text-sm text-gray-700">
-              Selected: {format(new Date(selectedDate), "PPP")} at{" "}
-              {format(new Date(selectedTime), "hh:mm a")}
-            </div>
+          {selectedSlot && (
+            <button
+              className="w-full mt-6 bg-black text-white py-3 rounded-md font-medium"
+              onClick={() => handleCheckout(doctor?._id)}
+            >
+              Book an Appointment
+              -
+              {selectedSlot.startTime} - {selectedSlot.endTime}
+            </button>
           )}
-
-          <button
-            className="w-full bg-black text-white py-3 rounded-md font-medium hover:bg-black"
-            onClick={() =>{
-              if(selectedSolot){
-                handleCheckout(doctor?._id,selectedSolot);
-              }
-            }}
-          >
-            Book an Appointment
-          </button>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">

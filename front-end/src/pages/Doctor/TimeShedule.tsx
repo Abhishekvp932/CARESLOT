@@ -1,458 +1,430 @@
 import { useState, useEffect } from "react";
+import { DoctorSidebar } from "@/layout/doctor/sideBar";
+import { useSelector } from "react-redux";
+import { useSlotAddMutation } from "@/features/docotr/doctorApi";
 import {
-  CalendarIcon,
-  Clock,
   Plus,
   Timer,
-  Calendar as CalendarSchedule,
-  TrashIcon
+  Trash2,
+  Clock,
+  Calendar,
+  Save,
+  Coffee,
+  Briefcase,
+  X,
+  Edit,
 } from "lucide-react";
-import { format } from "date-fns";
-import { toast, ToastContainer } from "react-toastify";
-import { Button } from "@/components/ui/button";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { DoctorSidebar } from "@/layout/doctor/sideBar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-import { useSlotAddMutation } from "@/features/docotr/doctorApi";
-import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
-import { useGetDoctorSlotsQuery } from "@/features/docotr/doctorApi";
-import { useDeleteSlotMutation } from "@/features/docotr/doctorApi";
+import {toast,ToastContainer} from 'react-toastify'
 
-interface TimeSlot {
+interface DaySchedule {
+  day: string;
   startTime: string;
   endTime: string;
-  id: string;
+  breaks: { id: string; start: string; end: string }[];
 }
 
-import { useNavigate } from "react-router-dom";
+interface Slot {
+  _id: string;
+  day: string;
+  startTime: string;
+  endTime: string;
+}
 
 export default function TimeShedule() {
-  const navigate = useNavigate();
-  const [slotAdd] = useSlotAddMutation();
-  const [deleteSlot] = useDeleteSlotMutation();
-  const [selectedDate, setSelectedDate] = useState<Date>();
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([
-    {
-      id: "1",
-      startTime: "09:00",
-      endTime: "10:00",
-    },
+ const doctor = useSelector((state:RootState)=> state.doctor.doctor);
+ console.log('time slot doctor is',doctor);
+  const [slots, setSlots] = useState<Slot[]>([
+    { _id: "1", day: "Monday", startTime: "09:00", endTime: "10:00" },
+    { _id: "2", day: "Monday", startTime: "10:00", endTime: "11:00" },
+    { _id: "3", day: "Tuesday", startTime: "14:00", endTime: "15:00" },
   ]);
 
-  const doctor = useSelector((state: RootState) => state.doctor.doctor);
+  const [weekSchedule, setWeekSchedule] = useState<DaySchedule[]>(
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map(day => ({
+      day,
+      startTime: "09:00",
+      endTime: "17:00",
+      breaks: [],
+    }))
+  );
 
-  const { data: slots = [], refetch } = useGetDoctorSlotsQuery(doctor?._id);
-
-  const updateTimeSlot = (
-    id: string,
-    field: "startTime" | "endTime",
-    value: string
-  ) => {
-    setTimeSlots(
-      timeSlots.map((slot) =>
-        slot.id === id ? { ...slot, [field]: value } : slot
-      )
-    );
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // New state for edit mode
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false); // Track unsaved changes
 
   const generateTimeOptions = () => {
     const times = [];
-    for (let hour = 8; hour < 18; hour++) {
+    for (let hour = 6; hour < 22; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
-        const timeString = `${hour.toString().padStart(2, "0")}:${minute
-          .toString()
-          .padStart(2, "0")}`;
-        times.push(timeString);
+        times.push(`${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`);
       }
     }
     return times;
   };
-
   const timeOptions = generateTimeOptions();
 
+  const updateDaySchedule = (day: string, field: keyof DaySchedule, value: any) => {
+    if (!isEditing) return; // Prevent updates when not in edit mode
+    
+    setWeekSchedule(prev =>
+      prev.map(d => (d.day === day ? { ...d, [field]: value } : d))
+    );
+    setHasUnsavedChanges(true);
+  };
+
+  const addBreak = (day: string) => {
+    if (!isEditing) return; // Prevent adding breaks when not in edit mode
+    
+    setWeekSchedule(prev =>
+      prev.map(d =>
+        d.day === day
+          ? { ...d, breaks: [...d.breaks, { id: Date.now().toString(), start: "12:00", end: "13:00" }] }
+          : d
+      )
+    );
+    setHasUnsavedChanges(true);
+  };
+
+  const updateBreak = (day: string, id: string, field: "start" | "end", value: string) => {
+    if (!isEditing) return; // Prevent updates when not in edit mode
+    
+    setWeekSchedule(prev =>
+      prev.map(d =>
+        d.day === day
+          ? {
+              ...d,
+              breaks: d.breaks.map(b => (b.id === id ? { ...b, [field]: value } : b)),
+            }
+          : d
+      )
+    );
+    setHasUnsavedChanges(true);
+  };
+
+  const removeBreak = (day: string, id: string) => {
+    if (!isEditing) return; // Prevent removing breaks when not in edit mode
+    
+    setWeekSchedule(prev =>
+      prev.map(d => (d.day === day ? { ...d, breaks: d.breaks.filter(b => b.id !== id) } : d))
+    );
+    setHasUnsavedChanges(true);
+  };
+
+const [slotAdd] = useSlotAddMutation()
+
   const handleSubmit = async () => {
-    if (!selectedDate) {
-      alert("Please select a date");
-      return;
-    }
-    const formattedDate = selectedDate.toISOString().split("T")[0];
-
-    const payload = {
-      startTime: `${formattedDate}T${timeSlots[0].startTime}:00`,
-      endTime: `${formattedDate}T${timeSlots[0].endTime}:00`,
-      date: formattedDate,
-      doctorId: doctor?._id,
-    };
-
+    setIsSubmitting(true);
     try {
-      const res = await slotAdd({ data: payload }).unwrap();
+      const data = {
+      doctorId : doctor?._id,
+      recurrenceType:"weekly",
+      recurrenceStartDate:new Date(),
+      recurrenceEndDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+      daysOfWeek: weekSchedule.map((day) => ({
+      daysOfWeek: day.day,
+      startTime: day.startTime,
+      endTime: day.endTime,
+      breakTime: day.breaks.map((b) => ({
+        startTime: b.start,
+        endTime: b.end,
+      })),
+    })),
+    }
+    console.log('time slot payload',data);
+      const res = await slotAdd({data}).unwrap()
       toast.success(res?.msg);
-      refetch();
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error?.data?.msg || "Time schedule error");
+      console.log(res);
+      
+      // After successful save, exit edit mode
+      setIsEditing(false);
+      setHasUnsavedChanges(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to save schedule");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const availableSlotCount = slots.filter(
-    (slot) => slot.status === "Available"
-  ).length;
-  const bookedSlotCount = slots.filter(
-    (slot) => slot.status === "Booked"
-  ).length;
-
-  const admin = useSelector((state: RootState) => state.admin.admin);
-  const patient = useSelector((state: RootState) => state.auth.user);
-  const doctors = useSelector((state: RootState) => state.doctor);
-  const [isAuthorized, setIsAuthorized] = useState(false);
-
-  useEffect(() => {
-    if (doctors?.role === "doctors") {
-      setIsAuthorized(true);
-    } else if (patient) {
-      navigate("/");
-    } else if (admin) {
-      navigate("/admin");
+  const handleEditToggle = () => {
+    if (isEditing && hasUnsavedChanges) {
+      // If in edit mode with unsaved changes, save first
+      handleSubmit();
+    } else if (isEditing && !hasUnsavedChanges) {
+      // If in edit mode without changes, just exit edit mode
+      setIsEditing(false);
     } else {
-      navigate("/login");
+      // If not in edit mode, enter edit mode
+      setIsEditing(true);
     }
-  }, [admin, patient, doctors, navigate]);
+  };
 
-  if (!isAuthorized) return null;
-
-
-  const handleSlotDelete = async(slotId:string)=>{
-      try {
-        console.log('slot id',slotId);
-        const res = await deleteSlot(slotId).unwrap()
-        toast.success(res?.msg);
-        refetch()
-      } catch (error:any) {
-        toast.error(error?.data?.msg);
-      }
-  }
+  const handleSlotDelete = (slotId: string) => {
+    setSlots(prev => prev.filter(slot => slot._id !== slotId));
+  };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex">
-        <DoctorSidebar />
-        <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="mr-2 h-4" />
+  
+    <div className="min-h-screen bg-gray-50 flex">
 
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full mb-6">
-                <Timer className="h-8 w-8 text-white" />
+      <DoctorSidebar />
+
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Timer className="h-6 w-6 text-gray-700" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Time Schedule</h1>
+                <p className="text-sm text-gray-500">
+                  {isEditing ? "Edit your weekly recurring slots" : "Manage your weekly recurring slots"}
+                </p>
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-600 bg-clip-text text-transparent mb-3">
-                Time Slot Management
-              </h1>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Create and manage your appointment time slots with ease
-              </p>
             </div>
+            <button
+              onClick={handleEditToggle}
+              disabled={isSubmitting}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isEditing 
+                  ? 'bg-gray-900 text-white hover:bg-gray-800' 
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+            >
+              {isSubmitting ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : isEditing ? (
+                <Save className="h-4 w-4" />
+              ) : (
+                <Edit className="h-4 w-4" />
+              )}
+              {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Edit Schedule"}
+            </button>
+          </div>
+        </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-              <div className="xl:col-span-2 space-y-6">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden">
-                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white/20 rounded-lg">
-                        <Plus className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold text-white">
-                          Create New Time Slot
-                        </h2>
-                        <p className="text-blue-100 mt-1">
-                          Schedule your available appointment times
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-8 space-y-8">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-4">
-                        <CalendarSchedule className="h-5 w-5 text-blue-600" />
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Select Date
-                        </h3>
-                      </div>
-
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full h-14 justify-start text-left font-normal border-2 hover:border-blue-300 transition-all duration-200",
-                              !selectedDate && "text-muted-foreground",
-                              selectedDate && "border-blue-200 bg-blue-50"
-                            )}
-                          >
-                            <CalendarIcon className="mr-3 h-5 w-5" />
-                            <div>
-                              <div className="font-medium">
-                                {selectedDate
-                                  ? format(selectedDate, "EEEE, MMMM do, yyyy")
-                                  : "Choose appointment date"}
-                              </div>
-                              {selectedDate && (
-                                <div className="text-xs text-gray-500 mt-1">
-                                  {format(selectedDate, "PPP")}
-                                </div>
-                              )}
-                            </div>
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={setSelectedDate}
-                            initialFocus
-                            disabled={(date) => date < new Date()}
-                            className="rounded-lg border shadow-lg"
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Clock className="h-5 w-5 text-indigo-600" />
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Set Time Slot
-                        </h3>
-                      </div>
-
-                      <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-xl border-2 border-gray-100">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-                            <span className="font-medium text-gray-900">
-                              Appointment Slot
-                            </span>
-                          </div>
-                          <div className="text-sm text-gray-500 bg-white px-3 py-1 rounded-full">
-                            1 Hour Duration
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          <div className="flex-1">
-                            <label className="text-sm font-medium text-gray-700 mb-2 block">
-                              Start Time
-                            </label>
-                            <Select
-                              value={timeSlots[0].startTime}
-                              onValueChange={(value) =>
-                                updateTimeSlot("1", "startTime", value)
-                              }
-                            >
-                              <SelectTrigger className="h-12 border-2 hover:border-blue-300 transition-colors">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {timeOptions.map((time) => (
-                                  <SelectItem
-                                    key={time}
-                                    value={time}
-                                    className="text-base"
-                                  >
-                                    {time}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="flex items-center justify-center mt-6">
-                            <div className="w-8 h-0.5 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full"></div>
-                          </div>
-
-                          <div className="flex-1">
-                            <label className="text-sm font-medium text-gray-700 mb-2 block">
-                              End Time
-                            </label>
-                            <Select
-                              value={timeSlots[0].endTime}
-                              onValueChange={(value) =>
-                                updateTimeSlot("1", "endTime", value)
-                              }
-                            >
-                              <SelectTrigger className="h-12 border-2 hover:border-blue-300 transition-colors">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {timeOptions.map((time) => (
-                                  <SelectItem
-                                    key={time}
-                                    value={time}
-                                    className="text-base"
-                                  >
-                                    {time}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-4 pt-4">
-                      <Button
-                        onClick={handleSubmit}
-                        className="flex-1 h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200"
-                        size="lg"
-                      >
-                        <Plus className="mr-2 h-5 w-5" />
-                        Create Time Slot
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="flex-1 h-14 text-lg font-semibold border-2 hover:bg-gray-50 transition-all duration-200"
-                        size="lg"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden">
-                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white/20 rounded-lg">
-                        <CalendarSchedule className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <h2 className="text-xl font-bold text-white">
-                          Scheduled Slots
-                        </h2>
-                        <p className="text-indigo-100 text-sm mt-1">
-                          Your upcoming appointments
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  {slots.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Clock className="h-10 w-10 text-gray-400" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        No Slots Created Yet
-                      </h3>
-                      <p className="text-gray-500 text-sm mb-6">
-                        Create your first time slot to start scheduling
-                        appointments
-                      </p>
-                      <div className="w-full h-1 bg-gradient-to-r from-blue-200 via-indigo-200 to-purple-200 rounded-full opacity-50"></div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {slots.map((slot) => (
-                        <div
-                          key={slot._id}
-                          className="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-start"
-                        >
-                          <div className="flex-1">
-                            <div className="text-sm text-gray-500">
-                              {format(new Date(slot.date), "eeee, MMMM do, yyyy")}
-                            </div>
-                            <div className="text-lg font-semibold text-blue-600">
-                              {format(new Date(slot.startTime), "hh:mm a")} -{" "}
-                              {format(new Date(slot.endTime), "hh:mm a")}
-                            </div>
-                            <div
-                              className={`text-sm mt-1 ${
-                                slot.status === "Available"
-                                  ? "text-green-600"
-                                  : "text-red-500"
-                              }`}
-                            >
-                              {slot.status}
-                            </div>
-                          </div>
-                          <div className="ml-4">
-                            <button className="text-sm text-red-500 hover:text-red-700 font-medium" onClick={()=> handleSlotDelete(slot._id)}>
-                              <TrashIcon size={20}/>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden">
-                  <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4">
-                    <h3 className="text-lg font-bold text-white">
-                      Quick Stats
-                    </h3>
-                  </div>
-                  <div className="p-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-                        <div className="text-2xl font-bold text-blue-600 mb-1">
-                          {availableSlotCount}
-                        </div>
-                        <div className="text-xs text-gray-600">Available</div>
-                      </div>
-                      <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl">
-                        <div className="text-2xl font-bold text-emerald-600 mb-1">
-                          {bookedSlotCount}
-                        </div>
-                        <div className="text-xs text-gray-600">Booked</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+       
+        {isEditing && (
+          <div className="bg-blue-50 border-b border-blue-200 px-6 py-2">
+            <div className="flex items-center gap-2 text-blue-700 text-sm">
+              <Edit className="h-4 w-4" />
+              <span className="font-medium">Edit Mode Active</span>
+              {hasUnsavedChanges && (
+                <span className="text-orange-600 ml-2">• Unsaved changes</span>
+              )}
             </div>
           </div>
+        )}
 
-          <ToastContainer
-            autoClose={3000}
-            position="top-right"
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            className="mt-16"
-          />
+       
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-7xl mx-auto">
+           
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+              {weekSchedule.map((day) => (
+                <div
+                  key={day.day}
+                  className={`bg-white rounded-lg border shadow-sm transition-all ${
+                    isEditing 
+                      ? 'border-blue-200 hover:shadow-md' 
+                      : 'border-gray-200 hover:shadow-md'
+                  } ${!isEditing ? 'opacity-90' : ''}`}
+                >
+                  {/* Day Header */}
+                  <div className={`px-4 py-3 border-b border-gray-200 ${
+                    isEditing ? 'bg-blue-50' : 'bg-gray-50'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900">{day.day}</h3>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                        {isEditing && (
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  
+                  <div className="p-4 space-y-6">
+                    {/* Work Hours */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <Briefcase className="h-4 w-4" />
+                        Work Hours
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs text-gray-500">Start Time</label>
+                          <select
+                            value={day.startTime}
+                            onChange={e => updateDaySchedule(day.day, "startTime", e.target.value)}
+                            disabled={!isEditing}
+                            className={`w-full p-2 border rounded-md text-sm transition-colors ${
+                              isEditing 
+                                ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-gray-400' 
+                                : 'border-gray-200 bg-gray-50 cursor-not-allowed text-gray-600'
+                            }`}
+                          >
+                            {timeOptions.map(t => (
+                              <option key={t} value={t}>{t}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs text-gray-500">End Time</label>
+                          <select
+                            value={day.endTime}
+                            onChange={e => updateDaySchedule(day.day, "endTime", e.target.value)}
+                            disabled={!isEditing}
+                            className={`w-full p-2 border rounded-md text-sm transition-colors ${
+                              isEditing 
+                                ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-gray-400' 
+                                : 'border-gray-200 bg-gray-50 cursor-not-allowed text-gray-600'
+                            }`}
+                          >
+                            {timeOptions.map(t => (
+                              <option key={t} value={t}>{t}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Breaks Section */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                          <Coffee className="h-4 w-4" />
+                          Breaks
+                        </div>
+                        {isEditing && (
+                          <button
+                            onClick={() => addBreak(day.day)}
+                            className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                          >
+                            <Plus className="h-3 w-3" />
+                            Add Break
+                          </button>
+                        )}
+                      </div>
+
+                      {day.breaks.length === 0 ? (
+                        <div className="text-center py-3 text-gray-400 text-sm">
+                          No breaks scheduled
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {day.breaks.map((breakItem) => (
+                            <div
+                              key={breakItem.id}
+                              className={`flex gap-2 items-center p-2 rounded-md border ${
+                                isEditing 
+                                  ? 'bg-blue-50 border-blue-200' 
+                                  : 'bg-gray-50 border-gray-200'
+                              }`}
+                            >
+                              <select
+                                value={breakItem.start}
+                                onChange={e => updateBreak(day.day, breakItem.id, "start", e.target.value)}
+                                disabled={!isEditing}
+                                className={`flex-1 p-1 border rounded text-xs transition-colors ${
+                                  isEditing 
+                                    ? 'border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent' 
+                                    : 'border-gray-200 bg-gray-100 cursor-not-allowed text-gray-600'
+                                }`}
+                              >
+                                {timeOptions.map(t => (
+                                  <option key={t} value={t}>{t}</option>
+                                ))}
+                              </select>
+                              <span className="text-gray-500 text-xs">to</span>
+                              <select
+                                value={breakItem.end}
+                                onChange={e => updateBreak(day.day, breakItem.id, "end", e.target.value)}
+                                disabled={!isEditing}
+                                className={`flex-1 p-1 border rounded text-xs transition-colors ${
+                                  isEditing 
+                                    ? 'border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent' 
+                                    : 'border-gray-200 bg-gray-100 cursor-not-allowed text-gray-600'
+                                }`}
+                              >
+                                {timeOptions.map(t => (
+                                  <option key={t} value={t}>{t}</option>
+                                ))}
+                              </select>
+                              {isEditing && (
+                                <button
+                                  onClick={() => removeBreak(day.day, breakItem.id)}
+                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Scheduled Slots */}
+            {/* <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  <Clock className="h-5 w-5 text-gray-700" />
+                  <div>
+                    <h2 className="font-semibold text-gray-900">Scheduled Slots</h2>
+                    <p className="text-sm text-gray-500">Your upcoming time slots</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6">
+                {slots.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Timer className="h-8 w-8 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 font-medium">No slots scheduled yet</p>
+                    <p className="text-gray-400 text-sm">Create your weekly schedule above to get started</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {slots.map((slot) => (
+                      <div
+                        key={slot._id}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-8 bg-gray-400 rounded-full"></div>
+                          <div>
+                            <div className="font-medium text-gray-900">{slot.day}</div>
+                            <div className="flex items-center gap-1 text-sm text-gray-500">
+                              <Clock className="h-3 w-3" />
+                              {slot.startTime} - {slot.endTime}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleSlotDelete(slot._id)}
+                          className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div> */}
+          </div>
         </div>
       </div>
-    </SidebarProvider>
+      <ToastContainer autoClose={300}/>
+    </div>
   );
 }

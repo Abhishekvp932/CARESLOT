@@ -1,35 +1,49 @@
-import { IPatientService } from "../../interface/patients/IPatient.service";
+import { IPatientService } from '../../interface/patients/IPatient.service';
 
-import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
+import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 
-import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interface";
-import { IpatientRepository } from "../../interface/auth/auth.interface";
-import { IDoctor } from "../../models/interface/IDoctor";
-import { ISlots } from "../../models/interface/ISlots";
-import { ISlotRepository } from "../../interface/Slots/slotRepository.interface";
-import { DoctorDTO } from "../../types/doctor.dto";
-import { DoctorListResult } from "../../types/doctorListResult";
-import { SpecializationsList } from "../../types/specializationsList";
-import logger from "../../utils/logger";
-import { hashPassword, comparePassword } from "../../utils/hash";
-import { doctorDetails } from "../../types/doctorDetails";
-import { UserDTO } from "../../types/user.dto";
+import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import { IpatientRepository } from '../../interface/auth/auth.interface';
+import { IDoctor } from '../../models/interface/IDoctor';
+import { ISlots } from '../../models/interface/ISlots';
+import { ISlotRepository } from '../../interface/Slots/slotRepository.interface';
+import { DoctorDTO } from '../../types/doctor.dto';
+import { DoctorListResult } from '../../types/doctorListResult';
+import { SpecializationsList } from '../../types/specializationsList';
+import logger from '../../utils/logger';
+import { hashPassword, comparePassword } from '../../utils/hash';
+import { doctorDetails } from '../../types/doctorDetails';
+import { UserDTO } from '../../types/user.dto';
+import { getNextDateOfWeek } from '../../utils/getDayOfWeek';
+import { genarateSlots } from '../../utils/SlotUtlity';
+import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
+import { IAppoinment } from '../../models/interface/IAppoinments';
 export class PatientService implements IPatientService {
   constructor(
     private _patientRepo: IpatientRepository,
     private _doctorRepo: IDoctorAuthRepository,
-    private _slotsRepo: ISlotRepository
+    private _slotsRepo: ISlotRepository,
+    private _appoinmentRepo:IAppoinmentRepository
   ) {}
-  async getResendAppoinments(): Promise<{msg:string,doctors:DoctorDTO[]}> {
-    const doctorsList = await this._doctorRepo.findAllWithFilter({
-      isApproved: true,
-    });
+  async getResendAppoinments(patientId:string): Promise<{ msg: string; doctors: DoctorDTO[],appoinments:IAppoinment[] }> {
+       
+
+    const appoinments = await this._appoinmentRepo.findByPatientId(patientId);
+   console.log(appoinments);
+    if(!appoinments){
+      throw new Error ('Appoinment not found');
+    }
+    const doctorIds = appoinments.map(app => app.doctorId);
+    const uniqueIds =  [...new Set(doctorIds)];
+    const doctorsList = await this._doctorRepo.findAppoinmentDoctors({_id:{$in:uniqueIds}});
 
     if (!doctorsList) {
-      throw new Error("No doctors found");
+      throw new Error('No doctors found');
     }
 
-    const doctors: DoctorDTO[] = doctorsList.map((doctor:IDoctor) => ({
+
+
+    const doctors: DoctorDTO[] = doctorsList.map((doctor: IDoctor) => ({
       _id: String(doctor?._id),
       email: doctor?.email,
       isBlocked: doctor?.isBlocked,
@@ -65,13 +79,13 @@ export class PatientService implements IPatientService {
       },
     }));
 
-    return {msg:"data fetched",doctors};
+    return { msg: 'data fetched', doctors,appoinments};
   }
   async updateUserProfile(
     formData: any,
     userId: string,
     profileImg?: string
-  ): Promise<{msg:string}> {
+  ): Promise<{ msg: string }> {
     const user = await this._patientRepo.findById(userId);
 
     if (!user) {
@@ -82,15 +96,15 @@ export class PatientService implements IPatientService {
       profile_img: profileImg,
     });
 
-    return { msg: "profile updated successfully" };
+    return { msg: 'profile updated successfully' };
   }
-  async getUserData(userId: string): Promise<{msg:string,users:UserDTO}> {
+  async getUserData(userId: string): Promise<{ msg: string; users: UserDTO }> {
     const user = await this._patientRepo.findById(userId);
 
     if (!user) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
-    const users= {
+    const users = {
       _id: String(user?._id),
       email: user?.email,
       name: user?.name,
@@ -102,8 +116,8 @@ export class PatientService implements IPatientService {
       createdAt: user?.createdAt,
       updatedAt: user?.updatedAt,
       profile_img: user?.profile_img,
-    }
-    return { msg: "user data fetched successfully", users };
+    };
+    return { msg: 'user data fetched successfully', users };
   }
 
   async getAllDoctors(
@@ -118,18 +132,18 @@ export class PatientService implements IPatientService {
       ...(search
         ? {
             $or: [
-              { name: { $regex: search, $options: "i" } },
+              { name: { $regex: search, $options: 'i' } },
               {
-                "qualifications.specialization": {
+                'qualifications.specialization': {
                   $regex: search,
-                  $options: "i",
+                  $options: 'i',
                 },
               },
             ],
           }
         : {}),
-      ...(specialty && specialty !== "All Specialties"
-        ? { "qualifications.specialization": specialty }
+      ...(specialty && specialty !== 'All Specialties'
+        ? { 'qualifications.specialization': specialty }
         : {}),
     };
 
@@ -187,33 +201,139 @@ export class PatientService implements IPatientService {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
 
-const doctor: doctorDetails = {
-  _id: String(doctors._id),
-  email: doctors.email,
-  name: doctors.name,
-  profile_img: doctors.profile_img ?? undefined, 
-  qualifications: {
-    degree: doctors.qualifications?.degree ?? undefined,
-    experince: doctors.qualifications?.experince ?? undefined,
-    specialization: doctors.qualifications?.specialization ?? undefined,
-    about: doctors.qualifications?.about ?? undefined,
-    fees: doctors.qualifications?.fees !== undefined 
-          ? Number(doctors.qualifications.fees) 
-          : undefined, // convert string to number
-  },
-};
+    const doctor: doctorDetails = {
+      _id: String(doctors._id),
+      email: doctors.email,
+      name: doctors.name,
+      profile_img: doctors.profile_img ?? undefined,
+      qualifications: {
+        degree: doctors.qualifications?.degree ?? undefined,
+        experince: doctors.qualifications?.experince ?? undefined,
+        specialization: doctors.qualifications?.specialization ?? undefined,
+        about: doctors.qualifications?.about ?? undefined,
+        fees:
+          doctors.qualifications?.fees !== undefined
+            ? Number(doctors.qualifications.fees)
+            : undefined, 
+      },
+    };
 
     return doctor;
   }
-  async getDoctorSlots(doctorId: string): Promise<ISlots[]> {
-    const doctor = await this._doctorRepo.findById(doctorId);
-    if (!doctor) {
-      throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
-    }
-    const slots = await this._slotsRepo.findByDoctorId(doctorId);
 
-    return slots;
+
+
+   async getDoctorSlots(doctorId: string): Promise<ISlots[]> {
+  const doctor = await this._doctorRepo.findById(doctorId);
+  if (!doctor) {
+    throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
   }
+
+  const doctorSlots = await this._slotsRepo.findByDoctorId(doctorId);
+  const slots: any[] = [];
+
+ const doctorAppoinments = await this._appoinmentRepo.findByDoctorId(doctorId);
+ 
+
+ const bookedSlot = doctorAppoinments.map((appt)=>({
+   date:appt?.slot?.date,
+  startTime:appt?.slot?.startTime,
+  endTime:appt?.slot?.endTime,
+ }));
+ 
+ console.log('booked slot',bookedSlot);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const endOfWeek = new Date(today);
+  endOfWeek.setDate(today.getDate() + (7 - today.getDay())); 
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  doctorSlots?.forEach((slotDoc) => {
+    slotDoc?.slotTimes.forEach((slot) => {
+      const dayDate = getNextDateOfWeek(slot?.daysOfWeek);
+
+    
+      if (!dayDate || dayDate < today || dayDate > endOfWeek) return;
+
+      const startTime = new Date(dayDate);
+      startTime.setHours(
+        slot.startTime.getHours(),
+        slot.startTime.getMinutes(),
+        0,
+        0
+      );
+
+      const endTime = new Date(dayDate);
+      endTime.setHours(
+        slot.endTime.getHours(),
+        slot.endTime.getMinutes(),
+        0,
+        0
+      );
+       
+      const breaks = (slot.breakTime || []).map((b) => {
+        const brStart = new Date(dayDate);
+        brStart.setHours(
+          b.startTime.getHours(),
+          b.startTime.getMinutes(),
+          0,
+          0
+        );
+
+        const brEnd = new Date(dayDate);
+        brEnd.setHours(b.endTime.getHours(), b.endTime.getMinutes(), 0, 0);
+
+        return { startTime: brStart, endTime: brEnd };
+      });
+
+      const slotsArray = genarateSlots(
+        startTime,
+        endTime,
+        slot.slotDuration,
+        breaks
+      )
+      
+        .filter(
+          (s) => s.startTime >= today && s.startTime <= endOfWeek
+        ).filter((s) => {
+  return !bookedSlot.some(
+    (b) =>
+      b.date === s.startTime.toISOString().split('T')[0] && 
+      b.startTime === s.startTime.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }) &&
+      b.endTime === s.endTime.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+  );
+})
+        .map((s) => ({
+          startTime: s.startTime.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          endTime: s.endTime.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          status: s.status,
+          dayOfWeek: slot.daysOfWeek,
+          doctorId: doctorId,
+          date: startTime.toISOString().split('T')[0],
+        }));
+
+      slots.push(...slotsArray);
+    });
+  });
+
+
+  return slots;
+}
+
 
   async getAllspecializations(): Promise<SpecializationsList> {
     const doctorList: IDoctor[] = await this._doctorRepo.findAllWithFilter({
@@ -234,39 +354,34 @@ const doctor: doctorDetails = {
   }
   async getDoctorAndSlot(
     doctorId: string,
-    slotId: string
-  ): Promise<{ doctor: doctorDetails | null; slot: ISlots | null }> {
+  ): Promise<{ doctor: doctorDetails | null}> {
     const doctor = await this._doctorRepo.findById(doctorId);
-   console.log('docc',doctor);
+    console.log('docc', doctor);
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
 
-    const slot = await this._slotsRepo.findById(slotId);
+    const doctors: doctorDetails = {
+      _id: String(doctor._id),
+      email: doctor.email,
+      name: doctor.name,
+      profile_img: doctor.profile_img ?? undefined,
+      qualifications: {
+        degree: doctor.qualifications?.degree ?? undefined,
+        experince:
+          doctor.qualifications?.experince !== undefined
+            ? Number(doctor.qualifications.experince)
+            : undefined,
+        specialization: doctor.qualifications?.specialization ?? undefined,
+        about: doctor.qualifications?.about ?? undefined,
+        fees:
+          doctor.qualifications?.fees !== undefined
+            ? Number(doctor.qualifications.fees)
+            : undefined,
+      },
+    };
 
-    if (!slot) {
-      throw new Error(SERVICE_MESSAGE.SLOT_NOT_FOUND);
-    }
-    
-  const doctors: doctorDetails = {
-  _id: String(doctor._id),
-  email: doctor.email,
-  name: doctor.name,
-  profile_img: doctor.profile_img ?? undefined,
-  qualifications: {
-    degree: doctor.qualifications?.degree ?? undefined,
-    experince: doctor.qualifications?.experince !== undefined 
-              ? Number(doctor.qualifications.experince) 
-              : undefined,
-    specialization: doctor.qualifications?.specialization ?? undefined,
-    about: doctor.qualifications?.about ?? undefined,
-    fees: doctor.qualifications?.fees !== undefined 
-          ? Number(doctor.qualifications.fees) 
-          : undefined,
-  },
-};
-    
-    return { doctor:doctors, slot };
+    return { doctor: doctors};
   }
 
   async getRelatedDoctor(
@@ -335,6 +450,6 @@ const doctor: doctorDetails = {
     }
     const hashedPassword = await hashPassword(newPasword);
     await this._patientRepo.updateById(patientId, { password: hashedPassword });
-    return { msg: "Password Changed" };
+    return { msg: 'Password Changed' };
   }
 }

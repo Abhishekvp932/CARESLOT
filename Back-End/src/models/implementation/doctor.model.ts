@@ -1,6 +1,6 @@
-import { IDoctor } from "../interface/IDoctor";
+import { IDoctor } from '../interface/IDoctor';
 
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 const doctorSchema = new Schema<IDoctor>(
   {
@@ -12,6 +12,10 @@ const doctorSchema = new Schema<IDoctor>(
     name: {
       type: String,
       required: false,
+    },
+    isRejected: {
+      type:Boolean,
+      default:false,
     },
     phone: {
       type: String,
@@ -34,17 +38,17 @@ const doctorSchema = new Schema<IDoctor>(
     },
     gender: {
       type: String,
-      enum: ["male", "female", "others"],
+      enum: ['male', 'female', 'others'],
       required: false,
-      default: "male",
+      default: 'male',
     },
     DOB: {
       type: Date,
     },
     role: {
       type: String,
-      enum: ["doctors"],
-      default: "doctors",
+      enum: ['doctors'],
+      default: 'doctors',
     },
     rejectionReason:{
        type:String
@@ -75,5 +79,5 @@ const doctorSchema = new Schema<IDoctor>(
   { timestamps: true }
 );
 
-const Doctor = mongoose.model<IDoctor>("Doctor", doctorSchema);
+const Doctor = mongoose.model<IDoctor>('Doctor', doctorSchema);
 export default Doctor;

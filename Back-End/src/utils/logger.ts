@@ -1,6 +1,6 @@
-import {createLogger,format,transports,addColors} from 'winston'
-import dotenv from 'dotenv'
-dotenv.config()
+import {createLogger,format,transports,addColors} from 'winston';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const levels = {
     error:0,
@@ -8,25 +8,25 @@ const levels = {
     info:2,
     http:3,
     debug:4
-}
+};
 
 const level = ()=>{
-    return process.env.NODE_ENV === "development" ? "debug" : "warn";
-}
+    return process.env.NODE_ENV === 'development' ? 'debug' : 'warn';
+};
 
 addColors({
-    error:"red",
-    warn:"yellow",
-    info:"green",
-    http:"magenta",
-    debug:"blue"
+    error:'red',
+    warn:'yellow',
+    info:'green',
+    http:'magenta',
+    debug:'blue'
 
-})
+});
 const logger = createLogger({
   level: level(),
   levels,
   format: format.combine(
-    format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     format.errors({stack:true}),
     format.splat(),
     format.colorize({all:true}),
@@ -36,8 +36,8 @@ const logger = createLogger({
   ),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: "logs/error.log", level: "error" }),
-    new transports.File({ filename: "logs/combined.log" }),
+    new transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new transports.File({ filename: 'logs/combined.log' }),
   ],
 });
 

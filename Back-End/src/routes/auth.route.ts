@@ -1,29 +1,31 @@
-import express from "express";
-import { AuthController } from "../controllers/auth/auth.controller";
-import { AuthService } from "../services/auth/auth.service"
-import { PatientRepository } from "../repositories/auth/auth.repository";
-import passport from "passport";
-import { profile } from "console";
-import { generateAccessToken,generateRefreshToken } from "../utils/jwt";
-import { DoctorAuthRepository } from "../repositories/doctors/doctor.auth.repository";
-import { AdminRepository } from "../repositories/admin/admin.repository";
-import redisClient from "../config/redisClient";
-import {v4 as uuidv4} from 'uuid'
-const PatientRepo = new PatientRepository()
-const doctorRepo = new DoctorAuthRepository()
-const adminRepo = new AdminRepository()
-const authService = new AuthService(PatientRepo,doctorRepo,adminRepo);
+import express from 'express';
+import { AuthController } from '../controllers/auth/auth.controller';
+import { AuthService } from '../services/auth/auth.service';
+import { PatientRepository } from '../repositories/auth/auth.repository';
+import passport from 'passport';
+import { profile } from 'console';
+import { generateAccessToken,generateRefreshToken } from '../utils/jwt';
+import { DoctorAuthRepository } from '../repositories/doctors/doctor.auth.repository';
+import { AdminRepository } from '../repositories/admin/admin.repository';
+import redisClient from '../config/redisClient';
+import {v4 as uuidv4} from 'uuid';
+import { AuthMiddleware } from '../middleware/auth.middleware';
 
+const PatientRepo = new PatientRepository();
+const doctorRepo = new DoctorAuthRepository();
+const adminRepo = new AdminRepository();
+const authService = new AuthService(PatientRepo,doctorRepo,adminRepo);
+const authMiddleware = new AuthMiddleware(PatientRepo,doctorRepo);
 const authController = new AuthController(authService);
 const router  = express.Router();
 
 
 // Patient routes
 router.post('/login',authController.login.bind(authController));
-router.post('/signup',authController.signup.bind(authController))
-router.post('/verify-otp',authController.verifyOTP.bind(authController))
+router.post('/signup',authController.signup.bind(authController));
+router.post('/verify-otp',authController.verifyOTP.bind(authController));
 router.get('/google',passport.authenticate('google',{scope:['profile','email']}));
-router.get('/me',authController.getMe.bind(authController));
+router.get('/me',authMiddleware.isBlockedOrNot,authMiddleware.protect,authMiddleware.protect,authController.getMe.bind(authController));
 
 
 router.get(
@@ -50,19 +52,19 @@ router.get(
     res.cookie('sessionId',sessionId,{
                 httpOnly:true,
                 secure:false,
-                sameSite:"lax",
+                sameSite:'lax',
                 maxAge:7*24*60*60*1000
-            })
+            });
 
     return res.redirect('http://localhost:2025/');
   }
 );
 
-router.get('/logout',authController.logOut.bind(authController));
+router.post('/logout',authController.logOut.bind(authController));
 router.post('/resend-otp',authController.resendOTP.bind(authController));
 router.post('/send-otp',authController.verfiyEmail.bind(authController));
 router.post('/verify-email',authController.verifyEmailOTP.bind(authController));
 router.post('/forgot-password',authController.forgotPassword.bind(authController));
 router.post('/refresh-token',authController.refreshToken.bind(authController));
 
-export default router
+export default router;
