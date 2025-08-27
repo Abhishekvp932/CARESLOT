@@ -255,7 +255,7 @@ export class AuthService implements IService {
     }
 
     const newOTp = generateOTP();
-    console.log('resend otp is',newOTp);
+   
     const otpExpire = new Date(Date.now() + 60 * 1000);
     if (role === 'patients') {
       await this._patientRepo.upsertWithOTP(email, newOTp, otpExpire);
@@ -360,7 +360,7 @@ export class AuthService implements IService {
 
     async refreshAccessToken(req: any, res: any): Promise<any> {
       const sessionId = req.cookies?.sessionId;
-     console.log('session id missing',req.cookies?.sessionId);
+    
       if (!sessionId) {
         throw new Error('No session id found');
         return;

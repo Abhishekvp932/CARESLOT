@@ -11,7 +11,7 @@ export class PatientRepository extends BaseRepository<IPatient> implements Ipati
   }
  
 
-    async updateById(id: string, update: Partial<any>) {
+    async updateById(id: string, update: Partial<IPatient>) {
       return await this.model.findByIdAndUpdate(id, update, { new: true });
     }
   async upsertWithOTP(email: string, otp: string, otpExpire: Date) {

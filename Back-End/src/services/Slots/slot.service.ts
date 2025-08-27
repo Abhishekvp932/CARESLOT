@@ -17,7 +17,7 @@ export class SlotService implements ISlotService {
 
       logger.info('time slot data is comming from the back end');
       const doctorId = data?.doctorId;
-      console.log('slot data is',data);
+     
       logger.debug('doctorid is',doctorId);
 
       if (!doctorId) {
@@ -40,7 +40,7 @@ export class SlotService implements ISlotService {
         
       };
 
-      console.log('existing slot',payloadExistingSlot);
+      
       
        await this._slotRepo.findByIdAndUpdate(doctorId,payloadExistingSlot);
        return { msg: 'slot updated successfully' };
@@ -66,7 +66,7 @@ export class SlotService implements ISlotService {
         
       };
 
-      console.log('payload',payload);
+     
 
       await this._slotRepo.create(payload);
 

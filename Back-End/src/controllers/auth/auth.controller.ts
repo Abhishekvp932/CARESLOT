@@ -67,7 +67,7 @@ import logger from '../../utils/logger';
             return;
         }
         const result = await this._authService.getMe({sessionId});
-        // console.log(result);
+       
         res.status(HttpStatus.OK).json({user:result});
        } catch (error) {
         const err = error as Error;
