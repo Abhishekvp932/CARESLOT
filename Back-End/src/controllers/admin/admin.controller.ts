@@ -53,6 +53,10 @@ export class AdminController implements IAdminController {
       res.status(HttpStatus.NOT_FOUND).json({ msg: err.message });
     }
   }
+
+
+
+  
   async blockAndUnblockDoctors(req: Request, res: Response): Promise<void> {
     try {
       const { id: doctorId } = req.params;
