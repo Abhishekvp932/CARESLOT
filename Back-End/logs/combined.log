@@ -19556,3 +19556,15 @@
 2025-08-27 15:20:45 [[34MDEBUG[39M]: [34mdecoded[39m
 2025-08-27 15:20:45 [[32MINFO[39M]: [32msearch filter result[39m
 2025-08-27 15:20:45 [[35MHTTP[39M]: [35mGET /api/admin/users?page=1&limit=10&search= 304 - - 25.196 ms[39m
+2025-09-08 10:10:00 [[35MHTTP[39M]: [35mGET /api/auth/me 401 23 - 12.672 ms[39m
+2025-09-08 10:10:00 [[35MHTTP[39M]: [35mPOST /api/auth/refresh-token 200 25 - 69.933 ms[39m
+2025-09-08 10:10:00 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-09-08 10:10:00 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-09-08 10:10:00 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-09-08 10:10:00 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-09-08 10:10:00 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 43.298 ms[39m
+2025-09-08 10:10:04 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-09-08 10:10:04 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-09-08 10:10:04 [[34MDEBUG[39M]: [34msesssion id[39m
+2025-09-08 10:10:04 [[34MDEBUG[39M]: [34mdecoded[39m
+2025-09-08 10:10:04 [[35MHTTP[39M]: [35mGET /api/auth/me 304 - - 30.755 ms[39m
