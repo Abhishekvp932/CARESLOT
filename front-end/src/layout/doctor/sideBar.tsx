@@ -18,6 +18,7 @@ import type { RootState } from "@/app/store"
 import { Link, useNavigate } from "react-router-dom"
 import { logOut } from "@/features/docotr/doctorSlice"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import LiveNotifications from "@/components/common/LiveNotification"
 // import { useLogOutMutation } from "@/features/auth/authApi"
 const navItems = [
   { title: "Dashboard", url: "/doctor", icon: Home },
@@ -64,6 +65,7 @@ export function DoctorSidebar({ children }: { children: React.ReactNode }) {
           <span className="bg-green-100 text-green-700 px-2 py-0.5 text-xs rounded-full">
             Online
           </span>
+          <LiveNotifications userId={doctor?._id} />
         </div>
 
         {/* Navigation */}

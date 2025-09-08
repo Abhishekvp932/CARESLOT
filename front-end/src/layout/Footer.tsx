@@ -34,7 +34,7 @@ const Footer = () => {
             <div className="contact-info">
               <p>📍 123 Medical Center Drive</p>
               <p>📞 (555) 123-4567</p>
-              <p>✉️ info@healthcareplus.com</p>
+              <p>✉️ careslot@gmail.com</p>
               <p>🕒 24/7 Emergency Services</p>
             </div>
           </div>

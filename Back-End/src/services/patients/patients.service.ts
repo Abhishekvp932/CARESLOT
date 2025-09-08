@@ -25,6 +25,7 @@ export class PatientService implements IPatientService {
     private _slotsRepo: ISlotRepository,
     private _appoinmentRepo:IAppoinmentRepository
   ) {}
+  
   async getResendAppoinments(patientId:string): Promise<{ msg: string; doctors: DoctorDTO[],appoinments:IAppoinment[] }> {
        
 
@@ -217,11 +218,13 @@ export class PatientService implements IPatientService {
 
 
 
-   async getDoctorSlots(doctorId: string): Promise<ISlots[]> {
+   async getDoctorSlots(doctorId: string,targetDate:string): Promise<ISlots[]> {
   const doctor = await this._doctorRepo.findById(doctorId);
   if (!doctor) {
     throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
   }
+   const targetDay = new Date (targetDate);
+
 
   const doctorSlots = await this._slotsRepo.findByDoctorId(doctorId);
   const slots: any[] = [];
@@ -235,19 +238,19 @@ export class PatientService implements IPatientService {
   endTime:appt?.slot?.endTime,
  }));
  
- 
-
-  const today = new Date();
+  const today = targetDate ? new Date (targetDate) : new Date();
   today.setHours(0, 0, 0, 0);
 
   const endOfWeek = new Date(today);
-  endOfWeek.setDate(today.getDate() + (7 - today.getDay())); 
+
+  // endOfWeek.setDate(today.getDate() + (7 - today.getDay())); 
   endOfWeek.setHours(23, 59, 59, 999);
 
   doctorSlots?.forEach((slotDoc) => {
     slotDoc?.slotTimes.forEach((slot) => {
       const dayDate = getNextDateOfWeek(slot?.daysOfWeek);
-
+     
+      if(targetDay < new Date()) return;
     
       if (!dayDate || dayDate < today || dayDate > endOfWeek) return;
 

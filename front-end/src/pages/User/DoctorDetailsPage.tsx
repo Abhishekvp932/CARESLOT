@@ -6,7 +6,7 @@ import { useGetDoctorDetailPageQuery } from "@/features/users/userApi";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetSlotsQuery } from "@/features/users/userApi";
 import { useGetRelatedDoctorQuery } from "@/features/users/userApi";
-import { format } from "date-fns";
+
 
 const UserDoctorDetailsPage = () => {
   const { doctorId } = useParams<{ doctorId: string }>();
@@ -18,9 +18,14 @@ const UserDoctorDetailsPage = () => {
     doctorId,
     specialization: doctor?.qualifications?.specialization,
   });
-  // console.log('sppppp',doctor?.qualifications?.specialization,);
+
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  // const [selectedTime, setSelectedTime] = useState<Date | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
+
+ 
   const relatedDoctor = data?.relatedDoctor || [];
-  const { data: slots = [] } = useGetSlotsQuery(doctorId);
+  const { data: slots = [] } = useGetSlotsQuery({doctorId,date:selectedDate || new Date().toISOString().split("T")[0]});
   console.log("slots", slots);
 
   type Slot = {
@@ -33,22 +38,22 @@ const UserDoctorDetailsPage = () => {
     status: string;
   };
 
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  // const [selectedTime, setSelectedTime] = useState<Date | null>(null);
-  const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
 
   const groupSlotsByDate = (slots: Slot[]) => {
     const grouped: { [key: string]: Slot[] } = {};
 
     slots.forEach((slot) => {
-      if (!grouped[slot.dayOfWeek]) grouped[slot.dayOfWeek] = [];
-      grouped[slot.dayOfWeek].push(slot);
+      console.log('goruping slotss',slot);
+      if (!grouped[slot.date]) grouped[slot.date] = [];
+      grouped[slot.date].push(slot);
     });
 
     return grouped;
   };
 
   const groupedSlots = groupSlotsByDate(slots);
+  console.log('grouped slots',groupedSlots);
+
   console.log('selected slot',selectedSlot);
   console.log('selected',selectedDate); 
   const handleCheckout = (doctorId: string) => {
@@ -113,10 +118,21 @@ const UserDoctorDetailsPage = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <h3 className="text-xl font-semibold mb-6">Booking slots</h3>
 
+            <input type="date" onChange={(e)=> setSelectedDate(e.target.value)} />
+
           <div className="flex items-center justify-between mb-6">
             <button className="p-2 hover:bg-gray-100 rounded-full"></button>
             <div className="flex gap-2 overflow-x-auto">
-              {Object.keys(groupedSlots).map((day) => (
+            {Object.keys(groupedSlots).map((day) => {
+              const dateObj = new Date(day);
+
+              
+              const formattedDay = dateObj.toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",  
+              });
+
+              return (
                 <button
                   key={day}
                   onClick={() => {
@@ -129,10 +145,11 @@ const UserDoctorDetailsPage = () => {
                       : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  <span className="text-sm">{day}</span>
+                  <span className="text-sm">{formattedDay}</span>
                 </button>
-              ))}
-            </div>
+              );
+            })}
+             </div>
             <button className="p-2 hover:bg-gray-100 rounded-full"></button>
           </div>
 

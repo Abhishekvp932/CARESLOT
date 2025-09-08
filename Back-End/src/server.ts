@@ -4,6 +4,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
+
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+
+
 import autRoutes from './routes/auth.route';
 import connectDB from './config/db';
 import { confiqurePassport } from './config/passport';
@@ -14,7 +19,8 @@ import slotRoute from './routes/slot.route';
 import appoinmentRoute from './routes/appoinment.route';
 import requestLogger from './middleware/requestLogger';
 import redisClient from './config/redisClient';
-
+import chatbotRoute from './routes/chatbot.route';
+import notificationRoute from './routes/notification.route';
 (async()=>{
   try {
     await redisClient.connect();
@@ -26,6 +32,28 @@ import redisClient from './config/redisClient';
 
 dotenv.config();
 const app : Application = express();
+
+const httpServer = createServer(app);
+
+export const io = new Server(httpServer,{
+  cors:{
+    origin:'http://localhost:2025',
+    credentials:true
+  },
+});
+
+io.on('connection',(socket)=>{
+  console.log('user connected',socket?.id);
+
+  socket.on('join',(userId:string)=>{
+    socket.join(userId);
+    console.log(`user ${userId} joined room`);
+  });
+
+  socket.on('disconnect',()=>{
+    console.log('user disconnected',socket.id);
+  });
+});
 
 const corsOperation = {
     origin: 'http://localhost:2025', 
@@ -57,14 +85,14 @@ app.use('/api/admin',adminRoute);
 app.use('/api/patient',patientRoute);
 app.use('/api/slots',slotRoute);
 app.use('/api/appoinment',appoinmentRoute);
-
-
+app.use('/api/chatbot',chatbotRoute);
+app.use('/api/notification',notificationRoute);
 
 const PORT = process.env.PORT;
 
 
 connectDB().then(()=>{
-  app.listen(PORT,()=>{
+  httpServer.listen(PORT,()=>{
      console.log(`server running in ${PORT}`);
   });
 }).catch((err)=>{
