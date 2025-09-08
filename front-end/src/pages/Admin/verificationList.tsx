@@ -49,8 +49,7 @@ const VerificationList = () => {
   }, []);
   const handleApproveDoctor = async (doctorId: string) => {
     try {
-      const res = await doctorApprove({ doctorId }).unwrap();
-
+      const res = await doctorApprove(doctorId).unwrap();
       toast.success(res.msg);
       refetch();
     } catch (error: any) {
@@ -91,8 +90,7 @@ const VerificationList = () => {
       accessor: "actions",
       render: (item) => (
         <div>
-          {
-          item?.rejectionReason && item?.rejectionReason?.length > 0 ? (
+          {!item?.isRejected ? (
             <div className="flex gap-2">
               <button
                 onClick={() => handleApproveDoctor(item._id)}
@@ -114,10 +112,9 @@ const VerificationList = () => {
               </button>
             </div>
           ) : (
-         <div className="text-red-600 bg-red-100 px-4 py-1 rounded-lg font-semibold text-center shadow-md ml-2 w-max">
-        <h4>Admin rejected</h4>
-        </div>
-
+            <h1 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1">
+              Rejected
+            </h1>
           )}
         </div>
       ),
@@ -212,10 +209,8 @@ const VerificationList = () => {
                   </p>
                 </div>
 
-                <div className="flex flex-col gap-2 items-end">
-                  {doctors?.rejectionReason &&
-                  doctors.rejectionReason.trim() !== "" &&
-                  !doctors.isApproved ? (
+                {!user.isRejected ? (
+                  <div className="flex flex-col gap-2 items-end">
                     <div>
                       <button
                         onClick={() => handleApproveDoctor(doctors._id)}
@@ -236,30 +231,30 @@ const VerificationList = () => {
                         Reject
                       </button>
                     </div>
-                  ) : (
-                    <div>
-                      <h4>Admin rejected</h4>
-                    </div>
-                  )}
 
-                  <RejectionReasonModal
-                    open={isOpen}
-                    onOpenChange={setIsOpen}
-                    title="Rejection Reason"
-                    onSave={(reason) => {
-                      if (selectedDoctorId) {
-                        handleReject(selectedDoctorId, reason);
-                      }
-                    }}
-                  />
-                  <button
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
-                    onClick={() => handleDetailsPage(user._id)}
-                  >
-                    <Eye size={20} />
-                    View
-                  </button>
-                </div>
+                    <RejectionReasonModal
+                      open={isOpen}
+                      onOpenChange={setIsOpen}
+                      title="Rejection Reason"
+                      onSave={(reason) => {
+                        if (selectedDoctorId) {
+                          handleReject(selectedDoctorId, reason);
+                        }
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <h1 className="bg-red-100 text-red-700 font-semibold px-6 py-2 rounded-full shadow-sm border border-red-200 text-sm uppercase tracking-wide text-center inline-block">
+                    Rejected
+                  </h1>
+               )}
+                <button
+                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+                  onClick={() => handleDetailsPage(user._id)}
+                >
+                  <Eye size={20} />
+                  View
+                </button>
               </div>
             )}
           />

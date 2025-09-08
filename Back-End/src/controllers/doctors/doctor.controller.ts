@@ -1,11 +1,11 @@
-import IDoctorController from "../../interface/doctor/doctor.controller";
-import { HttpStatus } from "../../utils/httpStatus";
-import { CONTROLLER_MESSAGE } from "../../utils/controllerMessage";
-import { NextFunction, Request, Response } from "express";
-import { DoctorService } from "../../services/doctor/doctor.service";
-import { QualificationInput } from "../../interface/doctor/doctor.service.interface";
-import { IDoctor } from "../../interface/doctor/doctor.service.interface";
-import { IDoctor as IDoctorData } from "../../models/interface/IDoctor";
+import IDoctorController from '../../interface/doctor/doctor.controller';
+import { HttpStatus } from '../../utils/httpStatus';
+import { CONTROLLER_MESSAGE } from '../../utils/controllerMessage';
+import { NextFunction, Request, Response } from 'express';
+import { DoctorService } from '../../services/doctor/doctor.service';
+import { QualificationInput } from '../../interface/doctor/doctor.service.interface';
+import { IDoctor } from '../../interface/doctor/doctor.service.interface';
+import { IDoctor as IDoctorData } from '../../models/interface/IDoctor';
 export class DoctorController implements IDoctorController {
   constructor(private _doctorService: IDoctor) {}
 
@@ -43,10 +43,10 @@ export class DoctorController implements IDoctorController {
         about,
         lisence: lisence,
         fees,
-        educationCertificate: files.educationCertificate?.[0]?.path || "",
-        experienceCertificate: files.experienceCertificate?.[0]?.path || "",
+        educationCertificate: files.educationCertificate?.[0]?.path || '',
+        experienceCertificate: files.experienceCertificate?.[0]?.path || '',
       };
-      const profileImage = files.profileImage?.[0]?.path || "";
+      const profileImage = files.profileImage?.[0]?.path || '';
       const result = await this._doctorService.uploadDocument(
         doctorId,
         input,
@@ -57,7 +57,7 @@ export class DoctorController implements IDoctorController {
       const err = error as Error;
       res
         .status(HttpStatus.BAD_REQUEST)
-        .json({ msg: "qualification error msg" });
+        .json({ msg: 'qualification error msg' });
     }
   }
   async getDoctorProfile(req: Request, res: Response): Promise<void> {
@@ -90,8 +90,28 @@ export class DoctorController implements IDoctorController {
 
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error
+      const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
     }
+  }
+  async reApplyDoctor(req: Request, res: Response): Promise<void> {
+      try {
+       const {doctorId} = req.params;
+       
+      const files = req.files as {
+        profileImage?: Express.Multer.File[];
+        educationCertificate?: Express.Multer.File[];
+        experienceCertificate?: Express.Multer.File[];
+      };
+      const result = await this._doctorService.reApplyDoctor(
+        doctorId,
+        req.body,
+        files,
+      );
+      res.status(HttpStatus.OK).json(result);
+      } catch (error) {
+        const err = error as Error;
+        res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
+      }
   }
 }

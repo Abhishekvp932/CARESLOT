@@ -1,11 +1,11 @@
-import { AdminService } from "../../services/admin/admin.service";
-import IAdminController from "../../interface/admin/admin.controller.interface";
-import { Request, Response } from "express";
-import { HttpStatus } from "../../utils/httpStatus";
-import { IAdminService } from "../../interface/admin/admin.serivce.interface";
-import { CONTROLLER_MESSAGE } from "../../utils/controllerMessage";
-import { IDoctor } from "../../models/interface/IDoctor";
-import logger from "../../utils/logger";
+import { AdminService } from '../../services/admin/admin.service';
+import IAdminController from '../../interface/admin/admin.controller.interface';
+import { Request, Response } from 'express';
+import { HttpStatus } from '../../utils/httpStatus';
+import { IAdminService } from '../../interface/admin/admin.serivce.interface';
+import { CONTROLLER_MESSAGE } from '../../utils/controllerMessage';
+import { IDoctor } from '../../models/interface/IDoctor';
+import logger from '../../utils/logger';
 export class AdminController implements IAdminController {
   constructor(private _adminService: IAdminService) {}
 
@@ -14,9 +14,9 @@ export class AdminController implements IAdminController {
       const page = parseInt(req.query.page as string);
      
       const limit = parseInt(req.query.limit as string);
-      const search = req.query.search as string
+      const search = req.query.search as string;
       const result = await this._adminService.findAllUsers(page,limit,search);
-      res.status(HttpStatus.OK).json({data:result.users,currentPage:page,totalPages:Math.ceil(result.total/limit),totalItem:result.total})
+      res.status(HttpStatus.OK).json({data:result.users,currentPage:page,totalPages:Math.ceil(result.total/limit),totalItem:result.total});
     } catch (error) {
       const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
@@ -27,7 +27,7 @@ export class AdminController implements IAdminController {
      const page = parseInt(req.query.page as string);
      
      const limit = parseInt(req.query.limit as string);
-      const search = req.query.search as string
+      const search = req.query.search as string;
       const result = await this._adminService.findAllDoctors(page,limit,search);
 
       res.status(HttpStatus.OK).json({data:result.doctors,currentPage:page,totalPages:Math.ceil(result.total/limit),totalItem:result.total});
@@ -53,6 +53,10 @@ export class AdminController implements IAdminController {
       res.status(HttpStatus.NOT_FOUND).json({ msg: err.message });
     }
   }
+
+
+
+  
   async blockAndUnblockDoctors(req: Request, res: Response): Promise<void> {
     try {
       const { id: doctorId } = req.params;
@@ -74,9 +78,9 @@ export class AdminController implements IAdminController {
   async findUnprovedDoctors(req: Request, res: Response): Promise<void> {
     try {
 
-      const page = parseInt(req.query.page as string)
+      const page = parseInt(req.query.page as string);
       const limit = parseInt(req.query.limit as string);
-      const search = req.query.search as string
+      const search = req.query.search as string;
 
       const result = await this._adminService.findUnApprovedDoctors(page,limit,search);
 
@@ -155,7 +159,7 @@ export class AdminController implements IAdminController {
       const { id: doctorId } = req.params;
       logger.info('doctor id comming',doctorId);
       if (!doctorId) {
-        res.status(HttpStatus.BAD_REQUEST).json({ msg: "doctor id not found" });
+        res.status(HttpStatus.BAD_REQUEST).json({ msg: 'doctor id not found' });
         return;
       }
 
@@ -205,7 +209,7 @@ export class AdminController implements IAdminController {
           files.educationCertificate[0].path;
       } else if (
         rawData.educationCertificate &&
-        typeof rawData.educationCertificate === "string"
+        typeof rawData.educationCertificate === 'string'
       ) {
         data.qualifications.educationCertificate = rawData.educationCertificate;
       }
@@ -215,7 +219,7 @@ export class AdminController implements IAdminController {
           files.experienceCertificate[0].path;
       } else if (
         rawData.experienceCertificate &&
-        typeof rawData.experienceCertificate === "string"
+        typeof rawData.experienceCertificate === 'string'
       ) {
         data.qualifications.experienceCertificate =
           rawData.experienceCertificate;
@@ -250,7 +254,7 @@ export class AdminController implements IAdminController {
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
     }
   }
-
+  
   async addDoctor(req: Request, res: Response): Promise<void> {
     try {
       const files = req.files as {
@@ -281,7 +285,7 @@ export class AdminController implements IAdminController {
         phone,
         DOB,
         gender,
-        profile_img: files.profileImage?.[0]?.path || "",
+        profile_img: files.profileImage?.[0]?.path || '',
         isApproved: true,
         qualifications: {
           degree,
@@ -293,8 +297,8 @@ export class AdminController implements IAdminController {
           fees,
           lisence: license,
           about,
-          educationCertificate: files.educationCertificate?.[0]?.path || "",
-          experienceCertificate: files.experienceCertificate?.[0]?.path || "",
+          educationCertificate: files.educationCertificate?.[0]?.path || '',
+          experienceCertificate: files.experienceCertificate?.[0]?.path || '',
         },
       };
 

@@ -17,13 +17,23 @@ import {
 } from "lucide-react";
 import Header from "@/layout/Header";
 import Footer from "@/layout/Footer";
-import { useLocation } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 
 import { useGetDoctorAndSlotQuery } from "@/features/users/userApi";
    import { format} from 'date-fns';
+import {toast,ToastContainer} from 'react-toastify'
+   import { useSelector} from "react-redux";
+import type { RootState } from "@/app/store";
+  import { useBookAppoinmentMutation } from "@/features/users/userApi";
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
+  const patient = useSelector((state:RootState)=> state.auth.user);
+
+
+  const [bookAppoinment] = useBookAppoinmentMutation();
+
+// const navigate = useNavigate();
 
   const handlePayment = async () => {
     setIsProcessing(true);
@@ -35,24 +45,44 @@ export default function CheckoutPage() {
 
   const location = useLocation();
   const doctorId = location?.state?.doctorId ?? null;
-  const slotId = location?.state?.slotId ?? null
-  const { data = {} } = useGetDoctorAndSlotQuery({doctorId,slotId});
+
+ const time = location?.state?.slotTime ?? null
+ 
+  const { data = {} } = useGetDoctorAndSlotQuery({doctorId});
 console.log('data',data)
   const doctor = data?.doctor ?? null;
-  const slot = data?.slot ?? null;
+
  const total =  Number(data?.doctor?.qualifications?.fees) + 100
 
   if (!doctorId) {
   return <div className="p-8">No doctor selected.</div>;
 }
 
-if (!data || !doctor || !slot) {
+if (!data || !doctor) {
   return <div className="p-8">Loading appointment details...</div>;
 }
 
 
-  console.log("docrto", doctor);
-  console.log("slot", slot);
+
+const handleAppoinment = async ()=>{
+     try {
+      const payload = {
+        doctorId:doctorId,
+        date:time?.date,
+        startTime:time?.startTime,
+        endTime:time?.endTime,
+        patientId:patient?._id,
+        amount:total
+      } 
+        const res = await bookAppoinment({data:payload}).unwrap();
+       toast.success(res?.msg);
+    
+     } catch (error) {  
+      toast.error(error?.res?.msg);
+      console.log(error);
+     }
+}
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <Header />
@@ -108,13 +138,13 @@ if (!data || !doctor || !slot) {
                   <div className="space-y-3">
                     <div>
                       <p className="text-sm font-medium text-gray-500">Date</p>
-                      <p className="text-gray-900">{format(new Date(slot?.date), 'MMMM dd, yyyy')}</p>
+                      <p className="text-gray-900">{time?.date} - {time?.dayOfWeek}</p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
                         Time Slot
                       </p>
-                      <p className="text-gray-900">{format(new Date(slot?.startTime), 'hh:mm a')}</p>
+                      <p className="text-gray-900">{time?.startTime} - {time?.endTime}</p>
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -122,11 +152,13 @@ if (!data || !doctor || !slot) {
                       <p className="text-sm font-medium text-gray-500">
                         Duration
                       </p>
-                      {format(new Date(slot?.startTime), 'hh:mm a')} - {format(new Date(slot?.endTime  ), 'hh:mm a')}
+                     {time?.startTime} - {time?.endTime}
                     </div>
                     <div>
+
                       {/* <p className="text-sm font-medium text-gray-500">Appointment Type</p>
                       <Badge variant="outline">{mockBookingData.appointment.type}</Badge> */}
+                      
                     </div>
                   </div>
                 </div>
@@ -245,7 +277,7 @@ if (!data || !doctor || !slot) {
                   <Button
                     className="w-full"
                     size="lg"
-                    onClick={handlePayment}
+                    onClick={handleAppoinment}
                     disabled={isProcessing}
                   >
                     {isProcessing ? (
@@ -282,6 +314,7 @@ if (!data || !doctor || !slot) {
           </div>
         </div>
       </div>
+      <ToastContainer autoClose={200}/>
       <Footer />
     </div>
   );

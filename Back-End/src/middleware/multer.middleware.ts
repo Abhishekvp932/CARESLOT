@@ -1,4 +1,4 @@
-import { cloudUpload } from "../config/multer.config";
+import { cloudUpload } from '../config/multer.config';
 
 export const multiFileUpload = cloudUpload.fields([
   { name: 'educationCertificate', maxCount: 1 },

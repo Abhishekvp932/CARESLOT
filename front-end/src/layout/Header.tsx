@@ -2,22 +2,23 @@ import '../css/Header.css'
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch,useSelector} from 'react-redux';
 import type { RootState } from '@/app/store';
-import { logOut, setCredentials } from '@/features/auth/authSlice';
+import { logOut} from '@/features/auth/authSlice';
 import { useLogOutMutation } from '@/features/auth/authApi';
 
 const Header = () => {
   const dispatch = useDispatch()
   const  user = useSelector((state: RootState) => state.auth.user)
-
-  console.log('usersss is ', user)
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [LogOut] = useLogOutMutation()
+
+  
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  
   const handleLogin = () => {
     navigate('/login');
   };
@@ -27,7 +28,6 @@ const Header = () => {
       await LogOut().unwrap()
       dispatch(logOut())
       navigate('/login')
-      setCredentials(null);
       setIsDropdownOpen(false);
     } catch (error) {
       console.log(error)

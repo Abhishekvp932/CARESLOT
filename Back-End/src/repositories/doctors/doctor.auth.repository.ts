@@ -1,12 +1,12 @@
-import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interface";
-import Doctor from "../../models/implementation/doctor.model";
-import { Profile } from "passport-google-oauth20";
-import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
-import { BaseRepository } from "../base.repository";
-import { IDoctor } from "../../models/interface/IDoctor";
-import { DoctorPagination } from "../../types/doctorFiltering";
-import { QualificationInput } from "../../interface/doctor/doctor.service.interface";
-import { doctorDetails } from "../../types/doctorDetails";
+import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import Doctor from '../../models/implementation/doctor.model';
+import { Profile } from 'passport-google-oauth20';
+import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
+import { BaseRepository } from '../base.repository';
+import { IDoctor } from '../../models/interface/IDoctor';
+import { DoctorPagination } from '../../types/doctorFiltering';
+import { QualificationInput } from '../../interface/doctor/doctor.service.interface';
+import { doctorDetails } from '../../types/doctorDetails';
 
 export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDoctorAuthRepository{
      
@@ -60,7 +60,7 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
     );
   }
    async findByIdAndDelete(id: string):Promise<IDoctor | null>{
-     return await this.model.findByIdAndDelete(id)
+     return await this.model.findByIdAndDelete(id);
    }
 
    async findAllWithPagination(skip: number, limit: number, filter?:Partial<IDoctor>): Promise<IDoctor[]> {
@@ -68,10 +68,10 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
       .sort({createdAt:-1})
       .skip(skip)
       .limit(limit)
-      .lean()
+      .lean();
    }
         async countAll(filter?:Partial<IDoctor>):Promise<number> {
-            return this.model.countDocuments(filter)
+            return this.model.countDocuments(filter);
         }
 
 
@@ -98,6 +98,10 @@ async findRelatedDoctors(specialization: string, excludeId: string, limit = 5): 
 
 async findAllWithFilter(filter: any): Promise<IDoctor[]> {
   return Doctor.find(filter);
+}
+
+async findAppoinmentDoctors(filter:any): Promise<IDoctor[]> {
+  return await Doctor.find(filter);
 }
  
 }

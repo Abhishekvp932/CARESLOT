@@ -3,5 +3,6 @@ export interface IBaseUser{
     email:string,
     password:string,
     role:string;
-    isApproved:boolean
+    isApproved:boolean;
+    isBlocked:boolean;
 }

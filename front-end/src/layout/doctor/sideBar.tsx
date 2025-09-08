@@ -1,166 +1,132 @@
-
-
-import type React from "react"
-
-import { Calendar, Clock, Home, Settings, User, Users, FileText, Bell, LogOut, Stethoscope } from "lucide-react"
-import { useSelector } from "react-redux"
+import { useState } from "react"
+import {
+  Calendar,
+  Clock,
+  Home,
+  Settings,
+  User,
+  Users,
+  FileText,
+  Bell,
+  LogOut,
+  Stethoscope,
+  Menu,
+  X,
+} from "lucide-react"
+import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "@/app/store"
-import { Link } from "react-router-dom"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
-} from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/doctor",
-      icon: Home,
-      isActive: true,
-    },
-    {
-      title: "Profile",
-      url: "/doctor/profile",
-      icon: User,
-    },
-    {
-      title: "Schedule & Timing",
-      url: "/doctor/time-shedule",
-      icon: Clock,
-    },
-    {
-      title: "Consultations",
-      url: "#consultations",
-      icon: Stethoscope,
-    },
-    {
-      title: "Patients",
-      url: "#patients",
-      icon: Users,
-    },
-    {
-      title: "Appointments",
-      url: "#appointments",
-      icon: Calendar,
-    },
-    {
-      title: "Medical Records",
-      url: "#records",
-      icon: FileText,
-    },
-    {
-      title: "Notifications",
-      url: "#notifications",
-      icon: Bell,
-      badge: "3",
-    },
-    {
-      title: "Settings",
-      url: "#settings",
-      icon: Settings,
-    },
-  ],
-}
+import { Link, useNavigate } from "react-router-dom"
 import { logOut } from "@/features/docotr/doctorSlice"
-import { useDispatch } from "react-redux"
-import { useNavigate } from "react-router-dom"
-export function DoctorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-     const navigate = useNavigate()
-    const doctor = useSelector((state:RootState)=> state.doctor.doctor);
-    const dispatch = useDispatch()
-    const handleLogout = ()=>{
-        dispatch(logOut());
-        navigate('/login');
-    }
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+// import { useLogOutMutation } from "@/features/auth/authApi"
+const navItems = [
+  { title: "Dashboard", url: "/doctor", icon: Home },
+  { title: "Profile", url: "/doctor/profile", icon: User },
+  { title: "Schedule & Timing", url: "/doctor/time-shedule", icon: Clock },
+  { title: "Consultations", url: "#consultations", icon: Stethoscope },
+  { title: "Patients", url: "#patients", icon: Users },
+  { title: "Appointments", url: "#appointments", icon: Calendar },
+  { title: "Medical Records", url: "#records", icon: FileText },
+  { title: "Notifications", url: "#notifications", icon: Bell, badge: "3" },
+  { title: "Settings", url: "#settings", icon: Settings },
+]
+
+export function DoctorSidebar({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(true)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const doctor = useSelector((state: RootState) => state.doctor.doctor)
+  // const [Logout] = useLogOutMutation();
+  const handleLogout = async() => {
+    dispatch(logOut())
+    navigate("/login")
+  }
+
   return (
-    <Sidebar {...props}>
-      <SidebarHeader className="p-4">
-        <div className="flex items-center gap-3">
+    <div className="flex">
+      {/* Sidebar */}
+      <aside
+        className={`fixed top-0 left-0 h-screen bg-white border-r border-gray-200 flex flex-col shadow-sm transition-all duration-300 z-40
+        ${open ? "w-64" : "w-0 overflow-hidden"}`}
+      >
+        {/* Header */}
+        <div className="flex items-center gap-3 p-4 border-b">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={doctor?.profile_img} alt="Dr. Sarah Johnson" />
-            <AvatarFallback>SJ</AvatarFallback>
+            <AvatarImage src={doctor?.profile_img} alt={doctor?.name} />
+            <AvatarFallback>{doctor?.name?.charAt(0) || "D"}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-sm truncate">{doctor?.name}</p>
-            <p className="text-xs text-muted-foreground truncate">{doctor?.qualifications?.specialization}</p>
+            <p className="text-xs text-gray-500 truncate">
+              {doctor?.qualifications?.specialization}
+            </p>
           </div>
-          <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+          <span className="bg-green-100 text-green-700 px-2 py-0.5 text-xs rounded-full">
             Online
-          </Badge>
+          </span>
         </div>
-      </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {data.navMain.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={item.isActive}>
-                    <Link to={item.url} className="flex items-center gap-2">
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                      {item.badge && (
-                        <Badge variant="secondary" className="ml-auto bg-red-100 text-red-800 text-xs">
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto">
+          <ul className="p-2 space-y-1">
+            {navItems.map((item) => (
+              <li key={item.title}>
+                <Link
+                  to={item.url}
+                  className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition"
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span className="flex-1">{item.title}</span>
+                  {item.badge && (
+                    <span className="ml-auto bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-      <SidebarFooter className="p-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-sidebar-accent cursor-pointer">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={doctor?.profile_img} alt="Dr. Sarah Johnson" />
-                <AvatarFallback></AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate">{doctor?.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{doctor?.email}</p>
-              </div>
+        {/* Footer / Account */}
+        <div className="border-t p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={doctor?.profile_img} alt={doctor?.name} />
+              <AvatarFallback>{doctor?.name?.charAt(0) || "D"}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm truncate">{doctor?.name}</p>
+              <p className="text-xs text-gray-500 truncate">{doctor?.email}</p>
             </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">
-              <LogOut className="mr-2 h-4 w-4"/>
-              <button  onClick={handleLogout}>sign out</button>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div
+        className={`flex-1 transition-all duration-300 ${
+          open ? "ml-64" : "ml-0"
+        }`}
+      >
+        {/* Toggle Button */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition"
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+
+        {/* Page Content */}
+        <main className="p-6">{children}</main>
+      </div>
+    </div>
   )
 }

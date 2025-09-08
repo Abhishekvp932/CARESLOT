@@ -3,13 +3,10 @@ import { api } from "@/app/api";
 export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getResendAppoinments: builder.query({
-      query: () => ({
-        url: `/patient/profile`,
+      query: ({patientId}) => ({
+        url: `/patient/resend-appoinment/${patientId}`,
         method: "GET",
       }),
-      transformResponse: (response) => {
-        return response.doctors;
-      },
     }),
     updateUserData:builder.mutation({
         query:({formData,userId})=>({
@@ -60,8 +57,8 @@ export const userApi = api.injectEndpoints({
         transformResponse: (response) => response.specializations,
     }),
     getDoctorAndSlot:builder.query({
-      query:({doctorId,slotId})=>({
-        url:`/patient/checkout/${doctorId}?slotId=${slotId}`,
+      query:({doctorId})=>({
+        url:`/patient/checkout/${doctorId}`,
         method:"GET"
       }),
     }),
@@ -76,8 +73,15 @@ export const userApi = api.injectEndpoints({
         url:`/patient/change-password/${userId}`,
         method:"PATCH",
         body:formData
-      })
-    })
+      }),
+    }),
+    bookAppoinment:builder.mutation({
+      query:({data})=>({
+        url:`/appoinment/appoinment`,
+        method:"POST",
+        body:data,
+      }),
+    }),
   }),
 });
 
@@ -92,6 +96,7 @@ export const {
    useGetAllSpecializationsQuery ,
    useGetDoctorAndSlotQuery,
    useGetRelatedDoctorQuery,
-   useChangePasswordMutation
+   useChangePasswordMutation,
+   useBookAppoinmentMutation
   }
    = userApi;

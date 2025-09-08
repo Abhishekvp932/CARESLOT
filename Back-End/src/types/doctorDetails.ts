@@ -1,11 +1,13 @@
 
 export interface doctorDetails {
   _id: string;
-  email: string;
+  email?: string;
   isBlocked?: boolean;
   isApproved?: boolean;
   name: string;
+  phone?:string;
   DOB?: Date;
+  isRejected?:boolean;
   gender?: 'male' | 'female' | 'others';
   role?: 'doctors';
   updatedAt?: Date;

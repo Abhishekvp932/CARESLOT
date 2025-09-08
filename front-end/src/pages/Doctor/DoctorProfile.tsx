@@ -12,36 +12,37 @@ import {
   User,
   Stethoscope,
   GraduationCap,
-  MapPin,
-  Phone,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import { DoctorSidebar } from "@/layout/doctor/sideBar";
-import {
-  SidebarProvider,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
+
+
 import { useGetDoctorDataQuery } from "@/features/docotr/doctorApi";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 import { toast, ToastContainer } from "react-toastify";
 import { useEditDoctorDataMutation } from "@/features/docotr/doctorApi";
 import isEqual from "lodash.isequal";
+import { useReApplyDataMutation } from "@/features/docotr/doctorApi";
 export default function DoctorProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const doctorId = useSelector((state: RootState) => state.doctor.doctor);
   const { data: doctor, refetch } = useGetDoctorDataQuery(doctorId?._id);
   const [formData, setFormData] = useState<typeof doctor | null>(null);
   const [originalData, setOriginalData] = useState<typeof doctor | null>(null);
-  const [editDoctorData] = useEditDoctorDataMutation();
+  const [editDoctorData,{isLoading:editLoading}] = useEditDoctorDataMutation();
+  const [reApplyData,{isLoading}] = useReApplyDataMutation();
   useEffect(() => {
     if (doctor) {
       setFormData(doctor);
       setOriginalData(doctor);
     }
   }, [doctor]);
+
+
+  useEffect(()=>{
+    refetch()
+  },[refetch]);
 
   const handleSave = async () => {
     if (!formData) return;
@@ -106,18 +107,97 @@ export default function DoctorProfile() {
     }
   };
 
+
+
+  const handleReApply = async () => {
+    if (!formData) return;
+
+    if (isEqual(formData, originalData)) {
+      toast.info("No change detected");
+      setIsEditing(false);
+      return;
+    }
+
+    try {
+      const fd = new FormData();
+
+      fd.append("name", formData.name || "");
+      fd.append("email", formData.email || "");
+      fd.append("phone", formData.phone || "");
+      fd.append("DOB", formData.DOB || "");
+      fd.append("gender", formData.gender || "");
+
+      if (formData.profile_img instanceof File) {
+        fd.append("profileImage", formData.profile_img);
+      }
+
+      const q = formData.qualifications || {};
+      fd.append("degree", q.degree || "");
+      fd.append("institution", q.institution || "");
+      fd.append("specialization", q.specialization || "");
+      fd.append("medicalSchool", q.medicalSchool || "");
+      fd.append("experince", q.experince?.toString() || "");
+      fd.append("graduationYear", q.graduationYear?.toString() || "");
+      fd.append("fees", q.fees?.toString() || "");
+      fd.append("license", q.lisence || "");
+      fd.append("about", q.about || "");
+
+      if (
+        q.educationCertificate instanceof File ||
+        (typeof q.educationCertificate === "string" &&
+          q.educationCertificate.trim())
+      ) {
+        fd.append("educationCertificate", q.educationCertificate);
+      }
+
+      if (
+        q.experienceCertificate instanceof File ||
+        (typeof q.experienceCertificate === "string" &&
+          q.experienceCertificate.trim())
+      ) {
+        fd.append("experienceCertificate", q.experienceCertificate);
+      }
+       
+
+      const res = await reApplyData({
+        doctorId: formData?._id,
+        formData: fd,
+      }).unwrap();
+      toast.success(res?.msg);
+      setIsEditing(false);
+      refetch();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.data?.msg || "Doctor update error");
+    }
+  };
+
+
   return (
-    <SidebarProvider>
-      <SidebarInset>
+    
         <div className="min-h-screen bg-gray-50 p-6 flex">
           <DoctorSidebar />
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-6">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
               <h1 className="text-2xl font-bold">My Profile</h1>
 
-              <Button
+
+              {!doctor?.isRejected ? (
+                <div>
+                  {editLoading ? (
+                    <div>
+                      <div className="animate-pulse space-y-3 p-2">
+                      
+                      <div className="h-10 w-32 bg-gray-300 rounded-xl"></div>
+
+                      
+                      <div className="h-4 w-20 bg-gray-300 rounded"></div>
+                      <div className="h-4 w-16 bg-gray-300 rounded"></div>
+                    </div>
+                    </div>
+                  ):(
+                    <div>
+               <Button
                 onClick={isEditing ? handleSave : () => setIsEditing(true)}
               >
                 {isEditing ? (
@@ -132,6 +212,50 @@ export default function DoctorProfile() {
                   </>
                 )}
               </Button>
+             </div>
+                  )}
+                </div>
+
+
+
+
+              ):(
+                <div>
+                  {isLoading ?(
+                    <div>
+                      <div className="animate-pulse space-y-3 p-2">
+                      
+                      <div className="h-10 w-32 bg-gray-300 rounded-xl"></div>
+
+                      
+                      <div className="h-4 w-20 bg-gray-300 rounded"></div>
+                      <div className="h-4 w-16 bg-gray-300 rounded"></div>
+                    </div>
+                    </div>
+                ):(
+                  <div>
+                     <Button
+                onClick={isEditing ? handleReApply : () => setIsEditing(true)}
+              >
+                {isEditing ? (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Submit
+                  </>
+                ) : (
+                  <>
+                    <Edit className="h-4 w-4 mr-2" />
+                     Re Applay
+                  </>
+                )}
+              </Button>
+                  </div>
+                )}
+                </div>
+
+
+
+              )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -185,13 +309,13 @@ export default function DoctorProfile() {
                   <p className="text-gray-600 mb-3">
                     {doctor?.qualifications?.specialization}
                   </p>
-                  {doctor?.isBlocked ? (
+                  {!doctor?.isApproved ? (
                     <Badge className="bg-green-100 text-red-800">
-                      Not Active
+                      Not verified
                     </Badge>
                   ) : (
                     <Badge className="bg-green-100 text-green-800">
-                      Active
+                      verified
                     </Badge>
                   )}
                 </CardContent>
@@ -563,7 +687,5 @@ export default function DoctorProfile() {
           </div>
           <ToastContainer autoClose={200} />
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }

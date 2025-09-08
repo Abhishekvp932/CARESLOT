@@ -76,9 +76,9 @@ const DoctorsList = () => {
     }
   };
 
-  const handleEdit = (doctorId: string) => {
-    navigate(`/admin/doctor-edit/${doctorId}`);
-  };
+  // const handleEdit = (doctorId: string) => {
+  //   navigate(`/admin/doctor-edit/${doctorId}`);
+  // };
 
   const handleDoctorDetailsPage = (doctorId: string) => {
     navigate(`/admin/doctor-details/${doctorId}`);
@@ -94,13 +94,13 @@ const DoctorsList = () => {
       accessor: "actions",
       render: (item) => (
         <div className="flex gap-2">
-          <button
+          {/* <button
             className="bg-black text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
             onClick={() => handleEdit(item?._id)}
           >
             <Edit size={16} />
             Edit
-          </button>
+          </button> */}
 
           <button
             onClick={() => {
@@ -229,9 +229,17 @@ const DoctorsList = () => {
                     }
                   />
                 </div>
+                 <button
+            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+            onClick={() => handleDoctorDetailsPage(user?._id)}
+          >
+            <Eye size={16} />
+            view
+          </button>
               </div>
             )}
           />
+         
         </div>
       )}
       <ToastContainer autoClose={2000} />

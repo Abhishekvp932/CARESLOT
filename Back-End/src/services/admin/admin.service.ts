@@ -1,22 +1,24 @@
-import { IAdminService } from "../../interface/admin/admin.serivce.interface";
+import { IAdminService } from '../../interface/admin/admin.serivce.interface';
 
-import { SERVICE_MESSAGE } from "../../utils/ServiceMessage";
-import { hashPassword } from "../../utils/hash";
-import { IDoctor } from "../../models/interface/IDoctor";
+import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
+import { hashPassword } from '../../utils/hash';
+import { IDoctor } from '../../models/interface/IDoctor';
 
-import { IDoctor as Idoctors } from "../../interface/doctor/doctor.service.interface";
-import { IpatientRepository } from "../../interface/auth/auth.interface";
-import { IAdminRepository } from "../../interface/admin/admin.repo.interface";
-import { IDoctorAuthRepository } from "../../interface/doctor/doctor.auth.interface";
-import { IPatient } from "../../models/interface/IPatient";
-import { DoctorListResult } from "../../types/doctorListResult";
-import { UserListResult } from "../../types/userListsResult";
-import { UserDTO } from "../../types/user.dto";
-import { DoctorDTO } from "../../types/doctor.dto";
-import { FilterQuery } from "mongoose";
-import { doctorDetails } from "../../types/doctorDetails";
-import logger from "../../utils/logger";
-import { MailService } from "../mail.service";
+import { IDoctor as Idoctors } from '../../interface/doctor/doctor.service.interface';
+import { IpatientRepository } from '../../interface/auth/auth.interface';
+import { IAdminRepository } from '../../interface/admin/admin.repo.interface';
+import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import { IPatient } from '../../models/interface/IPatient';
+import { DoctorListResult } from '../../types/doctorListResult';
+import { UserListResult } from '../../types/userListsResult';
+import { UserDTO } from '../../types/user.dto';
+import { DoctorDTO } from '../../types/doctor.dto';
+import { FilterQuery } from 'mongoose';
+import { doctorDetails } from '../../types/doctorDetails';
+import logger from '../../utils/logger';
+import { MailService } from '../mail.service';
+import redisClient from '../../config/redisClient';
+import { verifyAccessToken } from '../../utils/jwt';
 export class AdminService implements IAdminService {
   constructor(
     private _patientRepo: IpatientRepository,
@@ -34,8 +36,8 @@ export class AdminService implements IAdminService {
     const searchFilter: FilterQuery<IPatient> = search
       ? {
           $or: [
-            { name: { $regex: search, $options: "i" } },
-            { email: { $regex: search, $options: "i" } },
+            { name: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
           ],
         }
       : {};
@@ -44,9 +46,9 @@ export class AdminService implements IAdminService {
       this._patientRepo.findAllWithPagination(skip, limit, searchFilter),
       this._patientRepo.countAll(searchFilter),
     ]);
-    logger.info("search filter result", searchFilter);
+    logger.info('search filter result', searchFilter);
     if (!userList) {
-      throw new Error("No user found");
+      throw new Error('No user found');
     }
     const users: UserDTO[] = userList.map((user) => ({
       _id: String(user?._id),
@@ -76,12 +78,12 @@ export class AdminService implements IAdminService {
       ? {
           isApproved: true,
           $or: [
-            { name: { $regex: search, $options: "i" } },
-            { email: { $regex: search, $options: "i" } },
+            { name: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
             {
-              "qualifications.specialization": {
+              'qualifications.specialization': {
                 $regex: search,
-                $options: "i",
+                $options: 'i',
               },
             },
           ],
@@ -92,7 +94,7 @@ export class AdminService implements IAdminService {
       this._doctorAuthRepo.countAll(searchFilter),
     ]);
     if (!doctorsList) {
-      throw new Error("No doctors found");
+      throw new Error('No doctors found');
     }
     const doctors: DoctorDTO[] = doctorsList.map((doctor) => ({
       _id: String(doctor?._id),
@@ -147,33 +149,85 @@ export class AdminService implements IAdminService {
       isBlocked,
     });
 
+     const iter = await redisClient.keys('refresh:*');
+
     if (updatedUser?.isBlocked) {
-      return { msg: "User blocked successfully" };
+     
+     for await (const refreshKey of iter) {
+  const key = refreshKey.toString(); 
+
+
+
+  const sessionId = key.replace('refresh:', '');
+  const accessKey = `access:${sessionId}`;
+
+
+
+  const accessToken = await redisClient.get(accessKey);
+  const refreshToken = await redisClient.get(key);
+  
+
+
+
+  if (!accessToken || !refreshToken) continue;
+
+  const decode = verifyAccessToken(accessToken);
+ 
+  // const updateUserID= updatedUser._id as string;
+
+  if (decode?.id === userId) {
+ 
+
+    await redisClient.set(`bl_access:${accessToken}`,'true',{EX:15 * 60});
+    await redisClient.set(`bl_refresh:${refreshToken}`,'true',{EX:7 * 24 * 60 * 60});
+    
+
+
+    await redisClient.del(accessKey);
+    await redisClient.del(key);
+  }
+}
+      return { msg: 'User blocked successfully' };
     } else {
-      return { msg: "user unblocked successfully" };
+      return { msg: 'user unblocked successfully' };
     }
   }
+
+
+
+
 
   async blockAndUnblockDoctors(
     doctorId: string,
     isBlocked: boolean,
     reason: string
   ): Promise<{ msg: string }> {
+
+
     const doctor = await this._doctorAuthRepo.findById(doctorId);
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
+         
     await this._doctorAuthRepo.updateById(doctorId, {
       isBlocked,
       blockReason: reason,
     });
 
-    const mailService = new MailService();
-
+   const response = {
+      msg: isBlocked
+        ? 'Doctor blocked successfully'
+        : 'Doctor unblocked successfully',
+    };
+    
+    (async ()=>{
+      try {
+         const mailService = new MailService();
+   const iter = await redisClient.keys('refresh:*');
     if (isBlocked) {
       await mailService.sendMail(
         doctor?.email,
-        "Account Suspension Notification",
+        'Account Suspension Notification',
         `Dear Dr.${doctor?.name},
 
      We regret to inform you that your account on Our Platform has been temporarily blocked by the administrator.
@@ -187,14 +241,45 @@ export class AdminService implements IAdminService {
    Best regards,
     The CARESLOT Team`
       );
+         
+
+for await (const refreshKey of iter){
+  const key = refreshKey.toString();
+   
+
+  const sessionId = key.replace('refresh:','');
+  const accessKey = `access:${sessionId}`;
+
+
+  const accessToken = await redisClient.get(accessKey);
+  const refreshToken = await redisClient.get(key);
+
+
+
+  if(!accessToken || !refreshToken) continue;
+
+  const decode = verifyAccessToken(accessToken);
+
+
+  if(decode?.id === doctorId){
+    
+    await redisClient.set(`bl_access:${accessToken}`,'true',{EX:15 * 60});
+    await redisClient.set(`bl_refresh:${refreshToken}`,'true',{EX:7 * 24 * 60 * 60});
+  
+    await redisClient.del(accessKey);
+    await redisClient.del(key);
+  }
+
+}
+
     } else {
       await this._doctorAuthRepo.updateById(doctorId, {
-        $unset: { blockReason: "" },
+        $unset: { blockReason: '' },
         $set: { isBlocked: false },
       });
       await mailService.sendMail(
         doctor?.email,
-        "Account Reinstatement Notification",
+        'Account Reinstatement Notification',
         `Dear Dr.${doctor?.name},
 
     We are pleased to inform you that your account on Our Platform has been reinstated and you can now access all services as usual.
@@ -208,12 +293,15 @@ export class AdminService implements IAdminService {
       );
     }
 
-    return {
-      msg: isBlocked
-        ? "Doctor blocked successfully"
-        : "Doctor unblocked successfully",
-    };
+      } catch (error:any) {
+        throw new Error(error);
+      }
+    });
+
+    return response;
   }
+
+
 
   async findUnApprovedDoctors(
     page: number,
@@ -226,12 +314,12 @@ export class AdminService implements IAdminService {
       ? {
           isApproved: false,
           $or: [
-            { name: { $regex: search, $options: "i" } },
-            { email: { $regex: search, $options: "i" } },
+            { name: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
             {
-              "qualifications.specialization": {
+              'qualifications.specialization': {
                 $regex: search,
-                $options: "i",
+                $options: 'i',
               },
             },
           ],
@@ -243,7 +331,7 @@ export class AdminService implements IAdminService {
       this._doctorAuthRepo.countAll(searchFilter),
     ]);
     if (!doctorsList) {
-      throw new Error("No doctors found");
+      throw new Error('No doctors found');
     }
     const doctors: DoctorDTO[] = doctorsList.map((doctor) => ({
       _id: String(doctor?._id),
@@ -255,6 +343,7 @@ export class AdminService implements IAdminService {
       gender: doctor?.gender,
       role: doctor?.role,
       updatedAt: doctor?.updatedAt,
+      isRejected:doctor?.isRejected,
       createdAt: doctor?.createdAt,
       profile_img: doctor?.profile_img,
       qualifications: {
@@ -282,20 +371,28 @@ export class AdminService implements IAdminService {
     }));
     return { doctors, total };
   }
+
+
+
+
   async doctorApprove(doctorId: string): Promise<{ msg: string }> {
     const doctors = await this._doctorAuthRepo.findById(doctorId);
     if (!doctors) {
-      throw new Error("No dotors found");
+      throw new Error('No dotors found');
     }
     await this._doctorAuthRepo.updateById(doctorId, {
-      $unset: { rejectionReason: "" },
-      $set: { isApproved: true },
+      $unset: { rejectionReason: '' },
+      $set: { isApproved: true,isRejected:false },
     });
+   const response = {msg: 'Doctors Approved successfully'};
 
+   (async ()=>{
+    try {
+      
     const mailService = new MailService();
     await mailService.sendMail(
       doctors?.email,
-      "Applicarion Approved - CARESLOT",
+      'Applicarion Approved - CARESLOT',
       `Dear Dr.${doctors?.name},
 
 We are delighted to inform you that your application to join CARESLOT has been approved!
@@ -310,7 +407,11 @@ Best regards,
 The CARESLOT Team`
     );
 
-    return { msg: "Doctors Approved successfully" };
+    } catch (error:any) {
+      throw new Error(error);
+    }
+   });
+    return response;
   }
 
   async doctorReject(
@@ -325,11 +426,16 @@ The CARESLOT Team`
     await this._doctorAuthRepo.updateById(doctorId, {
       rejectionReason: reason,
       isApproved: false,
+      isRejected:true,
     });
-    const mailService = new MailService();
+    const response = {msg:'Doctor reject successfully'};
+     
+    (async ()=>{
+      try {
+        const mailService = new MailService();
     await mailService.sendMail(
       doctor.email,
-      "Application Rejected – CARESLOT",
+      'Application Rejected – CARESLOT',
       `
     Dear Dr. ${doctor.name},
 
@@ -344,8 +450,16 @@ The CARESLOT Team`
     The CARESLOT Team
   `
     );
-    return { msg: "Doctor reject successfully" };
+      } catch (error:any) {
+        throw new Error(error);
+      }
+    });
+
+    return response;
   }
+
+
+
   async getVerificationDoctorDetails(doctorId: string): Promise<doctorDetails> {
     const doctor = await this._doctorAuthRepo.findById(doctorId);
 
@@ -360,7 +474,8 @@ The CARESLOT Team`
       name: doctor.name,
       DOB: doctor.DOB ? new Date(doctor.DOB) : undefined,
       gender: doctor.gender ?? undefined,
-      role: doctor.role ?? "doctors",
+      isRejected:doctor.isRejected ?? undefined,
+      role: doctor.role ?? 'doctors',
       updatedAt: doctor.updatedAt ? new Date(doctor.updatedAt) : undefined,
       createdAt: doctor.createdAt ? new Date(doctor.createdAt) : undefined,
       profile_img: doctor.profile_img ?? undefined,
@@ -408,7 +523,7 @@ The CARESLOT Team`
       profile_img: profileImage,
     });
 
-    return { msg: "user profile updated successfully" };
+    return { msg: 'user profile updated successfully' };
   }
 
   async editDoctorData(doctorId: string): Promise<doctorDetails> {
@@ -424,7 +539,7 @@ The CARESLOT Team`
       name: doctor.name,
       DOB: doctor.DOB ? new Date(doctor.DOB) : undefined,
       gender: doctor.gender ?? undefined,
-      role: doctor.role ?? "doctors",
+      role: doctor.role ?? 'doctors',
       updatedAt: doctor.updatedAt ? new Date(doctor.updatedAt) : undefined,
       createdAt: doctor.createdAt ? new Date(doctor.createdAt) : undefined,
       profile_img: doctor.profile_img ?? undefined,
@@ -467,7 +582,7 @@ The CARESLOT Team`
 
     await this._doctorAuthRepo.updateById(doctorId, data);
 
-    return { msg: "doctor profile updated successfully" };
+    return { msg: 'doctor profile updated successfully' };
   }
   async addUser(
     name: string,
@@ -487,7 +602,7 @@ The CARESLOT Team`
       name,
       email,
       phone,
-      gender: gender as "male" | "female" | "others",
+      gender: gender as 'male' | 'female' | 'others',
       DOB: dob,
       profile_img: profileImage,
       password: hashedPassword,
@@ -495,18 +610,18 @@ The CARESLOT Team`
     };
     await this._patientRepo.create(newUser);
 
-    return { msg: "User add successfully" };
+    return { msg: 'User add successfully' };
   }
   async addDoctor(data: unknown): Promise<{ msg: string }> {
     const doctorData = data as Partial<IDoctor>;
     if (!doctorData.email) {
-      throw new Error("Email is required");
+      throw new Error('Email is required');
     }
     const doctor = await this._doctorAuthRepo.findByEmail(doctorData.email);
     if (doctor) {
       throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
     }
     await this._doctorAuthRepo.create(doctorData);
-    return { msg: "New doctor added successfully" };
+    return { msg: 'New doctor added successfully' };
   }
 }

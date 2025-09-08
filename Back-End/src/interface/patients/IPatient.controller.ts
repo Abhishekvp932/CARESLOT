@@ -1,5 +1,4 @@
-
-import { Request,Response } from "express"
+import { Request,Response } from 'express';
 export interface IPatientController {
     getResendAppoinment(req:Request,res:Response):Promise<void>
     updateUserProfile(req:Request,res:Response):Promise<void>
