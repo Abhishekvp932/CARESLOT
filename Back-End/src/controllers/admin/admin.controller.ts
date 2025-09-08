@@ -12,7 +12,7 @@ export class AdminController implements IAdminController {
   async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
       const page = parseInt(req.query.page as string);
-     
+      
       const limit = parseInt(req.query.limit as string);
       const search = req.query.search as string;
       const result = await this._adminService.findAllUsers(page,limit,search);
@@ -22,6 +22,7 @@ export class AdminController implements IAdminController {
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
     }
   }
+  
   async getAllDoctors(req: Request, res: Response): Promise<void> {
     try {
      const page = parseInt(req.query.page as string);

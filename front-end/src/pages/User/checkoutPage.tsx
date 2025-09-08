@@ -75,6 +75,7 @@ const handleAppoinment = async ()=>{
         amount:total
       } 
         const res = await bookAppoinment({data:payload}).unwrap();
+        console.log('response from appoinment',res);
        toast.success(res?.msg);
     
      } catch (error) {  

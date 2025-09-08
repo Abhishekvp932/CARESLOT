@@ -7,26 +7,36 @@ import Header from '../../layout/Header'
 // import Doctor_two from '../../assets/d2.jpg'
 // import Doctor_three from '../../assets/d3.jpg'
 // import Doctor_four from '../../assets/WhatsApp Image 2025-07-15 at 18.34.52_bd39d868.jpg'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch} from 'react-redux'
 import { setCredentials } from '@/features/auth/authSlice'
 import type { AppDispatch } from '@/app/store'
 // import type { RootState } from '@/app/store'
-// import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 // import axios from 'axios'
 import { useGetAllApprovedDoctorsQuery } from '@/features/users/userApi'
 import { useGetMeQuery } from '@/features/auth/authApi'
+import Chatbot from '@/components/common/user/Chatboat';
+
+
+
+
 
 const Index = () => {
  const {data:doctors = []} = useGetAllApprovedDoctorsQuery();
   const {data,refetch}  = useGetMeQuery();
-
+   const [open,setOpen] = useState(false);
   const user = data?.user 
   console.log('rtk user data',user);
   const dispatch = useDispatch<AppDispatch>();
   
   // const admin = useSelector((state:RootState)=> state.admin.admin);
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
+
+
+  const hanldeDoctorList = ()=>{
+    navigate('/doctors');
+  }
     
   
 // interface userInfo{
@@ -61,7 +71,7 @@ useEffect(() => {
             <h1>Your Health, Our Priority</h1>
             <p>Book appointments with top-rated doctors and specialists. Quality healthcare is just a click away.</p>
             <div className="hero-buttons">
-              <button className="btn-primary">Book Appointment</button>
+              <button className="btn-primary" onClick={hanldeDoctorList}>Book Appointment</button>
               <button className="btn-secondary">Find Doctors</button>
             </div>
           </div>
@@ -125,12 +135,26 @@ useEffect(() => {
             ))}
           </div>
         </div>
+
       </section>
       <section className="cta">
         <div className="cta-container">
           <h2>Ready to Start Your Health Journey?</h2>
           <p>Join thousands of patients who trust HealthCare+ for their medical needs</p>
           <button className="btn-cta">Get Started Today</button>
+        </div>
+        <div>
+          {open && (
+             <div className="fixed bottom-20 right-6">
+          <Chatbot />
+        </div>
+          )}
+          <button
+        onClick={() => setOpen(!open)}
+        className="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition"
+      >
+        💬
+      </button>
         </div>
       </section>
    <Footer/>

@@ -44,8 +44,8 @@ export const userApi = api.injectEndpoints({
       }),
     }),
     getSlots:builder.query({
-      query:(doctorId)=>({
-        url:`/patient/slots/${doctorId}`
+      query:({doctorId,date})=>({
+        url:`/patient/slots/${doctorId}?date=${date}`
       }),
       transformResponse: (response) => response.slots,
     }),
@@ -82,6 +82,37 @@ export const userApi = api.injectEndpoints({
         body:data,
       }),
     }),
+    chatBoat:builder.mutation({
+      query:(message)=>({
+        url:'/chatbot/chat',
+        method:"POST",
+        body:{message},
+      }),
+    }),
+    getUserNotification:builder.query({
+      query:({patientId})=>({
+        url:`/notification/notification/${patientId}`,
+        method:'GET',
+      }),
+    }),
+    notificationUnread:builder.mutation({
+      query:(notificationId)=>({
+        url:`/notification/notification/${notificationId}`,
+        method:"PATCH",
+      }),
+    }),
+    notificationDelete:builder.mutation({
+      query:(notificationId)=>({
+        url:`/notification/notification/${notificationId}`,
+        method:'DELETE',
+      }),
+    }),
+    deleteAllNotification:builder.mutation({
+      query:(userId)=>({
+        url:`/notification/notification/${userId}`,
+        method:"DELETE",
+      }),
+    }),
   }),
 });
 
@@ -97,6 +128,12 @@ export const {
    useGetDoctorAndSlotQuery,
    useGetRelatedDoctorQuery,
    useChangePasswordMutation,
-   useBookAppoinmentMutation
+   useBookAppoinmentMutation,
+   useChatBoatMutation,
+   useGetUserNotificationQuery,
+   useNotificationUnreadMutation,
+   useNotificationDeleteMutation,
+   useDeleteAllNotificationMutation,
+
   }
    = userApi;

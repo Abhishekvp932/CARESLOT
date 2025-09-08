@@ -7,11 +7,19 @@ import { IpatientRepository } from '../../interface/auth/auth.interface';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import { Types } from 'mongoose';
 import { MailService } from '../mail.service';
+import { INotificationRepository } from '../../interface/notification/INotificationRepository';
+import { io } from '../../server';
+import { INotification } from '../../models/interface/INotification';
 export class AppoinmentService implements IAppoinmentService {
-    constructor(private _appoinmentRepo : IAppoinmentRepository,private _patientRepo:IpatientRepository,private _doctorRepo:IDoctorAuthRepository){}
+    constructor(
+        private _appoinmentRepo : IAppoinmentRepository,
+        private _patientRepo:IpatientRepository,
+        private _doctorRepo:IDoctorAuthRepository,
+        private _notificationRepository:INotificationRepository,
+    ){}
   
 
-    async createAppoinment(data: appoinemntData): Promise<{ msg: string; }> {
+    async createAppoinment(data: appoinemntData): Promise<{ msg: string,patientNotification:INotification  | null,doctorNotification:INotification | null}> {
         const doctorId = data?.doctorId;
         const patientId = data?.patientId;
         if(!doctorId || !patientId){
@@ -41,7 +49,23 @@ export class AppoinmentService implements IAppoinmentService {
         };
        
         await this._appoinmentRepo.create(newAppoinment);
-       const response = {msg:'Appoinmnet booked success'};
+         const notif = await this._notificationRepository.create({
+            userId:patientId,
+            title:'Appoinment Booked',
+            message:`Your appointment with doctor ${doctor?.name} is booked at ${data?.date} - ${data?.startTime}.`,
+             isRead: false,
+         });
+         io.to(patientId).emit('notification',notif);
+        
+         const drNotif = await this._notificationRepository.create({
+            userId:doctorId,
+            title:'New Appoinment Booked',
+            message : `New Appoinment Booked Patient Name ${patient?.name} time slot ${data?.date} ${data?.startTime}`,
+            isRead:false,
+         });
+         io.to(doctorId).emit('notification',drNotif);
+
+         const response = {msg:'Appoinmnet booked success',patientNotification:notif,doctorNotification:drNotif};
 
         (async ()=>{
 

@@ -88,7 +88,9 @@ export class PatientController implements IPatientController {
   async getDoctorSlots(req: Request, res: Response): Promise<void> {
     try {
       const {id:doctorId} = req.params;
-      const result = await this._patientService.getDoctorSlots(doctorId);
+      const date = req.query.date as string;
+      logger.debug('date is comming',date);
+      const result = await this._patientService.getDoctorSlots(doctorId,date);  
     
       res.status(HttpStatus.OK).json({slots:result});
     } catch (error) {

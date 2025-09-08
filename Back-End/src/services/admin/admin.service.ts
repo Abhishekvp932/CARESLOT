@@ -222,7 +222,7 @@ export class AdminService implements IAdminService {
     
     (async ()=>{
       try {
-         const mailService = new MailService();
+        const mailService = new MailService();
    const iter = await redisClient.keys('refresh:*');
     if (isBlocked) {
       await mailService.sendMail(
@@ -536,6 +536,7 @@ The CARESLOT Team`
       email: doctor.email,
       isBlocked: doctor.isBlocked ?? undefined,
       isApproved: doctor.isApproved ?? undefined,
+      phone:doctor?.phone,
       name: doctor.name,
       DOB: doctor.DOB ? new Date(doctor.DOB) : undefined,
       gender: doctor.gender ?? undefined,

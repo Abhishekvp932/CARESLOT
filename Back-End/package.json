@@ -6,8 +6,8 @@
     "dev": "nodemon --watch src --exec ts-node src/server.ts",
     "build": "tsc",
     "start": "nodemon dist/server.js",
-     "lint": "eslint .",
-  "lint:fix": "eslint . --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +32,7 @@
     "passport-google-oauth20": "^2.0.0",
     "path": "^0.12.7",
     "redis": "^5.8.0",
+    "socket.io": "^4.8.1",
     "uuid": "^11.1.0",
     "winston": "^3.17.0"
   },
@@ -49,6 +50,7 @@
     "@types/node": "^24.0.10",
     "@types/nodemailer": "^6.4.17",
     "@types/passport-google-oauth20": "^2.0.16",
+    "@types/socket.io": "^3.0.2",
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@typescript-eslint/parser": "^8.39.1",

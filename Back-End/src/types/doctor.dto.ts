@@ -1,6 +1,6 @@
 
 export interface DoctorDTO {
-  _id: string;
+  _id?: string;
   email?: string;
   isBlocked?: boolean;
   isApproved?: boolean;

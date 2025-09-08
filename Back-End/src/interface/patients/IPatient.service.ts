@@ -14,7 +14,7 @@ export interface IPatientService {
     getUserData(userId:string):Promise<{msg:string,users:UserDTO}>
     getAllDoctors(page:number,limit:number,search:string,specialty:string):Promise<DoctorListResult>
     getDoctorDetails(doctorId:string):Promise<doctorDetails>
-    getDoctorSlots(doctorId:string):Promise<ISlots[]>
+    getDoctorSlots(doctorId:string,targetDate:string):Promise<ISlots[]>
     getAllspecializations():Promise<SpecializationsList>
     getDoctorAndSlot(doctorId:string):Promise<{doctor:doctorDetails | null}>
     getRelatedDoctor(doctorId:string,specialization:string):Promise<doctorDetails[]>
