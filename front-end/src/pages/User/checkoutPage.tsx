@@ -8,81 +8,112 @@ import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import {
-  Calendar,
-  Clock,
-  CreditCard,
-  Wallet,
-  CheckCircle,
-} from "lucide-react";
+import { Calendar, Clock, CreditCard, Wallet, CheckCircle } from "lucide-react";
 import Header from "@/layout/Header";
 import Footer from "@/layout/Footer";
-import { useLocation} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useGetDoctorAndSlotQuery } from "@/features/users/userApi";
-   import { format} from 'date-fns';
-import {toast,ToastContainer} from 'react-toastify'
-   import { useSelector} from "react-redux";
+//  import { format} from 'date-fns';
+import { useCreateOrderMutation } from "@/features/payment/paymentSlice";
+import { useVerifyOrderMutation } from "@/features/payment/paymentSlice";
+import { toast, ToastContainer } from "react-toastify";
+import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
-  import { useBookAppoinmentMutation } from "@/features/users/userApi";
+// import { useBookAppoinmentMutation } from "@/features/users/userApi";
 export default function CheckoutPage() {
-  const [paymentMethod, setPaymentMethod] = useState("card");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const patient = useSelector((state:RootState)=> state.auth.user);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [createOrder] = useCreateOrderMutation();
+  const [verifyOrder] = useVerifyOrderMutation();
+  // const [isProcessing, setIsProcessing] = useState(false);
+  const patient = useSelector((state: RootState) => state.auth.user);
 
+  // const [bookAppoinment] = useBookAppoinmentMutation();
 
-  const [bookAppoinment] = useBookAppoinmentMutation();
+  const navigate = useNavigate();
 
-// const navigate = useNavigate();
-
-  const handlePayment = async () => {
-    setIsProcessing(true);
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsProcessing(false);
-    // Handle successful payment
-  };
+  // const handlePayment = async () => {
+  //   setIsProcessing(true);
+  //   // Simulate payment processing
+  //   await new Promise((resolve) => setTimeout(resolve, 2000));
+  //   setIsProcessing(false);
+  //   // Handle successful payment
+  // };
 
   const location = useLocation();
   const doctorId = location?.state?.doctorId ?? null;
 
- const time = location?.state?.slotTime ?? null
- 
-  const { data = {} } = useGetDoctorAndSlotQuery({doctorId});
-console.log('data',data)
+  const time = location?.state?.slotTime ?? null;
+
+  const { data = {} } = useGetDoctorAndSlotQuery({ doctorId });
+  console.log("data", data);
   const doctor = data?.doctor ?? null;
 
- const total =  Number(data?.doctor?.qualifications?.fees) + 100
+  const total = Number(data?.doctor?.qualifications?.fees) + 100;
 
   if (!doctorId) {
-  return <div className="p-8">No doctor selected.</div>;
-}
+    return <div className="p-8">No doctor selected.</div>;
+  }
 
-if (!data || !doctor) {
-  return <div className="p-8">Loading appointment details...</div>;
-}
+  if (!data || !doctor) {
+    return <div className="p-8">Loading appointment details...</div>;
+  }
 
+  const loadRazorpay = async () => {
+    // const payload = { // doctorId: doctorId,
+    // // date: time?.date,
+    //  // startTime: time?.startTime,
+    //  // endTime: time?.endTime,
+    //  // patientId: patient?._id,
+    //  // amount: total,
+    //  // };
 
+    if(!paymentMethod){
+      toast.error('Please Selecte a Payment Method')
+      return;
+    }
+     
+    if(paymentMethod === 'Online Payment'){
+      const order = await createOrder(total).unwrap();
+    console.log("response from orders", order);
 
-const handleAppoinment = async ()=>{
-     try {
-      const payload = {
-        doctorId:doctorId,
-        date:time?.date,
-        startTime:time?.startTime,
-        endTime:time?.endTime,
-        patientId:patient?._id,
-        amount:total
-      } 
-        const res = await bookAppoinment({data:payload}).unwrap();
-        console.log('response from appoinment',res);
-       toast.success(res?.msg);
-    
-     } catch (error) {  
-      toast.error(error?.res?.msg);
-      console.log(error);
-     }
-}
+    const options = {
+      key: "rzp_test_REa5si7xp8OFdl",
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.id,
+      name: "CareSlot",
+      description: "Doctor Appointment Payment",
+      handler: async function (response: any) {
+        // This will run ONLY if checkout is opened & payment success
+        const verify = await verifyOrder({
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+          doctorId: doctorId,
+          patientId: patient?._id,
+          date: time?.date,
+          startTime: time?.startTime,
+          endTime: time?.endTime,
+          amount: total,
+          paymentMethod:paymentMethod,
+        }).unwrap();
+        console.log("verify order", verify);
+        navigate('/');
+      },
+      prefill: {
+        name: patient?.name,
+        email: patient?.email,
+        contact: patient?.phone,
+      },
+      theme: { color: "#3399cc" },
+    };
+
+    const rzp = new (window as any).Razorpay(options);
+    rzp.open();
+    }
+
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -139,13 +170,17 @@ const handleAppoinment = async ()=>{
                   <div className="space-y-3">
                     <div>
                       <p className="text-sm font-medium text-gray-500">Date</p>
-                      <p className="text-gray-900">{time?.date} - {time?.dayOfWeek}</p>
+                      <p className="text-gray-900">
+                        {time?.date} - {time?.dayOfWeek}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
                         Time Slot
                       </p>
-                      <p className="text-gray-900">{time?.startTime} - {time?.endTime}</p>
+                      <p className="text-gray-900">
+                        {time?.startTime} - {time?.endTime}
+                      </p>
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -153,13 +188,11 @@ const handleAppoinment = async ()=>{
                       <p className="text-sm font-medium text-gray-500">
                         Duration
                       </p>
-                     {time?.startTime} - {time?.endTime}
+                      {time?.startTime} - {time?.endTime}
                     </div>
                     <div>
-
                       {/* <p className="text-sm font-medium text-gray-500">Appointment Type</p>
                       <Badge variant="outline">{mockBookingData.appointment.type}</Badge> */}
-                      
                     </div>
                   </div>
                 </div>
@@ -181,16 +214,16 @@ const handleAppoinment = async ()=>{
                 >
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3 p-4 border rounded-lg">
-                      <RadioGroupItem value="card" id="card" />
+                      <RadioGroupItem value="Online Payment" id="Online Payment" />
                       <Label
                         htmlFor="card"
                         className="flex items-center gap-3 cursor-pointer flex-1"
                       >
                         <CreditCard className="h-5 w-5" />
                         <div>
-                          <p className="font-medium">Credit/Debit Card</p>
+                          <p className="font-medium">Digital Wallet</p>
                           <p className="text-sm text-gray-500">
-                            Visa, Mastercard, American Express
+                            PayPal, Apple Pay, Google Pay
                           </p>
                         </div>
                       </Label>
@@ -204,17 +237,14 @@ const handleAppoinment = async ()=>{
                       >
                         <Wallet className="h-5 w-5" />
                         <div>
-                          <p className="font-medium">Digital Wallet</p>
-                          <p className="text-sm text-gray-500">
-                            PayPal, Apple Pay, Google Pay
-                          </p>
+                          <p className="font-medium">Wallet Payment</p>
                         </div>
                       </Label>
                     </div>
                   </div>
                 </RadioGroup>
 
-                {paymentMethod === "card" && (
+                {/* {paymentMethod === "card" && (
                   <div className="mt-6 space-y-4">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
@@ -240,7 +270,7 @@ const handleAppoinment = async ()=>{
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
               </CardContent>
             </Card>
           </div>
@@ -263,7 +293,6 @@ const handleAppoinment = async ()=>{
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tax</span>
-                    
                   </div>
                 </div>
 
@@ -275,23 +304,9 @@ const handleAppoinment = async ()=>{
                 </div>
 
                 <div className="pt-4 space-y-3">
-                  <Button
-                    className="w-full"
-                    size="lg"
-                    onClick={handleAppoinment}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Processing...
-                      </div>
-                    ) : (
-                      <>
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Confirm & Pay ₹ {total}
-                      </>
-                    )}
+                  <Button className="w-full" size="lg" onClick={loadRazorpay}>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Confirm & Pay ₹ {total}
                   </Button>
 
                   <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
@@ -315,7 +330,7 @@ const handleAppoinment = async ()=>{
           </div>
         </div>
       </div>
-      <ToastContainer autoClose={200}/>
+      <ToastContainer autoClose={200} />
       <Footer />
     </div>
   );

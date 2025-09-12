@@ -6,4 +6,5 @@ export default interface  IDoctorController {
     getDoctorProfile(req:Request,res:Response):Promise<void>;
     editDoctorProfile(req:Request,res:Response):Promise<void>;
     reApplyDoctor(req:Request,res:Response):Promise<void>;
+    getAllAppoinments(req:Request,res:Response):Promise<void>;
 };

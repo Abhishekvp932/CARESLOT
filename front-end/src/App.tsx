@@ -29,7 +29,10 @@ import UserDoctorDetailsPage from "./pages/User/DoctorDetailsPage"
 import CheckoutPage from "./pages/User/checkoutPage"
 // import PublicOnlyRoute from "./protectRoute/PublicOnlyRoute"
 import ChangePasswordPage from "./pages/User/changePasswordPage"
-
+import AppointmentsListDoctor from "./pages/Doctor/Appoinments"
+import { SessionCard } from "./pages/User/session"
+import { AppointmentHistory } from "./pages/Admin/Appoinment"
+import UserWallet from "./pages/User/Wallet"
 function App() {
 
   return (
@@ -48,6 +51,8 @@ function App() {
         <Route path = "/doctor-details/:doctorId" element = {<UserDoctorDetailsPage/>}/>
         <Route path = "/checkout-page" element = {<CheckoutPage/>}/>
         <Route path="/change-password/:userId" element={<ChangePasswordPage/>}/>
+        <Route path = '/sessions' element={<UserLayout><SessionCard/></UserLayout>}/>
+        <Route path='/wallet' element = {<UserLayout><UserWallet/></UserLayout>}/>
         <Route path="/kyc-submit" element ={
           <KYC/>
           }
@@ -62,12 +67,14 @@ function App() {
            <Route path="/admin/doctor-edit/:doctorId" element = {<DoctorEditPage/>}/>
            <Route path="/admin/add-doctors" element = {<AddDoctorPage/>}/>
            <Route path="/admin/doctor-details/:doctorId" element = {<DoctorDetailsPage/>}/>
+           <Route path="/admin/appoinments" element = {<AdminLayout><AppointmentHistory/></AdminLayout>}/>
 
            {/* doctor */}
 
            <Route path="/doctor" element = {<DoctorDashboard/>}/>
            <Route path="/doctor/profile" element = {<DoctorProfile/>}/>
            <Route path="/doctor/time-shedule" element = {<TimeShedule/>}/>
+           <Route path="/doctor/appoinment" element = {<AppointmentsListDoctor/>}/>
      </Routes>
    </div>
   )

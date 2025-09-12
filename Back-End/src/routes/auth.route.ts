@@ -4,32 +4,54 @@ import { AuthService } from '../services/auth/auth.service';
 import { PatientRepository } from '../repositories/auth/auth.repository';
 import passport from 'passport';
 import { profile } from 'console';
-import { generateAccessToken,generateRefreshToken } from '../utils/jwt';
+import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
 import { DoctorAuthRepository } from '../repositories/doctors/doctor.auth.repository';
 import { AdminRepository } from '../repositories/admin/admin.repository';
 import redisClient from '../config/redisClient';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { AuthMiddleware } from '../middleware/auth.middleware';
+import { Routers } from '../utils/Routers';
 
 const PatientRepo = new PatientRepository();
 const doctorRepo = new DoctorAuthRepository();
 const adminRepo = new AdminRepository();
-const authService = new AuthService(PatientRepo,doctorRepo,adminRepo);
-const authMiddleware = new AuthMiddleware(PatientRepo,doctorRepo);
+const authService = new AuthService(PatientRepo, doctorRepo, adminRepo);
+const authMiddleware = new AuthMiddleware(PatientRepo, doctorRepo);
 const authController = new AuthController(authService);
-const router  = express.Router();
-
+const router = express.Router();
 
 // Patient routes
-router.post('/login',authController.login.bind(authController));
-router.post('/signup',authController.signup.bind(authController));
-router.post('/verify-otp',authController.verifyOTP.bind(authController));
-router.get('/google',passport.authenticate('google',{scope:['profile','email']}));
-router.get('/me',authMiddleware.isBlockedOrNot,authMiddleware.protect,authMiddleware.protect,authController.getMe.bind(authController));
-
+// login
+router.post(
+  Routers.authRouters.login,
+  authController.login.bind(authController)
+);
+// signup
+router.post(
+  Routers.authRouters.signup,
+  authController.signup.bind(authController)
+);
+// verifyOtp
+router.post(
+  Routers.authRouters.verifyOtp,
+  authController.verifyOTP.bind(authController)
+);
+// google
+router.get(
+  Routers.authRouters.google,
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+// me
+router.get(
+  Routers.authRouters.me,
+  authMiddleware.isBlockedOrNot,
+  authMiddleware.protect,
+  authMiddleware.protect,
+  authController.getMe.bind(authController)
+);
 
 router.get(
-  '/google/callback',
+  Routers.authRouters.googleCallback,
   passport.authenticate('google', { session: false }),
   async (req, res) => {
     const user = req.user as any;
@@ -47,24 +69,49 @@ router.get(
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
     const sessionId = uuidv4();
-    await redisClient.set(`access:${sessionId}`,accessToken,{EX:15*60});
-    await redisClient.set(`refresh:${sessionId}`,refreshToken,{EX:7*24*60*60});       
-    res.cookie('sessionId',sessionId,{
-                httpOnly:true,
-                secure:false,
-                sameSite:'lax',
-                maxAge:7*24*60*60*1000
-            });
+    await redisClient.set(`access:${sessionId}`, accessToken, { EX: 15 * 60 });
+    await redisClient.set(`refresh:${sessionId}`, refreshToken, {
+      EX: 7 * 24 * 60 * 60,
+    });
+    res.cookie('sessionId', sessionId, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.redirect('http://localhost:2025/');
   }
 );
 
-router.post('/logout',authController.logOut.bind(authController));
-router.post('/resend-otp',authController.resendOTP.bind(authController));
-router.post('/send-otp',authController.verfiyEmail.bind(authController));
-router.post('/verify-email',authController.verifyEmailOTP.bind(authController));
-router.post('/forgot-password',authController.forgotPassword.bind(authController));
-router.post('/refresh-token',authController.refreshToken.bind(authController));
+router.post(
+  Routers.authRouters.logout,
+  authController.logOut.bind(authController)
+);
+// resend-otp
+router.post(
+  Routers.authRouters.resendOtp,
+  authController.resendOTP.bind(authController)
+);
+// send-otp
+router.post(
+  Routers.authRouters.sendOtp,
+  authController.verfiyEmail.bind(authController)
+);
+// verify-email
+router.post(
+  Routers.authRouters.verifyEmail,
+  authController.verifyEmailOTP.bind(authController)
+);
+// forgot-password
+router.post(
+  Routers.authRouters.forgotPassword,
+  authController.forgotPassword.bind(authController)
+);
+// refresh-token
+router.post(
+  Routers.authRouters.refreshToken,
+  authController.refreshToken.bind(authController)
+);
 
 export default router;

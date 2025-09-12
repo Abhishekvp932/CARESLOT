@@ -91,6 +91,12 @@ export const adminApi = api.injectEndpoints({
             body:formData
         }),
       }),
+      getAllAdminAppoinments:builder.query({
+        query:()=>({
+            url:'/admin/appoinments',
+            method:'GET'
+        }),
+      }),
     }),
 });
 
@@ -108,4 +114,5 @@ export const {
     useEditDoctorDataMutation,
     useAddUserMutation,
     useAddDoctorMutation,
+    useGetAllAdminAppoinmentsQuery
 } = adminApi

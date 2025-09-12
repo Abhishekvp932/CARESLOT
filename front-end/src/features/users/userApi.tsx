@@ -113,6 +113,18 @@ export const userApi = api.injectEndpoints({
         method:"DELETE",
       }),
     }),
+    getAllPatientAppoinments:builder.query({
+      query:(patientId)=>({
+        url:`/patient/appoinment/${patientId}`,
+        method:'GET',
+      }),
+    }),
+    cancelAppoinment:builder.mutation({
+      query:(appoinmentId)=>({
+        url:`/appoinment/appoinment/${appoinmentId}`,
+        method:'PATCH',
+      }),
+    })
   }),
 });
 
@@ -134,6 +146,8 @@ export const {
    useNotificationUnreadMutation,
    useNotificationDeleteMutation,
    useDeleteAllNotificationMutation,
+   useGetAllPatientAppoinmentsQuery,
+   useCancelAppoinmentMutation
 
   }
    = userApi;

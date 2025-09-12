@@ -61,7 +61,7 @@ export const Sidebar = () => {
           <li className="flex items-center space-x-3 hover:bg-gray-700 p-3 rounded transition">
             <CalendarDays size={20} />
             <span className="text-sm font-medium">
-              <Link to="#admin/appoinments">Appoinments</Link>
+              <Link to="/admin/appoinments">Appoinments</Link>
             </span>
           </li>
 

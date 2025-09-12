@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { AvatarImage, Avatar } from "@/components/ui/avatar";
 import { useGetUserDataQuery } from "@/features/users/userApi";
+import { useNavigate } from "react-router-dom";
 import type { RootState } from "@/app/store";
 import {
   User,
@@ -12,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Menu,
+  Wallet
 } from "lucide-react";
 
 const SideBar = () => {
@@ -19,13 +21,14 @@ const SideBar = () => {
   const [activeItem, setActiveItem] = React.useState("Profile");
   const user = useSelector((state: RootState) => state.auth.user);
   const { data: users } = useGetUserDataQuery(user?._id);
-
+const navigate = useNavigate();
   const menuItems = [
-    { name: "Profile", icon: User, color: "text-green-500" },
-    { name: "Sessions", icon: BarChart3, color: "text-purple-500" },
-    { name: "Documents", icon: FileText, color: "text-orange-500" },
-    { name: "Messages", icon: Mail, color: "text-red-500" },
-    { name: "Settings", icon: Settings, color: "text-gray-500" },
+    { name: "Profile", icon: User, color: "text-green-500",path:'/profile'},
+    { name: "Sessions", icon: BarChart3, color: "text-purple-500",path:'/sessions'},
+    {name:"Wallet",icon:Wallet,color:'text-blue-500',path:'/wallet'},
+    { name: "Documents", icon: FileText, color: "text-orange-500" ,path:'/document'},
+    { name: "Messages", icon: Mail, color: "text-red-500",path:'/messages'},
+    { name: "Settings", icon: Settings, color: "text-gray-500",path:'sesstings'},
   ];
 
   return (
@@ -58,7 +61,7 @@ const SideBar = () => {
               return (
                 <li key={item.name}>
                   <button
-                    onClick={() => setActiveItem(item.name)}
+                    onClick={() => {setActiveItem(item.name); navigate(item.path);}}
                     className={`w-full flex items-center px-3 py-2.5 text-left rounded-lg transition-all duration-200 group relative ${
                       isActive
                         ? "bg-blue-50 text-blue-700"

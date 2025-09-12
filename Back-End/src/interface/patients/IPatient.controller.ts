@@ -10,4 +10,5 @@ export interface IPatientController {
     getDoctorAndSlot(req:Request,res:Response):Promise<void>
     getRelatedDoctor(req:Request,res:Response):Promise<void>
     changePassword(req:Request,res:Response):Promise<void>
+    getAllAppoinments(req:Request,res:Response):Promise<void>;
 }

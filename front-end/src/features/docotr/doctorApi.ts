@@ -80,6 +80,12 @@ export const doctorApi = api.injectEndpoints({
         body:formData,
       }),
     }),
+    getAllAppoinments:builder.query({
+      query:(doctorId)=>({
+        url:`/doctor/appoinments/${doctorId}`,
+        method:'GET'
+      }),
+    }),
   }),
 });
 
@@ -91,4 +97,5 @@ export const {
   useGetDoctorSlotsQuery,
   useDeleteSlotMutation,
   useReApplyDataMutation,
+  useGetAllAppoinmentsQuery,
 } = doctorApi;

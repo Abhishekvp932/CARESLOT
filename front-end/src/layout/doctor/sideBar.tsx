@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 import {
   Calendar,
   Clock,
@@ -12,36 +12,37 @@ import {
   Stethoscope,
   Menu,
   X,
-} from "lucide-react"
-import { useSelector, useDispatch } from "react-redux"
-import type { RootState } from "@/app/store"
-import { Link, useNavigate } from "react-router-dom"
-import { logOut } from "@/features/docotr/doctorSlice"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import LiveNotifications from "@/components/common/LiveNotification"
+} from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "@/app/store";
+import { Link, useNavigate } from "react-router-dom";
+import { logOut } from "@/features/docotr/doctorSlice";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import LiveNotifications from "@/components/common/LiveNotification";
+import NotificationComponent from "@/components/common/notifications";
 // import { useLogOutMutation } from "@/features/auth/authApi"
 const navItems = [
   { title: "Dashboard", url: "/doctor", icon: Home },
   { title: "Profile", url: "/doctor/profile", icon: User },
   { title: "Schedule & Timing", url: "/doctor/time-shedule", icon: Clock },
-  { title: "Consultations", url: "#consultations", icon: Stethoscope },
   { title: "Patients", url: "#patients", icon: Users },
-  { title: "Appointments", url: "#appointments", icon: Calendar },
+  { title: "Appointments", url: "/doctor/appoinment", icon: Calendar },
   { title: "Medical Records", url: "#records", icon: FileText },
-  { title: "Notifications", url: "#notifications", icon: Bell, badge: "3" },
+  // { title: "Notifications", url: "#notifications", icon: Bell, badge: "3" },
   { title: "Settings", url: "#settings", icon: Settings },
-]
+];
 
 export function DoctorSidebar({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(true)
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const doctor = useSelector((state: RootState) => state.doctor.doctor)
+  const [open, setOpen] = useState(true);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const doctor = useSelector((state: RootState) => state.doctor.doctor);
+  const [showNotification, setNotification] = useState(false);
   // const [Logout] = useLogOutMutation();
-  const handleLogout = async() => {
-    dispatch(logOut())
-    navigate("/login")
-  }
+  const handleLogout = async () => {
+    dispatch(logOut());
+    navigate("/login");
+  };
 
   return (
     <div className="flex">
@@ -65,7 +66,23 @@ export function DoctorSidebar({ children }: { children: React.ReactNode }) {
           <span className="bg-green-100 text-green-700 px-2 py-0.5 text-xs rounded-full">
             Online
           </span>
-          <LiveNotifications userId={doctor?._id} />
+{/* Notification Button */}
+<button
+  className="relative p-2 rounded-full hover:bg-gray-100"
+  onClick={() => setNotification(!showNotification)}
+>
+  <span className="text-xl">🔔</span>
+</button>
+
+<LiveNotifications userId={doctor?._id} />
+
+{/* Notification Dropdown in top-right */}
+{showNotification && (
+  <div className="fixed top-14 right-6 w-96 bg-white border rounded-lg shadow-lg z-50">
+    <NotificationComponent patientId={doctor?._id} />
+  </div>
+)}
+
         </div>
 
         {/* Navigation */}
@@ -79,11 +96,11 @@ export function DoctorSidebar({ children }: { children: React.ReactNode }) {
                 >
                   <item.icon className="h-4 w-4" />
                   <span className="flex-1">{item.title}</span>
-                  {item.badge && (
+                  {/* {item.badge && (
                     <span className="ml-auto bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">
                       {item.badge}
                     </span>
-                  )}
+                  )} */}
                 </Link>
               </li>
             ))}
@@ -130,5 +147,5 @@ export function DoctorSidebar({ children }: { children: React.ReactNode }) {
         <main className="p-6">{children}</main>
       </div>
     </div>
-  )
+  );
 }

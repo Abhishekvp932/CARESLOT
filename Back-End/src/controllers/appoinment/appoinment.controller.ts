@@ -4,20 +4,30 @@ import { IAppoinmentService } from '../../interface/appoinment/IAppoinmentServic
 import { HttpStatus } from '../../utils/httpStatus';
 import logger from '../../utils/logger';
 
-
 export class AppoinmentController implements IAppoinmentController {
-         constructor (private _appoinmentService : IAppoinmentService){} 
+  constructor(private _appoinmentService: IAppoinmentService) {}
 
-         async createAppoinment(req: Request, res: Response): Promise<void> {
-            logger.info('appoinment data is comming .....');
-             try {
-                const data = req.body;
-              const result = await this._appoinmentService.createAppoinment(data);    
-              res.status(HttpStatus.CREATED).json(result);             
-             } catch (error) {
-                const err = error as Error;
-                console.error(err.message);
-                res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
-             }
-         }
-} 
+  async createAppoinment(req: Request, res: Response): Promise<void> {
+    logger.info('appoinment data is comming .....');
+    try {
+      const data = req.body;
+      const result = await this._appoinmentService.createAppoinment(data);
+      res.status(HttpStatus.CREATED).json(result);
+    } catch (error) {
+      const err = error as Error;
+      console.error(err.message);
+      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+    }
+  }
+  async cancelAppoinment(req: Request, res: Response): Promise<void> {
+    try {
+      logger.info('cancel appoinment request is comming to back end');
+      const {appoinmentId} = req.params;
+      const result = await this._appoinmentService.cancelAppoinment(appoinmentId);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      const err = error as Error;
+      res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
+    }
+  }
+}

@@ -49,7 +49,7 @@ export class AuthMiddleware {
         return;
       }
     };
-  
+      
       public isBlockedOrNot = async(req:Request,res:Response,next:NextFunction)=>{
         try {
           

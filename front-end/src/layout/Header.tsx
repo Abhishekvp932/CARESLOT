@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 import { logOut } from "@/features/auth/authSlice";
 import { useLogOutMutation } from "@/features/auth/authApi";
-import NotificationComponent from "@/components/common/notifications"; // ✅ use your working component
+import NotificationComponent from "@/components/common/notifications"; 
 import LiveNotifications from "@/components/common/LiveNotification";
 const Header = () => {
   const dispatch = useDispatch();
@@ -87,15 +87,14 @@ const Header = () => {
                 <span className="text-xl">🔔</span>
               </button>
 
-              {/* Dropdown Notifications */}
+              
               <LiveNotifications userId={user?._id}/>
               {showNotifications && (
                 <div className="absolute right-0 top-12 w-96 bg-white border rounded-lg shadow-lg z-50">
-                  <NotificationComponent />
+                  <NotificationComponent patientId={user?._id}/>
                 </div>
               )}
 
-              {/* 👤 User Dropdown */}
               <button
                 className="user-profile-btn"
                 onClick={() => {

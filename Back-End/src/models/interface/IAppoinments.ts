@@ -9,4 +9,4 @@ export interface IAppoinment extends Document{
    status?: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'rescheduled';
    createdAt?:Date;
    updatedAt?:Date;
-}
+}  

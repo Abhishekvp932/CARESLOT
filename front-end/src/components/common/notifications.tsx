@@ -14,9 +14,9 @@ interface Notification {
   createdAt: string;
 }
 
-export default function NotificationComponent() {
-  const patient = useSelector((state: RootState) => state.auth.user);
-  const patientId = patient?._id;
+export default function NotificationComponent({patientId}) {
+  // const patient = useSelector((state: RootState) => state.auth.user);
+  // const patientId = patient?._id;
 
   const { data, isLoading, isError,refetch } = useGetUserNotificationQuery({ patientId });
  

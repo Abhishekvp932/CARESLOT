@@ -1,26 +1,24 @@
 import IDoctorController from '../../interface/doctor/doctor.controller';
 import { HttpStatus } from '../../utils/httpStatus';
-import { CONTROLLER_MESSAGE } from '../../utils/controllerMessage';
-import { NextFunction, Request, Response } from 'express';
-import { DoctorService } from '../../services/doctor/doctor.service';
+
+import { Request, Response } from 'express';
 import { QualificationInput } from '../../interface/doctor/doctor.service.interface';
 import { IDoctor } from '../../interface/doctor/doctor.service.interface';
-import { IDoctor as IDoctorData } from '../../models/interface/IDoctor';
+
+import logger from '../../utils/logger';
 export class DoctorController implements IDoctorController {
   constructor(private _doctorService: IDoctor) {}
 
   async uploadDocuments(req: Request, res: Response): Promise<void> {
-     
     try {
       const files = req.files as {
         educationCertificate?: Express.Multer.File[];
         experienceCertificate?: Express.Multer.File[];
         profileImage?: Express.Multer.File[];
       };
-       
+
       const { id: doctorId } = req.params;
 
-       
       const {
         degree,
         institution,
@@ -32,7 +30,7 @@ export class DoctorController implements IDoctorController {
         fees,
         lisence,
       } = req.body;
-       
+
       const input: QualificationInput = {
         degree,
         institution,
@@ -74,8 +72,8 @@ export class DoctorController implements IDoctorController {
 
   async editDoctorProfile(req: Request, res: Response): Promise<void> {
     try {
-      const {id:doctorId} = req.params;
-       
+      const { id: doctorId } = req.params;
+
       const files = req.files as {
         profileImage?: Express.Multer.File[];
         educationCertificate?: Express.Multer.File[];
@@ -91,13 +89,13 @@ export class DoctorController implements IDoctorController {
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
+      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
     }
   }
   async reApplyDoctor(req: Request, res: Response): Promise<void> {
-      try {
-       const {doctorId} = req.params;
-       
+    try {
+      const { doctorId } = req.params;
+
       const files = req.files as {
         profileImage?: Express.Multer.File[];
         educationCertificate?: Express.Multer.File[];
@@ -106,12 +104,24 @@ export class DoctorController implements IDoctorController {
       const result = await this._doctorService.reApplyDoctor(
         doctorId,
         req.body,
-        files,
+        files
       );
       res.status(HttpStatus.OK).json(result);
-      } catch (error) {
-        const err = error as Error;
-        res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
-      }
+    } catch (error) {
+      const err = error as Error;
+      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+    }
+  }
+
+  async getAllAppoinments(req: Request, res: Response): Promise<void> {
+    try {
+      logger.info('appoinment request is comming');
+      const { doctorId } = req.params;
+      const result = await this._doctorService.getAllAppoinments(doctorId);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      const err = error as Error;
+      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+    }
   }
 }

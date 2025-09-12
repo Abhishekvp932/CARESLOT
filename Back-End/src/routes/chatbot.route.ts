@@ -1,6 +1,7 @@
 import { ChatbotController } from '../controllers/chatbot/chatbot.controller';
 import { ChatbotService } from '../services/chatbot/chatbot.service';
 import { DoctorAuthRepository } from '../repositories/doctors/doctor.auth.repository';
+import { Routers } from '../utils/Routers';
 import express from 'express';
 
 const doctorRepository = new DoctorAuthRepository();
@@ -9,7 +10,8 @@ const chatbotController = new ChatbotController(chatbotservice);
 
 const router = express.Router();
 
-router.route('/chat').post(chatbotController.handleChatMessage.bind(chatbotController));
-
+router
+  .route(Routers.chatbotRouters.chat)
+  .post(chatbotController.handleChatMessage.bind(chatbotController));
 
 export default router;

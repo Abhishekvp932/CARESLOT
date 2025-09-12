@@ -1,8 +1,8 @@
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import { generateOTP } from '../../utils/otp';
-import bcrypt from 'bcrypt';
+
 import { hashPassword, comparePassword } from '../../utils/hash';
-import { stringify } from 'querystring';
+
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -20,18 +20,17 @@ import { IpatientRepository } from '../../interface/auth/auth.interface';
 import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
 import { IAdminRepository } from '../../interface/admin/admin.repo.interface';
 import redisClient from '../../config/redisClient';
-import {v4 as uuidv4} from 'uuid';
+
 import { IDoctor } from '../../models/interface/IDoctor';
 import { IAdmin } from '../../models/interface/IAdmin';
 import { LogoutRequest } from '../../types/auth';
 import { UserDTO } from '../../types/user.dto';
 
-
 export class AuthService implements IService {
   constructor(
-    private _patientRepo: IpatientRepository,
-    private _doctorRepo: IDoctorAuthRepository,
-    private _adminRepo: IAdminRepository
+    private _patientRepository: IpatientRepository,
+    private _doctorRepository: IDoctorAuthRepository,
+    private _adminRepository: IAdminRepository
   ) {}
 
   async login(
@@ -44,14 +43,20 @@ export class AuthService implements IService {
     refreshToken: string;
   }> {
     let user: IBaseUser | null = null;
-    user = (await this._patientRepo.findByEmail(email)) as IBaseUser | null;
+    user = (await this._patientRepository.findByEmail(
+      email
+    )) as IBaseUser | null;
     let role = 'patients';
     if (!user) {
-      user = (await this._doctorRepo.findByEmail(email)) as IBaseUser | null;
+      user = (await this._doctorRepository.findByEmail(
+        email
+      )) as IBaseUser | null;
       role = 'doctors';
     }
     if (!user) {
-      user = (await this._adminRepo.findByEmail(email)) as IBaseUser | null;
+      user = (await this._adminRepository.findByEmail(
+        email
+      )) as IBaseUser | null;
       role = 'admin';
     }
 
@@ -63,9 +68,11 @@ export class AuthService implements IService {
       if (password !== user.password) {
         throw new Error(SERVICE_MESSAGE.PASSWORD_NOT_MATCH);
       }
-    } else {    
-
-      if((role === 'doctors' || role === 'patients')&& user?.isBlocked === true){
+    } else {
+      if (
+        (role === 'doctors' || role === 'patients') &&
+        user?.isBlocked === true
+      ) {
         throw new Error('The person blocked by the admin team');
       }
 
@@ -81,8 +88,6 @@ export class AuthService implements IService {
       role: role,
     };
 
-    
-
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
     return {
@@ -92,7 +97,7 @@ export class AuthService implements IService {
       refreshToken,
     };
   }
-  
+
   async signup(
     name: string,
     email: string,
@@ -101,14 +106,14 @@ export class AuthService implements IService {
     dob: Date,
     gender: string,
     role: string
-  ): Promise<{msg:string}> {
+  ): Promise<{ msg: string }> {
     const otp = generateOTP();
 
     const otpExpire = new Date(Date.now() + 60 * 1000);
     const hashedPassword = await hashPassword(password);
 
     if (role === 'patients') {
-      const existingUser = await this._patientRepo.findByEmail(email);
+      const existingUser = await this._patientRepository.findByEmail(email);
       if (existingUser) {
         throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
       }
@@ -126,9 +131,9 @@ export class AuthService implements IService {
         role: 'patients' as 'patients',
       };
 
-      await this._patientRepo.create(newPatient);
+      await this._patientRepository.create(newPatient);
     } else if (role === 'doctors') {
-      const existingDoctor = await this._doctorRepo.findByEmail(email);
+      const existingDoctor = await this._doctorRepository.findByEmail(email);
 
       if (existingDoctor) {
         throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
@@ -147,7 +152,7 @@ export class AuthService implements IService {
         role: 'doctors' as 'doctors',
       };
 
-      await this._doctorRepo.create(newDoctor);
+      await this._doctorRepository.create(newDoctor);
     }
     const mailService = new MailService();
 
@@ -157,15 +162,15 @@ export class AuthService implements IService {
       `Hi ${name},\n\nYour OTP is : ${otp}\nIt will expire in 1 minit.`
     );
 
-    return {msg:'otp send to your email id'};
+    return { msg: 'otp send to your email id' };
   }
   async verifyOtp(email: string, otp: string): Promise<any> {
     let user = null;
-    user = await this._patientRepo.findByEmail(email);
+    user = await this._patientRepository.findByEmail(email);
     let role = 'patients';
 
     if (!user) {
-      user = await this._doctorRepo.findByEmail(email);
+      user = await this._doctorRepository.findByEmail(email);
       role = 'doctors';
     }
     if (!user) {
@@ -173,32 +178,32 @@ export class AuthService implements IService {
     }
 
     if (role === 'patients') {
-      await this._patientRepo.verifyOtp(email, otp);
+      await this._patientRepository.verifyOtp(email, otp);
     } else {
-      await this._doctorRepo.verifyOtp(email, otp);
+      await this._doctorRepository.verifyOtp(email, otp);
     }
 
     return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS, role, user: user._id };
   }
 
-  async findOrCreateGoogleUser(profile: Profile):Promise<IPatient> {
-    const existingUser : IPatient | null = await this._patientRepo.findByGoogleId(profile.id);
+  async findOrCreateGoogleUser(profile: Profile): Promise<IPatient> {
+    const existingUser: IPatient | null =
+      await this._patientRepository.findByGoogleId(profile.id);
     if (existingUser) return existingUser;
-    const newUser = await this._patientRepo.createWithGoogle(profile);
-    if(!newUser){
+    const newUser = await this._patientRepository.createWithGoogle(profile);
+    if (!newUser) {
       throw new Error('Failed to create user with Google profile');
     }
     return newUser;
   }
 
+  async findUserById(id: string): Promise<{ users: UserDTO }> {
+    const usersData = await this._patientRepository.findById(id);
 
-  async findUserById(id: string): Promise<{users:UserDTO}> {
-    const usersData = await this._patientRepo.findById(id);
-   
-    if(!usersData){
+    if (!usersData) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
-      const users = {
+    const users = {
       _id: String(usersData?._id),
       email: usersData?.email,
       name: usersData?.name,
@@ -211,43 +216,40 @@ export class AuthService implements IService {
       updatedAt: usersData?.updatedAt,
       profile_img: usersData?.profile_img,
     };
-    return {users};
+    return { users };
   }
-  
 
-  async logOut({sessionId}:LogoutRequest): Promise<{msg:string}> {
+  async logOut({ sessionId }: LogoutRequest): Promise<{ msg: string }> {
+    if (!sessionId) throw new Error('session id missing');
 
-      if(!sessionId) throw new Error('session id missing');
+    const accessToken = await redisClient.get(`access:${sessionId}`);
+    const refreshToken = await redisClient.get(`refresh:${sessionId}`);
 
-      const accessToken = await redisClient.get(`access:${sessionId}`);
-      const refreshToken = await redisClient.get(`refresh:${sessionId}`);
-      
-      // if(!accessToken || !refreshToken){
-      //   throw new Error('Token not foud');
-      // }
-       const accessExp = 15 * 60 as number;           
-       const refreshExp = 7 * 24 * 60 * 60 as number; 
+    // if(!accessToken || !refreshToken){
+    //   throw new Error('Token not foud');
+    // }
+    const accessExp = (15 * 60) as number;
+    const refreshExp = (7 * 24 * 60 * 60) as number;
 
-    await redisClient.set(`bl_access:${accessToken}`,'true',{EX:accessExp});
-    await redisClient.set(`bl_refresh:${refreshToken}`,'true',{EX:refreshExp});
-    
+    await redisClient.set(`bl_access:${accessToken}`, 'true', {
+      EX: accessExp,
+    });
+    await redisClient.set(`bl_refresh:${refreshToken}`, 'true', {
+      EX: refreshExp,
+    });
 
     await redisClient.del(`access:${sessionId}`);
     await redisClient.del(`refresh:${sessionId}`);
 
-
-    return {msg:'logout success'};
+    return { msg: 'logout success' };
   }
 
-
-  
-
-  async resendOTP(email: string): Promise<{msg:string}> {
+  async resendOTP(email: string): Promise<{ msg: string }> {
     let user = null;
-    user = await this._patientRepo.findByEmail(email);
+    user = await this._patientRepository.findByEmail(email);
     let role = 'patients';
     if (!user) {
-      user = await this._doctorRepo.findByEmail(email);
+      user = await this._doctorRepository.findByEmail(email);
       role = 'doctors';
     }
     if (!user) {
@@ -255,12 +257,12 @@ export class AuthService implements IService {
     }
 
     const newOTp = generateOTP();
-   
+
     const otpExpire = new Date(Date.now() + 60 * 1000);
     if (role === 'patients') {
-      await this._patientRepo.upsertWithOTP(email, newOTp, otpExpire);
+      await this._patientRepository.upsertWithOTP(email, newOTp, otpExpire);
     } else if (role === 'doctors') {
-      await this._doctorRepo.upsertWithOTP(email, newOTp, otpExpire);
+      await this._doctorRepository.upsertWithOTP(email, newOTp, otpExpire);
     }
 
     const mailService = new MailService();
@@ -272,13 +274,13 @@ export class AuthService implements IService {
     return { msg: SERVICE_MESSAGE.RESEND_OTP_SUCCESS };
   }
 
-  async verifiyEmail(email: string): Promise<{msg:string}> {
+  async verifiyEmail(email: string): Promise<{ msg: string }> {
     let user = null;
-    user = await this._patientRepo.findByEmail(email);
+    user = await this._patientRepository.findByEmail(email);
     let role = 'patients';
 
     if (!user) {
-      user = await this._doctorRepo.findByEmail(email);
+      user = await this._doctorRepository.findByEmail(email);
       role = 'doctors';
     }
     if (!user) {
@@ -290,9 +292,9 @@ export class AuthService implements IService {
     const otpExpire = new Date(Date.now() + 60 * 1000);
 
     if (role === 'patients') {
-      await this._patientRepo.upsertWithOTP(email, otp, otpExpire);
+      await this._patientRepository.upsertWithOTP(email, otp, otpExpire);
     } else {
-      await this._doctorRepo.upsertWithOTP(email, otp, otpExpire);
+      await this._doctorRepository.upsertWithOTP(email, otp, otpExpire);
     }
     const mailService = new MailService();
     await mailService.sendMail(
@@ -303,14 +305,14 @@ export class AuthService implements IService {
 
     return { msg: SERVICE_MESSAGE.OTP_SEND_SUCCESS };
   }
-  
-  async verifyEmailOTP(email: string, otp: string): Promise<{msg:string}> {
-    let user: IPatient | IDoctor | IAdmin| null;
 
-    user = await this._patientRepo.findByEmail(email);
+  async verifyEmailOTP(email: string, otp: string): Promise<{ msg: string }> {
+    let user: IPatient | IDoctor | IAdmin | null;
+
+    user = await this._patientRepository.findByEmail(email);
     let role = 'patients';
     if (!user) {
-      user = await this._doctorRepo.findByEmail(email);
+      user = await this._doctorRepository.findByEmail(email);
       role = 'doctors';
     }
 
@@ -319,26 +321,24 @@ export class AuthService implements IService {
     }
 
     if (role === 'patients') {
-      await this._patientRepo.verifyOtp(email, otp);
+      await this._patientRepository.verifyOtp(email, otp);
     } else {
-      await this._doctorRepo.verifyOtp(email, otp);
+      await this._doctorRepository.verifyOtp(email, otp);
     }
 
     return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS };
   }
 
-
-
   async forgotPassword(
     email: string,
     newPassword: string
   ): Promise<{ msg: string }> {
-  let user: IPatient | IDoctor | IAdmin | null;
-     user = await this._patientRepo.findByEmail(email);
+    let user: IPatient | IDoctor | IAdmin | null;
+    user = await this._patientRepository.findByEmail(email);
     let role = 'patients';
 
     if (!user) {
-      user = await this._doctorRepo.findByEmail(email);
+      user = await this._doctorRepository.findByEmail(email);
       role = 'doctors';
     }
 
@@ -349,7 +349,7 @@ export class AuthService implements IService {
     const hashedPassword = await hashPassword(newPassword);
 
     if (role === 'patients') {
-      await this._patientRepo.updatePasswordWithEmail(email, {
+      await this._patientRepository.updatePasswordWithEmail(email, {
         password: hashedPassword,
       });
     } else {
@@ -358,73 +358,75 @@ export class AuthService implements IService {
     return { msg: SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
   }
 
-    async refreshAccessToken(req: any, res: any): Promise<any> {
-      const sessionId = req.cookies?.sessionId;
-    
-      if (!sessionId) {
-        throw new Error('No session id found');
-        return;
-      }
+  async refreshAccessToken(req: any, res: any): Promise<any> {
+    const sessionId = req.cookies?.sessionId;
 
-      const storedRefreshToken = await redisClient.get(`refresh:${sessionId}`);
-    
-
-      if(!storedRefreshToken){
-        throw new Error('NO_REFRESH_TOKEN_OR_EXPIRED');
-      }
-       
-      const decoded = verifyRefreshToken(storedRefreshToken);
-
-      if (!decoded) {
-        res.clearCookie('sessionId');
-        return res.status(403).json({ msg: 'Invalid or expired refresh token' });
-      }
-
-      let user: any;
-      if (decoded.role === 'patients') {
-        user = await this._patientRepo.findById(decoded.id);
-      } else if (decoded.role === 'doctors') {
-        user = await this._doctorRepo.findById(decoded.id);
-      } else if (decoded.role === 'admin') {
-        user = await this._adminRepo.findById(decoded.id);
-      }
-
-      if(!user){
-        throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
-      }
-
-      const payload: TokenPayload = {
-        id: user._id.toString(),
-        email: user.email,
-        role: user.role,
-      };
-
-      const newAccessToken = generateAccessToken(payload);
-      const newRefreshToken = generateRefreshToken(payload);
-      await redisClient.set(`access:${sessionId}`,newAccessToken,{EX:15*60});
-      await redisClient.set(`refresh:${sessionId}`,newRefreshToken,{EX:7*24*60*60});
-
-      return res.status(HttpStatus.OK).json({ msg: 'token refreshed' });
+    if (!sessionId) {
+      throw new Error('No session id found');
+      return;
     }
 
-    async getMe({ sessionId }: LogoutRequest): Promise<Partial<IPatient>> {
-        
-      const token = await redisClient.get(`access:${sessionId}`);
+    const storedRefreshToken = await redisClient.get(`refresh:${sessionId}`);
 
-      if(!token){
-        throw new Error('Token not found');
-      }
-
-      const decode = verifyAccessToken(token);
-       if(!decode){
-        throw new Error('user not found');
-       }
-      const user = await this._patientRepo.findById(decode?.id);
-
-      if(!user){
-        throw new Error('User is missing');
-      }
-
-      return user;
+    if (!storedRefreshToken) {
+      throw new Error('NO_REFRESH_TOKEN_OR_EXPIRED');
     }
+
+    const decoded = verifyRefreshToken(storedRefreshToken);
+
+    if (!decoded) {
+      res.clearCookie('sessionId');
+      return res.status(403).json({ msg: 'Invalid or expired refresh token' });
+    }
+
+    let user: any;
+    if (decoded.role === 'patients') {
+      user = await this._patientRepository.findById(decoded.id);
+    } else if (decoded.role === 'doctors') {
+      user = await this._doctorRepository.findById(decoded.id);
+    } else if (decoded.role === 'admin') {
+      user = await this._adminRepository.findById(decoded.id);
+    }
+
+    if (!user) {
+      throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const payload: TokenPayload = {
+      id: user._id.toString(),
+      email: user.email,
+      role: user.role,
+    };
+
+    const newAccessToken = generateAccessToken(payload);
+    const newRefreshToken = generateRefreshToken(payload);
+    await redisClient.set(`access:${sessionId}`, newAccessToken, {
+      EX: 15 * 60,
+    });
+    await redisClient.set(`refresh:${sessionId}`, newRefreshToken, {
+      EX: 7 * 24 * 60 * 60,
+    });
+
+    return res.status(HttpStatus.OK).json({ msg: 'token refreshed' });
   }
+
+  async getMe({ sessionId }: LogoutRequest): Promise<Partial<IPatient>> {
+    const token = await redisClient.get(`access:${sessionId}`);
+
+    if (!token) {
+      throw new Error('Token not found');
+    }
+
+    const decode = verifyAccessToken(token);
+    if (!decode) {
+      throw new Error('user not found');
+    }
+    const user = await this._patientRepository.findById(decode?.id);
+
+    if (!user) {
+      throw new Error('User is missing');
+    }
+
+    return user;
+  }
+}

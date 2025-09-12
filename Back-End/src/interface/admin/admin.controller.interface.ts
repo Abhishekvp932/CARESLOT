@@ -14,4 +14,5 @@ export default interface IAdminController {
     editDoctorProfile(req:Request,res:Response):Promise<void>;
     addUser(req:Request,res:Response):Promise<void>;
     addDoctor(req:Request,res:Response):Promise<void>;
+    getAllAppoinments(req:Request,res:Response):Promise<void>;
 }

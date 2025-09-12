@@ -19,11 +19,14 @@ import logger from '../../utils/logger';
 import { MailService } from '../mail.service';
 import redisClient from '../../config/redisClient';
 import { verifyAccessToken } from '../../utils/jwt';
+import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
+import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
 export class AdminService implements IAdminService {
   constructor(
-    private _patientRepo: IpatientRepository,
-    private _adminRepo: IAdminRepository,
-    private _doctorAuthRepo: IDoctorAuthRepository
+    private _patientRepository: IpatientRepository,
+    private _adminRepository: IAdminRepository,
+    private _doctorAuthRepository: IDoctorAuthRepository,
+    private _appoinmentRepository: IAppoinmentRepository
   ) {}
 
   async findAllUsers(
@@ -43,8 +46,8 @@ export class AdminService implements IAdminService {
       : {};
 
     const [userList, total] = await Promise.all([
-      this._patientRepo.findAllWithPagination(skip, limit, searchFilter),
-      this._patientRepo.countAll(searchFilter),
+      this._patientRepository.findAllWithPagination(skip, limit, searchFilter),
+      this._patientRepository.countAll(searchFilter),
     ]);
     logger.info('search filter result', searchFilter);
     if (!userList) {
@@ -90,8 +93,12 @@ export class AdminService implements IAdminService {
         }
       : { isApproved: true };
     const [doctorsList, total] = await Promise.all([
-      this._doctorAuthRepo.findAllWithPagination(skip, limit, searchFilter),
-      this._doctorAuthRepo.countAll(searchFilter),
+      this._doctorAuthRepository.findAllWithPagination(
+        skip,
+        limit,
+        searchFilter
+      ),
+      this._doctorAuthRepository.countAll(searchFilter),
     ]);
     if (!doctorsList) {
       throw new Error('No doctors found');
@@ -139,96 +146,82 @@ export class AdminService implements IAdminService {
     userId: string,
     isBlocked: boolean
   ): Promise<{ msg: string }> {
-    const user = await this._patientRepo.findById(userId);
+    const user = await this._patientRepository.findById(userId);
 
     if (!user) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
 
-    const updatedUser = await this._patientRepo.updateById(userId, {
+    const updatedUser = await this._patientRepository.updateById(userId, {
       isBlocked,
     });
 
-     const iter = await redisClient.keys('refresh:*');
+    const iter = await redisClient.keys('refresh:*');
 
     if (updatedUser?.isBlocked) {
-     
-     for await (const refreshKey of iter) {
-  const key = refreshKey.toString(); 
+      for await (const refreshKey of iter) {
+        const key = refreshKey.toString();
 
+        const sessionId = key.replace('refresh:', '');
+        const accessKey = `access:${sessionId}`;
 
+        const accessToken = await redisClient.get(accessKey);
+        const refreshToken = await redisClient.get(key);
 
-  const sessionId = key.replace('refresh:', '');
-  const accessKey = `access:${sessionId}`;
+        if (!accessToken || !refreshToken) continue;
 
+        const decode = verifyAccessToken(accessToken);
 
+        // const updateUserID= updatedUser._id as string;
 
-  const accessToken = await redisClient.get(accessKey);
-  const refreshToken = await redisClient.get(key);
-  
+        if (decode?.id === userId) {
+          await redisClient.set(`bl_access:${accessToken}`, 'true', {
+            EX: 15 * 60,
+          });
+          await redisClient.set(`bl_refresh:${refreshToken}`, 'true', {
+            EX: 7 * 24 * 60 * 60,
+          });
 
-
-
-  if (!accessToken || !refreshToken) continue;
-
-  const decode = verifyAccessToken(accessToken);
- 
-  // const updateUserID= updatedUser._id as string;
-
-  if (decode?.id === userId) {
- 
-
-    await redisClient.set(`bl_access:${accessToken}`,'true',{EX:15 * 60});
-    await redisClient.set(`bl_refresh:${refreshToken}`,'true',{EX:7 * 24 * 60 * 60});
-    
-
-
-    await redisClient.del(accessKey);
-    await redisClient.del(key);
-  }
-}
+          await redisClient.del(accessKey);
+          await redisClient.del(key);
+        }
+      }
       return { msg: 'User blocked successfully' };
     } else {
       return { msg: 'user unblocked successfully' };
     }
   }
 
-
-
-
-
   async blockAndUnblockDoctors(
     doctorId: string,
     isBlocked: boolean,
     reason: string
   ): Promise<{ msg: string }> {
-
-
-    const doctor = await this._doctorAuthRepo.findById(doctorId);
+    const doctor = await this._doctorAuthRepository.findById(doctorId);
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
-         
-    await this._doctorAuthRepo.updateById(doctorId, {
+
+    await this._doctorAuthRepository.updateById(doctorId, {
       isBlocked,
       blockReason: reason,
     });
 
-   const response = {
+    const response = {
       msg: isBlocked
         ? 'Doctor blocked successfully'
         : 'Doctor unblocked successfully',
     };
-    
-    (async ()=>{
+
+    async () => {
       try {
         const mailService = new MailService();
-   const iter = await redisClient.keys('refresh:*');
-    if (isBlocked) {
-      await mailService.sendMail(
-        doctor?.email,
-        'Account Suspension Notification',
-        `Dear Dr.${doctor?.name},
+        const iter = await redisClient.keys('refresh:*');
+        if (isBlocked) {
+          await mailService.sendMail(
+            doctor?.email,
+            'Account Suspension Notification',
+            `Dear Dr.${doctor?.name},
 
      We regret to inform you that your account on Our Platform has been temporarily blocked by the administrator.
 
@@ -240,47 +233,42 @@ export class AdminService implements IAdminService {
 
    Best regards,
     The CARESLOT Team`
-      );
-         
+          );
 
-for await (const refreshKey of iter){
-  const key = refreshKey.toString();
-   
+          for await (const refreshKey of iter) {
+            const key = refreshKey.toString();
 
-  const sessionId = key.replace('refresh:','');
-  const accessKey = `access:${sessionId}`;
+            const sessionId = key.replace('refresh:', '');
+            const accessKey = `access:${sessionId}`;
 
+            const accessToken = await redisClient.get(accessKey);
+            const refreshToken = await redisClient.get(key);
 
-  const accessToken = await redisClient.get(accessKey);
-  const refreshToken = await redisClient.get(key);
+            if (!accessToken || !refreshToken) continue;
 
+            const decode = verifyAccessToken(accessToken);
 
+            if (decode?.id === doctorId) {
+              await redisClient.set(`bl_access:${accessToken}`, 'true', {
+                EX: 15 * 60,
+              });
+              await redisClient.set(`bl_refresh:${refreshToken}`, 'true', {
+                EX: 7 * 24 * 60 * 60,
+              });
 
-  if(!accessToken || !refreshToken) continue;
-
-  const decode = verifyAccessToken(accessToken);
-
-
-  if(decode?.id === doctorId){
-    
-    await redisClient.set(`bl_access:${accessToken}`,'true',{EX:15 * 60});
-    await redisClient.set(`bl_refresh:${refreshToken}`,'true',{EX:7 * 24 * 60 * 60});
-  
-    await redisClient.del(accessKey);
-    await redisClient.del(key);
-  }
-
-}
-
-    } else {
-      await this._doctorAuthRepo.updateById(doctorId, {
-        $unset: { blockReason: '' },
-        $set: { isBlocked: false },
-      });
-      await mailService.sendMail(
-        doctor?.email,
-        'Account Reinstatement Notification',
-        `Dear Dr.${doctor?.name},
+              await redisClient.del(accessKey);
+              await redisClient.del(key);
+            }
+          }
+        } else {
+          await this._doctorAuthRepository.updateById(doctorId, {
+            $unset: { blockReason: '' },
+            $set: { isBlocked: false },
+          });
+          await mailService.sendMail(
+            doctor?.email,
+            'Account Reinstatement Notification',
+            `Dear Dr.${doctor?.name},
 
     We are pleased to inform you that your account on Our Platform has been reinstated and you can now access all services as usual.
 
@@ -290,18 +278,15 @@ for await (const refreshKey of iter){
 
    Best regards,
    The CARESLOT Team`
-      );
-    }
-
-      } catch (error:any) {
+          );
+        }
+      } catch (error: any) {
         throw new Error(error);
       }
-    });
+    };
 
     return response;
   }
-
-
 
   async findUnApprovedDoctors(
     page: number,
@@ -327,8 +312,12 @@ for await (const refreshKey of iter){
       : { isApproved: false };
 
     const [doctorsList, total] = await Promise.all([
-      this._doctorAuthRepo.findAllWithPagination(skip, limit, searchFilter),
-      this._doctorAuthRepo.countAll(searchFilter),
+      this._doctorAuthRepository.findAllWithPagination(
+        skip,
+        limit,
+        searchFilter
+      ),
+      this._doctorAuthRepository.countAll(searchFilter),
     ]);
     if (!doctorsList) {
       throw new Error('No doctors found');
@@ -343,7 +332,7 @@ for await (const refreshKey of iter){
       gender: doctor?.gender,
       role: doctor?.role,
       updatedAt: doctor?.updatedAt,
-      isRejected:doctor?.isRejected,
+      isRejected: doctor?.isRejected,
       createdAt: doctor?.createdAt,
       profile_img: doctor?.profile_img,
       qualifications: {
@@ -372,28 +361,24 @@ for await (const refreshKey of iter){
     return { doctors, total };
   }
 
-
-
-
   async doctorApprove(doctorId: string): Promise<{ msg: string }> {
-    const doctors = await this._doctorAuthRepo.findById(doctorId);
+    const doctors = await this._doctorAuthRepository.findById(doctorId);
     if (!doctors) {
       throw new Error('No dotors found');
     }
-    await this._doctorAuthRepo.updateById(doctorId, {
+    await this._doctorAuthRepository.updateById(doctorId, {
       $unset: { rejectionReason: '' },
-      $set: { isApproved: true,isRejected:false },
+      $set: { isApproved: true, isRejected: false },
     });
-   const response = {msg: 'Doctors Approved successfully'};
+    const response = { msg: 'Doctors Approved successfully' };
 
-   (async ()=>{
-    try {
-      
-    const mailService = new MailService();
-    await mailService.sendMail(
-      doctors?.email,
-      'Applicarion Approved - CARESLOT',
-      `Dear Dr.${doctors?.name},
+    async () => {
+      try {
+        const mailService = new MailService();
+        await mailService.sendMail(
+          doctors?.email,
+          'Applicarion Approved - CARESLOT',
+          `Dear Dr.${doctors?.name},
 
 We are delighted to inform you that your application to join CARESLOT has been approved!
 
@@ -405,12 +390,11 @@ Welcome aboard, and we look forward to supporting you on this journey!
 
 Best regards,  
 The CARESLOT Team`
-    );
-
-    } catch (error:any) {
-      throw new Error(error);
-    }
-   });
+        );
+      } catch (error: any) {
+        throw new Error(error);
+      }
+    };
     return response;
   }
 
@@ -418,25 +402,25 @@ The CARESLOT Team`
     doctorId: string,
     reason: string
   ): Promise<{ msg: string }> {
-    const doctor = await this._doctorAuthRepo.findById(doctorId);
+    const doctor = await this._doctorAuthRepository.findById(doctorId);
 
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
-    await this._doctorAuthRepo.updateById(doctorId, {
+    await this._doctorAuthRepository.updateById(doctorId, {
       rejectionReason: reason,
       isApproved: false,
-      isRejected:true,
+      isRejected: true,
     });
-    const response = {msg:'Doctor reject successfully'};
-     
-    (async ()=>{
+    const response = { msg: 'Doctor reject successfully' };
+
+    async () => {
       try {
         const mailService = new MailService();
-    await mailService.sendMail(
-      doctor.email,
-      'Application Rejected – CARESLOT',
-      `
+        await mailService.sendMail(
+          doctor.email,
+          'Application Rejected – CARESLOT',
+          `
     Dear Dr. ${doctor.name},
 
     We regret to inform you that your application on CARESLOT has been reviewed and unfortunately did not meet our approval criteria at this time.
@@ -449,19 +433,17 @@ The CARESLOT Team`
     Best regards,
     The CARESLOT Team
   `
-    );
-      } catch (error:any) {
+        );
+      } catch (error: any) {
         throw new Error(error);
       }
-    });
+    };
 
     return response;
   }
 
-
-
   async getVerificationDoctorDetails(doctorId: string): Promise<doctorDetails> {
-    const doctor = await this._doctorAuthRepo.findById(doctorId);
+    const doctor = await this._doctorAuthRepository.findById(doctorId);
 
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
@@ -474,7 +456,7 @@ The CARESLOT Team`
       name: doctor.name,
       DOB: doctor.DOB ? new Date(doctor.DOB) : undefined,
       gender: doctor.gender ?? undefined,
-      isRejected:doctor.isRejected ?? undefined,
+      isRejected: doctor.isRejected ?? undefined,
       role: doctor.role ?? 'doctors',
       updatedAt: doctor.updatedAt ? new Date(doctor.updatedAt) : undefined,
       createdAt: doctor.createdAt ? new Date(doctor.createdAt) : undefined,
@@ -513,12 +495,12 @@ The CARESLOT Team`
     userId: string,
     profileImage?: string
   ): Promise<{ msg: string }> {
-    const user = await this._patientRepo.findById(userId);
+    const user = await this._patientRepository.findById(userId);
 
     if (!user) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
-    await this._patientRepo.updateById(userId, {
+    await this._patientRepository.updateById(userId, {
       ...formData,
       profile_img: profileImage,
     });
@@ -527,7 +509,7 @@ The CARESLOT Team`
   }
 
   async editDoctorData(doctorId: string): Promise<doctorDetails> {
-    const doctor = await this._doctorAuthRepo.findById(doctorId);
+    const doctor = await this._doctorAuthRepository.findById(doctorId);
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
@@ -536,7 +518,7 @@ The CARESLOT Team`
       email: doctor.email,
       isBlocked: doctor.isBlocked ?? undefined,
       isApproved: doctor.isApproved ?? undefined,
-      phone:doctor?.phone,
+      phone: doctor?.phone,
       name: doctor.name,
       DOB: doctor.DOB ? new Date(doctor.DOB) : undefined,
       gender: doctor.gender ?? undefined,
@@ -576,12 +558,12 @@ The CARESLOT Team`
     doctorId: string,
     data: Partial<Idoctors>
   ): Promise<{ msg: string }> {
-    const doctor = await this._doctorAuthRepo.findById(doctorId);
+    const doctor = await this._doctorAuthRepository.findById(doctorId);
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
 
-    await this._doctorAuthRepo.updateById(doctorId, data);
+    await this._doctorAuthRepository.updateById(doctorId, data);
 
     return { msg: 'doctor profile updated successfully' };
   }
@@ -594,7 +576,7 @@ The CARESLOT Team`
     password: string,
     profileImage?: string
   ): Promise<{ msg: string }> {
-    const user = await this._patientRepo.findByEmail(email);
+    const user = await this._patientRepository.findByEmail(email);
     if (user) {
       throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
     }
@@ -609,7 +591,7 @@ The CARESLOT Team`
       password: hashedPassword,
       isVerified: true,
     };
-    await this._patientRepo.create(newUser);
+    await this._patientRepository.create(newUser);
 
     return { msg: 'User add successfully' };
   }
@@ -618,11 +600,54 @@ The CARESLOT Team`
     if (!doctorData.email) {
       throw new Error('Email is required');
     }
-    const doctor = await this._doctorAuthRepo.findByEmail(doctorData.email);
+    const doctor = await this._doctorAuthRepository.findByEmail(
+      doctorData.email
+    );
     if (doctor) {
       throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
     }
-    await this._doctorAuthRepo.create(doctorData);
+    await this._doctorAuthRepository.create(doctorData);
     return { msg: 'New doctor added successfully' };
+  }
+  async getAllAppoinments(): Promise<AppoinmentPopulatedDTO[]> {
+    const appoinmentsList = await this._appoinmentRepository.findAll();
+
+    if (!appoinmentsList) {
+      throw new Error('No Appoinments');
+    }
+
+    const appoinments: AppoinmentPopulatedDTO[] = appoinmentsList.map((app) => {
+      return {
+        _id: app._id,
+        doctorId: {
+          _id: app.doctorId._id,
+          name: app.doctorId.name,
+          email: app.doctorId.email,
+          phone: app.doctorId.phone,
+          qualifications: {
+            specialization: app.doctorId.qualifications.specialization,
+          },
+        },
+        amount: app.amount,
+        slot: {
+          date: app.slot.date,
+          startTime: app.slot.startTime,
+          endTime: app.slot.endTime,
+        },
+        patientId: {
+          _id: app.patientId._id,
+          name: app.patientId.name,
+          email: app.patientId.email,
+          phone: app.patientId.phone,
+        },
+        status: app.status,
+        createdAt: app.createdAt,
+        updatedAt: app.updatedAt,
+        transactionId: app.transactionId,
+      };
+    });
+
+    logger.debug(appoinments);
+    return appoinments;
   }
 }

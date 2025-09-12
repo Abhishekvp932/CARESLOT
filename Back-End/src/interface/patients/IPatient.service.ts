@@ -1,6 +1,7 @@
 import { IAppoinment } from '../../models/interface/IAppoinments';
 import { IDoctor } from '../../models/interface/IDoctor';
 import { ISlots } from '../../models/interface/ISlots';
+import { AppointmentDoctorDTO } from '../../types/AppoinmentsAndDoctorDto';
 import { DoctorDTO } from '../../types/doctor.dto';
 import { doctorDetails } from '../../types/doctorDetails';
 import { DoctorListResult } from '../../types/doctorListResult';
@@ -19,4 +20,5 @@ export interface IPatientService {
     getDoctorAndSlot(doctorId:string):Promise<{doctor:doctorDetails | null}>
     getRelatedDoctor(doctorId:string,specialization:string):Promise<doctorDetails[]>
     changePassword(patientId:string,oldPassword:string,newPassword:string):Promise<{msg:string}>
+    getAllAppoinments(patientId:string):Promise<AppointmentDoctorDTO[]>
 }

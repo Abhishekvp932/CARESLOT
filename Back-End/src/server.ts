@@ -21,6 +21,7 @@ import requestLogger from './middleware/requestLogger';
 import redisClient from './config/redisClient';
 import chatbotRoute from './routes/chatbot.route';
 import notificationRoute from './routes/notification.route';
+import paymentRoute from './routes/payment.route';
 (async()=>{
   try {
     await redisClient.connect();
@@ -87,7 +88,7 @@ app.use('/api/slots',slotRoute);
 app.use('/api/appoinment',appoinmentRoute);
 app.use('/api/chatbot',chatbotRoute);
 app.use('/api/notification',notificationRoute);
-
+app.use('/api/payment',paymentRoute);                       
 const PORT = process.env.PORT;
 
 
