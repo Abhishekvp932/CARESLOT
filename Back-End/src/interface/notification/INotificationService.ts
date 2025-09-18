@@ -4,4 +4,5 @@ export interface INotificationService {
    unReadNotification(notificationId:string):Promise<{msg:string}>;
    deleteNotification(notificationId:string):Promise<{msg:string}>;
    deleteAllNotification(userId:string):Promise<{msg:string}>;
+   readAllNotification(userId:string):Promise<{msg:string}>;
 }

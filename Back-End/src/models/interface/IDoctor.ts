@@ -1,4 +1,4 @@
-import mongoose, { Document } from 'mongoose';
+import { Document } from 'mongoose';
 
 export interface IDoctor extends Document {
   phone: string;

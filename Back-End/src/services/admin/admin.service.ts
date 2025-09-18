@@ -280,9 +280,15 @@ export class AdminService implements IAdminService {
    The CARESLOT Team`
           );
         }
-      } catch (error: any) {
-        throw new Error(error);
-      }
+      } catch (error: unknown) {
+  if (error instanceof Error) {
+    logger.error(error.message);
+    throw new Error(error.message);
+  } else {
+    logger.error('Unknown error', error);
+    throw new Error('Something went wrong');
+  }
+}
     };
 
     return response;
@@ -391,9 +397,15 @@ Welcome aboard, and we look forward to supporting you on this journey!
 Best regards,  
 The CARESLOT Team`
         );
-      } catch (error: any) {
-        throw new Error(error);
-      }
+      } catch (error: unknown) {
+  if (error instanceof Error) {
+    logger.error(error.message);
+    throw new Error(error.message);
+  } else {
+    logger.error('Unknown error', error);
+    throw new Error('Something went wrong');
+  }
+}
     };
     return response;
   }
@@ -434,9 +446,15 @@ The CARESLOT Team`
     The CARESLOT Team
   `
         );
-      } catch (error: any) {
-        throw new Error(error);
-      }
+      } catch (error: unknown) {
+  if (error instanceof Error) {
+    logger.error(error.message);
+    throw new Error(error.message);
+  } else {
+    logger.error('Unknown error', error);
+    throw new Error('Something went wrong');
+  }
+}
     };
 
     return response;

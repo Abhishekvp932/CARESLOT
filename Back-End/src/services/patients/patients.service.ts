@@ -19,6 +19,7 @@ import { genarateSlots } from '../../utils/SlotUtlity';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
 import { IAppoinment } from '../../models/interface/IAppoinments';
 import { AppointmentDoctorDTO } from '../../types/AppoinmentsAndDoctorDto';
+import { IPatient } from '../../models/interface/IPatient';
 export class PatientService implements IPatientService {
   constructor(
     private _patientRepository: IpatientRepository,
@@ -88,7 +89,7 @@ export class PatientService implements IPatientService {
     return { msg: 'data fetched', doctors, appoinments };
   }
   async updateUserProfile(
-    formData: any,
+    formData: Partial<IPatient>,
     userId: string,
     profileImg?: string
   ): Promise<{ msg: string }> {
@@ -229,7 +230,7 @@ export class PatientService implements IPatientService {
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
-    const targetDay = new Date(targetDate);
+   
 
     const doctorSlots = await this._slotsRepository.findByDoctorId(doctorId);
     const slots: any[] = [];
@@ -451,7 +452,8 @@ export class PatientService implements IPatientService {
     return { msg: 'Password Changed' };
   }
 
-  async getAllAppoinments(patientId: string): Promise<AppointmentDoctorDTO[]> {
+  async getAllAppoinments(patientId: string,page:number,limit:number): Promise<{appoinments:AppointmentDoctorDTO[],total:number}>{
+    const skip = (page - 1) * limit;
     if (!patientId) {
       throw new Error('patient id not found');
     }
@@ -459,9 +461,14 @@ export class PatientService implements IPatientService {
     if (!patient) {
       throw new Error('Patient not found');
     }
-    const appoinmentList = await this._appoinmentRepo.findAppoinmentsByPatient(
-      patient?._id as string
-    );
+    const [appoinmentList,total] = await Promise.all([
+      this._appoinmentRepo.findAppoinmentsByPatient(
+      patient?._id as string,
+      skip,
+      limit,
+    ),
+    this._appoinmentRepo.countPatientAppoinment(patientId)
+    ]);
 
     if (!appoinmentList) {
       throw new Error('Appoinments not found');
@@ -497,6 +504,9 @@ export class PatientService implements IPatientService {
 
     logger.debug(appoinments);
 
-    return appoinments;
+    return {
+      appoinments,
+      total
+    };
   }
 }

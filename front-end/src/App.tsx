@@ -33,6 +33,9 @@ import AppointmentsListDoctor from "./pages/Doctor/Appoinments"
 import { SessionCard } from "./pages/User/session"
 import { AppointmentHistory } from "./pages/Admin/Appoinment"
 import UserWallet from "./pages/User/Wallet"
+import { UserMessagingPage } from "./pages/User/UserMessage"
+import { DoctorMessagingPage } from "./pages/Doctor/DoctorMessage"
+
 function App() {
 
   return (
@@ -53,6 +56,7 @@ function App() {
         <Route path="/change-password/:userId" element={<ChangePasswordPage/>}/>
         <Route path = '/sessions' element={<UserLayout><SessionCard/></UserLayout>}/>
         <Route path='/wallet' element = {<UserLayout><UserWallet/></UserLayout>}/>
+        <Route path="/chat" element = {<UserLayout><UserMessagingPage/></UserLayout>}/>
         <Route path="/kyc-submit" element ={
           <KYC/>
           }
@@ -75,6 +79,7 @@ function App() {
            <Route path="/doctor/profile" element = {<DoctorProfile/>}/>
            <Route path="/doctor/time-shedule" element = {<TimeShedule/>}/>
            <Route path="/doctor/appoinment" element = {<AppointmentsListDoctor/>}/>
+           <Route path="/doctor/chat" element = {<DoctorMessagingPage/>}/>
      </Routes>
    </div>
   )

@@ -67,7 +67,7 @@ const DoctorsList = () => {
       toast.success(res.msg);
       setIsOpen(false);
       refetch();
-    } catch (error: any) {
+    } catch (error:  any) {
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {

@@ -1,4 +1,4 @@
-import express ,{Application,Request,Response}from 'express';
+import express ,{Application}from 'express';
 import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -22,13 +22,26 @@ import redisClient from './config/redisClient';
 import chatbotRoute from './routes/chatbot.route';
 import notificationRoute from './routes/notification.route';
 import paymentRoute from './routes/payment.route';
+import walletRoute from './routes/wallet.route';
+import chatRoute from './routes/chat.route';
+
+import { initChatSocket } from './utils/scoket/chat.scoket';
+import logger from './utils/logger';
+
 (async()=>{
   try {
     await redisClient.connect();
   console.log('redis connected');
-  } catch (error) {
+  }catch (error: unknown) {
+  if (error instanceof Error) {
+    logger.error(error.message);
+    throw new Error(error.message);
     process.exit(1);
+  } else {
+    logger.error('Unknown error', error);
+    throw new Error('Something went wrong');
   }
+}
 })();
 
 dotenv.config();
@@ -36,12 +49,15 @@ const app : Application = express();
 
 const httpServer = createServer(app);
 
+
+
 export const io = new Server(httpServer,{
   cors:{
     origin:'http://localhost:2025',
     credentials:true
   },
 });
+initChatSocket(io);
 
 io.on('connection',(socket)=>{
   console.log('user connected',socket?.id);
@@ -55,6 +71,9 @@ io.on('connection',(socket)=>{
     console.log('user disconnected',socket.id);
   });
 });
+
+
+
 
 const corsOperation = {
     origin: 'http://localhost:2025', 
@@ -88,7 +107,11 @@ app.use('/api/slots',slotRoute);
 app.use('/api/appoinment',appoinmentRoute);
 app.use('/api/chatbot',chatbotRoute);
 app.use('/api/notification',notificationRoute);
-app.use('/api/payment',paymentRoute);                       
+app.use('/api/payment',paymentRoute);   
+app.use('/api/wallet',walletRoute);         
+app.use('/api/chat',chatRoute);
+
+
 const PORT = process.env.PORT;
 
 
@@ -97,6 +120,6 @@ connectDB().then(()=>{
      console.log(`server running in ${PORT}`);
   });
 }).catch((err)=>{
-    
+    logger.error(err);
    process.exit(1);
 });

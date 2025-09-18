@@ -10,22 +10,22 @@ import express from 'express';
 import { WalletHistoryRepository } from '../repositories/walletHistory/wallet.history';
 import { WalletRepository } from '../repositories/wallet/wallet.repository';
 
-const doctorRepo = new DoctorAuthRepository();
-const appoinmentRepo = new AppoinmentRepository();
+const doctorRepository = new DoctorAuthRepository();
+const appoinmentRepository = new AppoinmentRepository();
 const notificationRepository = new NotificationRepository();
-const patientRepo = new PatientRepository();
+const patientRepository = new PatientRepository();
 const walletRepository = new WalletRepository();
 const walletHistoryRepository = new WalletHistoryRepository();
 const appoinmentService = new AppoinmentService(
-  appoinmentRepo,
-  patientRepo,
-  doctorRepo,
+  appoinmentRepository,
+  patientRepository,
+  doctorRepository,
   notificationRepository,
   walletRepository,
   walletHistoryRepository,
 );
 const appoinmentController = new AppoinmentController(appoinmentService);
-const authMiddleware = new AuthMiddleware(patientRepo, doctorRepo);
+const authMiddleware = new AuthMiddleware(patientRepository, doctorRepository);
 const router = express.Router();
 
 router

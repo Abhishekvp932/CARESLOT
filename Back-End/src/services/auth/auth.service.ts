@@ -164,7 +164,7 @@ export class AuthService implements IService {
 
     return { msg: 'otp send to your email id' };
   }
-  async verifyOtp(email: string, otp: string): Promise<any> {
+  async verifyOtp(email: string, otp: string): Promise<{msg:string,role:string,user:string}> {
     let user = null;
     user = await this._patientRepository.findByEmail(email);
     let role = 'patients';
@@ -183,8 +183,9 @@ export class AuthService implements IService {
       await this._doctorRepository.verifyOtp(email, otp);
     }
 
-    return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS, role, user: user._id };
+    return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS, role, user: user._id as string};
   }
+
 
   async findOrCreateGoogleUser(profile: Profile): Promise<IPatient> {
     const existingUser: IPatient | null =

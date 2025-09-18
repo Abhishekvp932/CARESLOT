@@ -55,4 +55,12 @@ export class NotificationService implements INotificationService {
 
     return { msg: 'all notification deleted' };
   }
+  async readAllNotification(userId: string): Promise<{ msg: string; }> {
+    if(!userId){
+      throw new Error('User Id not found');
+    }
+     await this._notificationRepository.updateAllNotificationByUserId(userId);
+
+     return {msg:'All Notification Readed'};
+  }
 }

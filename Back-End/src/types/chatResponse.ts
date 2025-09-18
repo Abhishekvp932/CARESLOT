@@ -1,4 +1,4 @@
-import { DoctorDTO } from './doctor.dto';
+
 export type ChatResponse = {
   specialization: string | null;         
   message: string;    

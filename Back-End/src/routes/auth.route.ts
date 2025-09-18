@@ -3,7 +3,7 @@ import { AuthController } from '../controllers/auth/auth.controller';
 import { AuthService } from '../services/auth/auth.service';
 import { PatientRepository } from '../repositories/auth/auth.repository';
 import passport from 'passport';
-import { profile } from 'console';
+
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
 import { DoctorAuthRepository } from '../repositories/doctors/doctor.auth.repository';
 import { AdminRepository } from '../repositories/admin/admin.repository';
@@ -11,12 +11,13 @@ import redisClient from '../config/redisClient';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthMiddleware } from '../middleware/auth.middleware';
 import { Routers } from '../utils/Routers';
+import { IBaseUser } from '../utils/IBaseUser';
 
-const PatientRepo = new PatientRepository();
-const doctorRepo = new DoctorAuthRepository();
-const adminRepo = new AdminRepository();
-const authService = new AuthService(PatientRepo, doctorRepo, adminRepo);
-const authMiddleware = new AuthMiddleware(PatientRepo, doctorRepo);
+const patientRepository = new PatientRepository();
+const doctorRepository = new DoctorAuthRepository();
+const adminRepository = new AdminRepository();
+const authService = new AuthService(patientRepository, doctorRepository, adminRepository);
+const authMiddleware = new AuthMiddleware(patientRepository, doctorRepository);
 const authController = new AuthController(authService);
 const router = express.Router();
 
@@ -54,7 +55,7 @@ router.get(
   Routers.authRouters.googleCallback,
   passport.authenticate('google', { session: false }),
   async (req, res) => {
-    const user = req.user as any;
+    const user = req.user as IBaseUser;
 
     if (!user) {
       return res.redirect('http://localhost:2025/login');

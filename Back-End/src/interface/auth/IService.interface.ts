@@ -8,7 +8,7 @@ import { UserDTO } from '../../types/user.dto';
 export interface IService{
      login(email:string,password:string) :Promise<{msg:string,user:IBaseUser,accessToken:string,refreshToken:string}>;
      signup(name:string,email:string,password:string,phone:string,dob:Date,gender:string,role:string):Promise<{msg:string}>;
-     verifyOtp(email:string,otp:string):Promise<{msg:string}>;
+     verifyOtp(email:string,otp:string):Promise<{msg:string,role:string,user:string}>;
      findOrCreateGoogleUser(profile:Profile):Promise<IPatient>;
      findUserById(id: string):Promise<{users:UserDTO}>
     logOut({sessionId}:LogoutRequest):Promise<{msg:string}>

@@ -9,6 +9,6 @@ export interface IWalletHistory extends Document{
     type:'credit' | 'debit';
     source:'refund' | 'consultation' | 'admin_adjustment' | 'cancel appoinment' | 'payout';
     status : 'success' | 'pending' | 'failed';
-    createdAt:Date;
-    updatedAt:Date;
+    createdAt?:Date;
+    updatedAt?:Date;
 }

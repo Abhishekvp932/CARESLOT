@@ -12,6 +12,7 @@ import {
   Stethoscope,
   Menu,
   X,
+  Mail,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/app/store";
@@ -28,7 +29,7 @@ const navItems = [
   { title: "Patients", url: "#patients", icon: Users },
   { title: "Appointments", url: "/doctor/appoinment", icon: Calendar },
   { title: "Medical Records", url: "#records", icon: FileText },
-  // { title: "Notifications", url: "#notifications", icon: Bell, badge: "3" },
+  { title: "Messages", url: "/doctor/chat", icon: Mail,},
   { title: "Settings", url: "#settings", icon: Settings },
 ];
 

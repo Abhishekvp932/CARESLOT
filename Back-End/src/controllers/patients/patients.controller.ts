@@ -161,8 +161,14 @@ export class PatientController implements IPatientController {
     try {
       logger.info('patient appoinment request is comming');
       const { patientId } = req.params;
-      const result = await this._patientService.getAllAppoinments(patientId);
-      res.status(HttpStatus.OK).json(result);
+      const page = parseInt(req.query.page as string);
+      const limit = parseInt(req.query.limit as string);
+      const result = await this._patientService.getAllAppoinments(
+        patientId,
+        page,
+        limit,
+      );
+      res.status(HttpStatus.OK).json({data:result.appoinments,currentPage:page,totalPages: Math.ceil(result.total / limit),totalItem: result.total});
     } catch (error) {
       const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });

@@ -1,5 +1,6 @@
 import { IAppoinment } from '../../models/interface/IAppoinments';
-import { IDoctor } from '../../models/interface/IDoctor';
+
+import { IPatient } from '../../models/interface/IPatient';
 import { ISlots } from '../../models/interface/ISlots';
 import { AppointmentDoctorDTO } from '../../types/AppoinmentsAndDoctorDto';
 import { DoctorDTO } from '../../types/doctor.dto';
@@ -11,7 +12,7 @@ import { UserDTO } from '../../types/user.dto';
 export interface IPatientService {
 
     getResendAppoinments(patientId:string):Promise<{msg:string,doctors:DoctorDTO[],appoinments:IAppoinment[]}>
-    updateUserProfile(formData:any,userId:string,profileImg?:string):Promise<{msg:string}>
+    updateUserProfile(formData:Partial<IPatient>,userId:string,profileImg?:string):Promise<{msg:string}>
     getUserData(userId:string):Promise<{msg:string,users:UserDTO}>
     getAllDoctors(page:number,limit:number,search:string,specialty:string):Promise<DoctorListResult>
     getDoctorDetails(doctorId:string):Promise<doctorDetails>
@@ -20,5 +21,5 @@ export interface IPatientService {
     getDoctorAndSlot(doctorId:string):Promise<{doctor:doctorDetails | null}>
     getRelatedDoctor(doctorId:string,specialization:string):Promise<doctorDetails[]>
     changePassword(patientId:string,oldPassword:string,newPassword:string):Promise<{msg:string}>
-    getAllAppoinments(patientId:string):Promise<AppointmentDoctorDTO[]>
+    getAllAppoinments(patientId:string,page:number,limit:number):Promise<{appoinments:AppointmentDoctorDTO[],total:number}>
 }

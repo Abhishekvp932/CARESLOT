@@ -1,5 +1,6 @@
 import { getNextDateOfWeek } from './getDayOfWeek';
 import { genarateSlots } from './SlotUtlity';
+
 export function generateSlotsForDay(slot: any) {
   const dayDate = getNextDateOfWeek(slot.daysOfWeek, slot.startTime);
 

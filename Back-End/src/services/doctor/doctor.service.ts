@@ -262,23 +262,37 @@ The CareSlot Team`
     Best regards,  
     The CareSlot Team`
         );
-      } catch (error: any) {
-        throw new Error(error);
-      }
+      } catch (error: unknown) {
+  if (error instanceof Error) {
+    logger.error(error.message);
+    throw new Error(error.message);
+  } else {
+    logger.error('Unknown error', error);
+    throw new Error('Something went wrong');
+  }
+}
     };
 
     return response;
   }
-  async getAllAppoinments(doctorId: string): Promise<AppointmentPatientDTO[]> {
+  async getAllAppoinments(doctorId: string,page:number,limit:number): Promise<{appoinments:AppointmentPatientDTO[],total:number}> {
+     
+    const skip = (page-1) * limit;
+
     const doctor = await this._authDoctorRepository.findById(doctorId);
 
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
-    const appoinmentWithPatients =
-      await this._appoinmentRepository.findAppoinmentsByDoctor(
-        doctor?._id as string
-      );
+    const [appoinmentWithPatients,total] = await Promise.all([
+       this._appoinmentRepository.findAppoinmentsByDoctor(
+        doctor?._id as string,
+        skip,
+        limit,
+      ),
+      this._appoinmentRepository.countDoctorAppoinment(doctorId)
+    ]);
+      
     // logger.debug(appoinmentWithPatients);
 
     const appointments: AppointmentPatientDTO[] = appoinmentWithPatients.map(
@@ -305,6 +319,9 @@ The CareSlot Team`
       })
     );
     logger.debug(appointments);
-    return appointments;
+    return {
+      appoinments:appointments,
+      total
+    };
   }
 }

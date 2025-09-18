@@ -11,7 +11,6 @@ export default interface IAdminController {
     getVerificationDoctorDetails(req:Request,res:Response):Promise<void>;
     updateUserData(req:Request,res:Response):Promise<void>;
     editDoctorData(req:Request,res:Response):Promise<void>;
-    editDoctorProfile(req:Request,res:Response):Promise<void>;
     addUser(req:Request,res:Response):Promise<void>;
     addDoctor(req:Request,res:Response):Promise<void>;
     getAllAppoinments(req:Request,res:Response):Promise<void>;

@@ -1,11 +1,10 @@
 // eslint.config.mjs
-import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
-  // For JavaScript files
+
   {
     files: ['**/*.{js,mjs,cjs}'],
     languageOptions: {
@@ -16,10 +15,10 @@ export default defineConfig([
     rules: {
       'semi': ['error', 'always'],
       'quotes': ['error', 'single'],
+      'no-unused-vars': ['error'], 
     },
   },
 
-  // For TypeScript files
   {
     files: ['**/*.{ts,cts,mts}'],
     languageOptions: {
@@ -36,6 +35,8 @@ export default defineConfig([
     rules: {
       'semi': ['error', 'always'],
       'quotes': ['error', 'single'],
+      '@typescript-eslint/no-explicit-any': ['error'], 
+      '@typescript-eslint/no-unused-vars': ['error'], 
     },
   },
 ]);

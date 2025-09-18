@@ -81,8 +81,8 @@ export const doctorApi = api.injectEndpoints({
       }),
     }),
     getAllAppoinments:builder.query({
-      query:(doctorId)=>({
-        url:`/doctor/appoinments/${doctorId}`,
+      query:({doctorId,page,limit})=>({
+        url:`/doctor/appoinments/${doctorId}?page=${page}&limit=${limit}`,
         method:'GET'
       }),
     }),

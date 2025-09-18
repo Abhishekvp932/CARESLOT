@@ -16,6 +16,10 @@ router
   .delete(
     notificationController.deleteAllNotification.bind(notificationController)
   );
+  
+router.route(Routers.notificationRouters.readAllNotification)
+  .put(notificationController.readAllNotification.bind(notificationController));
+
 
 router
   .route(Routers.notificationRouters.notificationWithNotificationId)

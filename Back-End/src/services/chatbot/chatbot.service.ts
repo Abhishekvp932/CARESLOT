@@ -1,55 +1,48 @@
 import { IChatbotService } from '../../interface/chatbot/IChatbot.service';
-import { ChatResponse } from '../../types/chatResponse';
 import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import dotenv from 'dotenv';
+import logger from '../../utils/logger';
+dotenv.config();
 
 export class ChatbotService implements IChatbotService {
   constructor(private _doctorRepository: IDoctorAuthRepository) {}
 
-  async processMessage(message: string): Promise<ChatResponse> {
-    const symptomMap: Record<string, string> = {
-      headache: 'Neurologist',
-      fever: 'General Physician',
-      chestpain: 'Cardiologist',
-      skinrash: 'Dermatology',
-      skin: 'Dermatology',
-      head: 'Neurologist',
-      cough: 'Pulmonologist',
-    };
-    const lowerMsg = message.toLowerCase();
+  async processMessage(message: string): Promise<{ replay: string }> {
+     const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
-    let specialization: string | null = null;
+     const model = genAi.getGenerativeModel({model:'gemini-1.5-flash'});
 
-    for (const [symptom, spec] of Object.entries(symptomMap)) {
-      if (lowerMsg.includes(symptom)) {
-        specialization = spec;
-        break;
+     const prompt = `
+You are a medical assistant chatbot for the CareSlot doctor booking website.
+Answer only questions related to this website:
+- Booking, rescheduling, or canceling appointments
+- Doctor information and specializations
+- General instructions for patients on using CareSlot
+
+If the user asks about anything outside this website (like Java programming or world news), reply:
+"I'm sorry, I can only provide information related to CareSlot website and its services."
+
+User message: "${message}"
+`;
+
+
+      let result;
+
+      for(let i =0;i<3;i++){
+        try {
+          result = await model.generateContent(prompt);
+          break;
+        } catch (err) {
+          logger.debug(err);
+          console.warn(`Retry ${i + 1} failed, retrying...`);
+          await new Promise((res) => setTimeout(res, 1000));
+        }
       }
-    }
+      if(!result){
+        return {replay:'server is busy. Please try again later.'};
 
-    if (!specialization) {
-      return {
-        specialization: null,
-        doctors: [],
-        message:
-          'Sorry, I couldn’t identify your issue. Please describe your symptoms differently.',
-      };
-    }
-    const doctorsList = await this._doctorRepository.findAllWithFilter({
-      'qualifications.specialization': specialization,
-    });
-    if (!doctorsList || doctorsList.length === 0) {
-      throw new Error('No doctors found');
-    }
-    const doctorData = doctorsList.map((doctor) => ({
-      name: doctor?.name,
-      profile_img: doctor?.profile_img,
-      _id: doctor?._id,
-    }));
-    console.log(doctorData);
-    return {
-      specialization,
-      doctors: doctorData,
-      message: `Based on your symptoms, you may need to consult a ${specialization}`,
-    };
+      }
+      return {replay:result.response.text()};
   }
 }

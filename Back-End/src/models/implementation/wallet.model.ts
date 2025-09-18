@@ -11,7 +11,7 @@ const walletSchema = new Schema<IWallet>({
     role:{
         type:String,
         required:true,
-        enum:['patient','doctor'],
+        enum:['patient','doctor','admin'],
     },
     balance:{
         type:Number,

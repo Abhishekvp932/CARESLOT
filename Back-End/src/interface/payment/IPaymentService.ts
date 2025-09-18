@@ -1,7 +1,8 @@
 import { INotification } from '../../models/interface/INotification';
+import { RazorpayOrder } from '../../utils/RazorpayOrder';
 
 export interface IPaymentService {
-  createOrder(amount: number): Promise<any>;
+  createOrder(amount: number): Promise<RazorpayOrder>;
   verifyOrder(
     orderId: string,
     paymentId: string,

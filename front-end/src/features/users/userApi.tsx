@@ -113,9 +113,15 @@ export const userApi = api.injectEndpoints({
         method:"DELETE",
       }),
     }),
+    readAllNotification:builder.mutation({
+       query:(userId)=>({
+        url:`/notification/readAll-notification/${userId}`,
+        method:"PUT",
+       }),
+    }),
     getAllPatientAppoinments:builder.query({
-      query:(patientId)=>({
-        url:`/patient/appoinment/${patientId}`,
+      query:({patientId,page,limit})=>({
+        url:`/patient/appoinment/${patientId}?page=${page}&limit=${limit}`,
         method:'GET',
       }),
     }),
@@ -124,7 +130,13 @@ export const userApi = api.injectEndpoints({
         url:`/appoinment/appoinment/${appoinmentId}`,
         method:'PATCH',
       }),
-    })
+    }),
+    getWalletData:builder.query({
+      query:({patientId,page,limit})=>({
+        url: `/wallet/userWallet/${patientId}?page=${page}&limit=${limit}`,
+        method:'GET',
+      }),
+    }),
   }),
 });
 
@@ -147,7 +159,9 @@ export const {
    useNotificationDeleteMutation,
    useDeleteAllNotificationMutation,
    useGetAllPatientAppoinmentsQuery,
-   useCancelAppoinmentMutation
+   useCancelAppoinmentMutation,
+   useGetWalletDataQuery,
+   useReadAllNotificationMutation,
 
   }
    = userApi;

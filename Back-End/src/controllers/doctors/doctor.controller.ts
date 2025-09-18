@@ -117,8 +117,10 @@ export class DoctorController implements IDoctorController {
     try {
       logger.info('appoinment request is comming');
       const { doctorId } = req.params;
-      const result = await this._doctorService.getAllAppoinments(doctorId);
-      res.status(HttpStatus.OK).json(result);
+      const page = parseInt(req.query.pagge as string);
+      const limit = parseInt(req.query.limit as string);
+      const result = await this._doctorService.getAllAppoinments(doctorId,page,limit);
+      res.status(HttpStatus.OK).json({data:result.appoinments,currentPage:page,totalPages: Math.ceil(result.total / limit),totalItem: result.total});
     } catch (error) {
       const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });

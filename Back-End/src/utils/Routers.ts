@@ -38,7 +38,8 @@ export const Routers = {
     },
     notificationRouters:{
         notificationWithPatientId:'/notification/:patientId',
-        notificationWithNotificationId:'/notification/:notificationId'
+        notificationWithNotificationId:'/notification/:notificationId',
+        readAllNotification:'/readAll-notification/:userId'
     },
     patientRouters:{
         resendAppoinmentsWithPatientId:'/resend-appoinment/:patientId',
@@ -59,5 +60,16 @@ export const Routers = {
     slotRouters:{
         slots:'/slots',
         slotWithSlotId:'/slots/:id'
+    },
+    walletRouters:{
+        userWalletData:'/userWallet/:patientId'
+    },
+    chatRouters:{
+        getUserChat:'/user-chat/:patientId',
+        sendMessage:'/send-message',
+        getDoctorChat:'/doctor-chat/:doctorId',
+        getDoctorMessage:'/doctor-messages/:chatId',
+        getPatientMessage:'/patient-messages/:chatId',
+        deleteMessage:'/delete-message/:messageId',
     }
 };

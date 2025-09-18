@@ -4,16 +4,14 @@ import { Profile } from 'passport-google-oauth20';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import { BaseRepository } from '../base.repository';
 import { IDoctor } from '../../models/interface/IDoctor';
-import { DoctorPagination } from '../../types/doctorFiltering';
-import { QualificationInput } from '../../interface/doctor/doctor.service.interface';
-import { doctorDetails } from '../../types/doctorDetails';
+import { FilterQuery, UpdateQuery } from 'mongoose';
 
 export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDoctorAuthRepository{
      
   constructor (){
     super(Doctor);
   }
-  async updateById(id: string, update: Partial<any>):Promise<IDoctor | null> {
+  async updateById(id: string, update: UpdateQuery<IDoctor>):Promise<IDoctor | null> {
     return await this.model.findByIdAndUpdate(id, update, { new: true });
   }
   async upsertWithOTP(email: string, otp: string, otpExpire: Date) {
@@ -52,7 +50,7 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
     });
     return await doctor.save();
   }
-  async updatePasswordWithEmail(email: string, update:any):Promise<IDoctor | null> {
+  async updatePasswordWithEmail(email: string, update:Partial<IDoctor>):Promise<IDoctor | null> {
     return  await this.model.findOneAndUpdate(
       {email},
       {$set:{password:update.password}},
@@ -63,20 +61,20 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
      return await this.model.findByIdAndDelete(id);
    }
 
-   async findAllWithPagination(skip: number, limit: number, filter?:Partial<IDoctor>): Promise<IDoctor[]> {
+   async findAllWithPagination(skip: number, limit: number,  filter: FilterQuery<IDoctor> = {}): Promise<IDoctor[]> {
       return this.model.find(filter)
       .sort({createdAt:-1})
       .skip(skip)
       .limit(limit)
       .lean();
    }
-        async countAll(filter?:Partial<IDoctor>):Promise<number> {
+        async countAll( filter: FilterQuery<IDoctor> = {}):Promise<number> {
             return this.model.countDocuments(filter);
         }
 
 
 
-    async uploadDocument(doctorId: string, data:any): Promise<IDoctor | null> {
+    async uploadDocument(doctorId: string, data:Partial<IDoctor>): Promise<IDoctor | null> {
   return await Doctor.findByIdAndUpdate(
     doctorId,
     {
@@ -96,12 +94,14 @@ async findRelatedDoctors(specialization: string, excludeId: string, limit = 5): 
   }).limit(limit).exec();
 }
 
-async findAllWithFilter(filter: any): Promise<IDoctor[]> {
+async findAllWithFilter(filter: FilterQuery<IDoctor>): Promise<IDoctor[]> {
   return Doctor.find(filter);
 }
 
-async findAppoinmentDoctors(filter:any): Promise<IDoctor[]> {
+async findAppoinmentDoctors(filter:FilterQuery<IDoctor>): Promise<IDoctor[]> {
   return await Doctor.find(filter);
 }
+
+
  
 }

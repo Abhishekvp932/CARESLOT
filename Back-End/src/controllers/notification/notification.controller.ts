@@ -59,4 +59,17 @@ export class NotificationController implements INotificationController {
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
     }
   }
+  async readAllNotification(req: Request, res: Response): Promise<void> {
+   try {
+
+    logger.info('read all notification request is comming...');
+     const {userId} = req.params;
+
+    const result = await this._notificationService.readAllNotification(userId);
+    res.status(HttpStatus.OK).json(result);
+   } catch (error) {
+    const err = error as Error;
+    res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
+   }
+  }
 }

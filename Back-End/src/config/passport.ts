@@ -1,9 +1,8 @@
-import passport, { use } from 'passport';
+import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import dotenv from 'dotenv';
 import { AuthService } from '../services/auth/auth.service';
-import { access } from 'fs';
-import { profile } from 'console';
+
 import { PatientRepository } from '../repositories/auth/auth.repository';
 import { DoctorAuthRepository } from '../repositories/doctors/doctor.auth.repository';
 import { AdminRepository } from '../repositories/admin/admin.repository';
@@ -23,12 +22,13 @@ export const confiqurePassport = () => {
           const user = await authService.findOrCreateGoogleUser(profile);
           return done(null, user);
         } catch (error) {
-          return done(error as any, false);
+          return done(error, false);
         }
       }
     )
   );
-  passport.serializeUser((user: any, done) => {
+
+  passport.serializeUser((user:any, done) => {
     done(null, user._id);
   });
   passport.deserializeUser(async (id: string, done) => {

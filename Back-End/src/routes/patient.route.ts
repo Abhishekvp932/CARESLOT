@@ -9,18 +9,18 @@ import { SlotRepository } from '../repositories/Slots/slot.repository';
 import { AppoinmentRepository } from '../repositories/appoinment/appoinment.repository';
 import { Routers } from '../utils/Routers';
 
-const appoinmentRepo = new AppoinmentRepository();
-const patientRepo = new PatientRepository();
-const doctorRepo = new DoctorAuthRepository();
-const slotRepo = new SlotRepository();
+const appoinmentRepository = new AppoinmentRepository();
+const patientRepository = new PatientRepository();
+const doctorRepository = new DoctorAuthRepository();
+const slotRepository = new SlotRepository();
 const patientService = new PatientService(
-  patientRepo,
-  doctorRepo,
-  slotRepo,
-  appoinmentRepo
+  patientRepository,
+  doctorRepository,
+  slotRepository,
+  appoinmentRepository
 );
 const patientController = new PatientController(patientService);
-const authMiddleware = new AuthMiddleware(patientRepo, doctorRepo);
+const authMiddleware = new AuthMiddleware(patientRepository, doctorRepository);
 const router = express.Router();
 
 router

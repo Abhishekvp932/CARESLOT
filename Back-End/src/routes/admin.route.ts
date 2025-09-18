@@ -9,19 +9,19 @@ import { AuthMiddleware } from '../middleware/auth.middleware';
 import { multiFileUpload } from '../middleware/multer.middleware';
 import { AppoinmentRepository } from '../repositories/appoinment/appoinment.repository';
 import { Routers } from '../utils/Routers';
-const patientRepo = new PatientRepository();
+const patientRepository = new PatientRepository();
 
-const adminRepo = new AdminRepository();
-const doctorAuthRepo = new DoctorAuthRepository();
+const adminRepository = new AdminRepository();
+const doctorAuthRepository = new DoctorAuthRepository();
 const appoinmentRepository = new AppoinmentRepository();
 const adminService = new AdminService(
-  patientRepo,
-  adminRepo,
-  doctorAuthRepo,
+  patientRepository,
+  adminRepository,
+  doctorAuthRepository,
   appoinmentRepository
 );
 const adminController = new AdminController(adminService);
-const authMiddleware = new AuthMiddleware(patientRepo, doctorAuthRepo);
+const authMiddleware = new AuthMiddleware(patientRepository, doctorAuthRepository);
 const router = express.Router();
 
 router
@@ -69,12 +69,8 @@ router
   .get(
     authMiddleware.protect,
     adminController.editDoctorData.bind(adminController)
-  )
-  .put(
-    authMiddleware.protect,
-    multiFileUpload,
-    adminController.editDoctorProfile.bind(adminController)
   );
+
 
 router
   .route(Routers.adminRouters.doctorId)

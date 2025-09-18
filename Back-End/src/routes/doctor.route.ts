@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express from 'express';
 import { DoctorController } from '../controllers/doctors/doctor.controller';
 import { DoctorService } from '../services/doctor/doctor.service';
 import { PatientRepository } from '../repositories/auth/auth.repository';
@@ -9,17 +9,17 @@ import { AppoinmentRepository } from '../repositories/appoinment/appoinment.repo
 import { Routers } from '../utils/Routers';
 const router = express.Router();
 
-const patientRepo = new PatientRepository();
-const doctorAuthRepo = new DoctorAuthRepository();
+const patientRepository = new PatientRepository();
+const doctorAuthRepository = new DoctorAuthRepository();
 const appoinmentRepository = new AppoinmentRepository();
 const doctorService = new DoctorService(
-  patientRepo,
-  doctorAuthRepo,
+  patientRepository,
+  doctorAuthRepository,
   appoinmentRepository
 );
 
 const doctorController = new DoctorController(doctorService);
-const authMiddleware = new AuthMiddleware(patientRepo, doctorAuthRepo);
+const authMiddleware = new AuthMiddleware(patientRepository, doctorAuthRepository);
 
 router.post(
   Routers.doctorRouters.kycSubmit,

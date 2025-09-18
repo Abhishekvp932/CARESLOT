@@ -22,7 +22,7 @@ export class SlotController implements ISlotController {
     logger.info('creating new time slot......');
     try {
       const data = req.body;
-
+      logger.debug(data);
       const result = await this._slotService.addTimeSlot(data);
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {

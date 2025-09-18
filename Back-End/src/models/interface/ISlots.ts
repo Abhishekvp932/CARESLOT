@@ -1,4 +1,4 @@
-import mongoose,{Document, Types} from 'mongoose';
+import {Document, Types} from 'mongoose';
 
 export interface ISlots extends Document {
   doctorId: Types.ObjectId;
@@ -7,17 +7,17 @@ export interface ISlots extends Document {
     daysOfWeek:string;
     startTime:Date;
     endTime:Date;
-    status:'Available'|'Booked';
+    status:'Available'|'Booked' | string;
     slotDuration:number
     breakTime:{
       startTime:Date;
       endTime:Date;
     }[];}[];
 
-  recurrenceType?: 'none' | 'daily' | 'weekly' | 'custom';
+  recurrenceType?: 'none' | 'daily' | 'weekly' | 'custom' | string;
   daysOfWeek?: string[];
-  recurrenceStartDate?: Date;
-  recurrenceEndDate?: Date;
+  recurrenceStartDate?: Date | string;
+  recurrenceEndDate?: Date | string;
   createdAt?: Date;
   updatedAt?: Date;
 }

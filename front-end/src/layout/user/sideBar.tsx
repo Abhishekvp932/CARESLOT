@@ -27,7 +27,7 @@ const navigate = useNavigate();
     { name: "Sessions", icon: BarChart3, color: "text-purple-500",path:'/sessions'},
     {name:"Wallet",icon:Wallet,color:'text-blue-500',path:'/wallet'},
     { name: "Documents", icon: FileText, color: "text-orange-500" ,path:'/document'},
-    { name: "Messages", icon: Mail, color: "text-red-500",path:'/messages'},
+    { name: "Messages", icon: Mail, color: "text-red-500",path:'/chat'},
     { name: "Settings", icon: Settings, color: "text-gray-500",path:'sesstings'},
   ];
 

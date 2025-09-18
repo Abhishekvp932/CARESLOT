@@ -1,4 +1,4 @@
-import mongoose, { Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 export interface IPatientPopulated {
   _id: string | Types.ObjectId;

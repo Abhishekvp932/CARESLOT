@@ -7,6 +7,8 @@ import { CONTROLLER_MESSAGE } from '../../utils/controllerMessage';
 import { IService } from '../../interface/auth/IService.interface';
 import redisClient from '../../config/redisClient';
 import { v4 as uuidv4 } from 'uuid';
+import logger from '../../utils/logger';
+
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IService) {}
@@ -50,7 +52,6 @@ export class AuthController implements IAuthController {
         dob,
         gender,
         phone,
-        confirmPassword,
         role,
       } = req.body;
       const result = await this._authService.signup(
@@ -63,9 +64,10 @@ export class AuthController implements IAuthController {
         role
       );
 
+
       res
         .status(HttpStatus.CREATED)
-        .json({ success: true, msg: CONTROLLER_MESSAGE.OTP_SEND_MESSAGE });
+        .json(result);
     } catch (error) {
       const err = error as Error;
 
@@ -128,6 +130,7 @@ export class AuthController implements IAuthController {
       const result = await this._authService.resendOTP(email);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
+      logger.error(error);
       res.status(HttpStatus.BAD_REQUEST).json('resend otp error');
     }
   }
@@ -167,7 +170,7 @@ export class AuthController implements IAuthController {
   async refreshToken(req: Request, res: Response): Promise<void> {
     try {
       const result = await this._authService.refreshAccessToken(req, res);
-      // res.status(HttpStatus.OK).json(result)
+      res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });

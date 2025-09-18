@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import dotenv from 'dotenv';
+import logger from '../utils/logger';
 dotenv.config();
 
 const connectDB = async() : Promise <void>=>{
@@ -12,7 +13,7 @@ const connectDB = async() : Promise <void>=>{
        await mongoose.connect(mongoURI);
        console.log('DataBase connect');
     } catch (error) {
-         
+         logger.error(error);
         process.exit(1);
     }
 };

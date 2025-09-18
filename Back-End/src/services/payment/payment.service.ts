@@ -11,8 +11,16 @@ import { Types } from 'mongoose';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import { io } from '../../server';
 import { MailService } from '../mail.service';
-
+import { IWalletHistoryRepository } from '../../interface/walletHistory/IWalletHistoryRepository';
+import { IWalletRepository } from '../../interface/wallet/IWalletRepository';
 import { INotification } from '../../models/interface/INotification';
+import { IWallet } from '../../models/interface/IWallet';
+import { IWalletHistory } from '../../models/interface/IWallet.history';
+
+import { RazorpayOrder } from '../../utils/RazorpayOrder';
+import { IChatRepository } from '../../interface/chat/IChatRepository';
+import { IChat } from '../../models/interface/IChat';
+import logger from '../../utils/logger';
 dotenv.config();
 
 export class PaymentService implements IPaymentService {
@@ -21,18 +29,21 @@ export class PaymentService implements IPaymentService {
     private _appoinmentRepository: IAppoinmentRepository,
     private _notificationRepository: INotificationRepository,
     private _doctorRepository: IDoctorAuthRepository,
-    private _patientRepository: IpatientRepository
+    private _patientRepository: IpatientRepository,
+    private _walletRepository:IWalletRepository,
+    private _walletHistoryRepository:IWalletHistoryRepository,
+    private _chatRepository:IChatRepository,
   ) {}
 
-  async createOrder(amount: number): Promise<any> {
+  async createOrder(amount: number): Promise<RazorpayOrder> {
     const options = {
       amount: amount * 100,
       currency: 'INR',
       receipt: 'order_rcptid_' + Date.now(),
     };
     const order = await razorpay.orders.create(options);
-
-    return order;
+    console.log(order);
+    return order as RazorpayOrder;
   }
   async verifyOrder(
     orderId: string,
@@ -105,6 +116,65 @@ export class PaymentService implements IPaymentService {
         { transactionId: new Types.ObjectId(payment?._id as string) }
       );
 
+
+      const newChat:Partial<IChat> = {
+        appoinmentId:appoinment?.id,
+        doctorId:appoinment?.doctorId,
+        patiendId:appoinment?.patientId,
+        participants:[appoinment?.doctorId,appoinment?.patientId],
+        isActive:true,
+        createdAt:new Date(),
+        updatedAt:new Date(),
+
+      };
+      await this._chatRepository.create(newChat);
+      const doctorWallet = await this._walletRepository.findByUserId(doctorId as string);
+
+      if(!doctorWallet){
+        
+        const newWallet:Partial<IWallet> = {
+          userId:new Types.ObjectId(doctorId as string),
+          role:'doctor',
+          balance:Number(amount),
+        };
+         
+       
+       const wallet =  await this._walletRepository.create(newWallet);
+        
+        const newWalletHistory:Partial<IWalletHistory> = {
+          walletId:new Types.ObjectId(wallet?._id as string),
+          appoinmentId:new Types.ObjectId(appoinment?._id as string),
+          transactionId:new Types.ObjectId(payment?._id as string),
+          amount:Number(amount),
+          type:'credit',
+          source:'consultation',
+          status:'success',
+        };
+        await this._walletHistoryRepository.create(newWalletHistory);
+
+   
+
+      } 
+      else{
+
+        const newWalletHistory:Partial<IWalletHistory> = {
+         walletId:new Types.ObjectId(doctorWallet?._id as string),
+         appoinmentId:new Types.ObjectId(appoinment?._id as string),
+         transactionId:new Types.ObjectId(payment?._id as string),
+         amount:Number(amount),
+         type:'credit',
+        source:'consultation',
+        status:'success',
+       }; 
+
+       await this._walletHistoryRepository.create(newWalletHistory);
+        
+         await this._walletRepository.findByIdAndUpdate(doctorWallet?._id as string,{$inc:{balance:Number(amount)}});
+
+       
+      }
+         
+
       const patientNotif = await this._notificationRepository.create({
         userId: patientId,
         title: 'Appoinment Booked',
@@ -168,9 +238,15 @@ export class PaymentService implements IPaymentService {
                              
                              `
           );
-        } catch (error: any) {
-          throw new Error(error);
-        }
+        } catch (error: unknown) {
+  if (error instanceof Error) {
+    logger.error(error.message);
+    throw new Error(error.message);
+  } else {
+    logger.error('Unknown error', error);
+    throw new Error('Something went wrong');
+  }
+}
       })();
       response = {
         status: 'success',

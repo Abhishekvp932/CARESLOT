@@ -1,3 +1,4 @@
+import { UpdateResult } from 'mongoose';
 import { INotificationRepository } from '../../interface/notification/INotificationRepository';
 import Notification from '../../models/implementation/notification.model';
 
@@ -30,5 +31,9 @@ export class NotificationRepository implements INotificationRepository{
    async deleteAllByUserId(userId: string): Promise<void> {
         await Notification.deleteMany({userId});
         return;
+   }
+
+   async updateAllNotificationByUserId(userId: string): Promise<UpdateResult> {
+       return await Notification.updateMany({userId:userId},{$set:{isRead:true}});
    }
 }

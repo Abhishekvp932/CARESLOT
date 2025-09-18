@@ -45,6 +45,7 @@ export class AuthMiddleware {
         next();
         return;
       } catch (error) {
+        console.log(error);
         res.status(500).json({ message: 'SERVER_ERROR_AUTH' });
         return;
       }
@@ -82,11 +83,11 @@ export class AuthMiddleware {
           let user:IBaseUser | null = null;
           
           user= (await this._patientRepo.findById(decode?.id)) as IBaseUser | null;
-          let role = 'patients';
+          // let role = 'patients';
 
           if(!user){
             user = await (this._doctorRepo.findById(decode?.id)) as IBaseUser | null;
-            role = 'doctors';
+            // role = 'doctors';
           }
 
           if(!user){
@@ -101,6 +102,7 @@ export class AuthMiddleware {
           req.user = decode;
           next();        
         } catch (error) {
+          console.log(error);
           res.status(500).json({ message: 'SERVER_ERROR_AUTH' });
           return;
         }

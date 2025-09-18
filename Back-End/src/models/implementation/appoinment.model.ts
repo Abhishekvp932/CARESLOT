@@ -1,6 +1,6 @@
 import mongoose,{Schema} from 'mongoose';
 import { IAppoinment } from '../interface/IAppoinments';
-import Doctor from './doctor.model';
+
 
 const appoinmentSchema = new Schema<(IAppoinment)>({
     doctorId:{

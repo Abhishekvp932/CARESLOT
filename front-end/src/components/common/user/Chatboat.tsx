@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useChatBoatMutation } from "@/features/users/userApi";
-import { useNavigate } from "react-router-dom";
 export default function Chatbot() {
   const [messages, setMessages] = useState([
     { role: "bot", text: "👋 Hi! Tell me your symptoms and I’ll suggest a doctor." },
   ]);
   const [input, setInput] = useState("");
 
-  const [chatBoat] = useChatBoatMutation();
-  const navigate = useNavigate();
+  const [chatBoat,{isLoading}] = useChatBoatMutation();
+ 
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -16,6 +15,7 @@ export default function Chatbot() {
     setMessages((prev) => [...prev, { role: "patient", text: input }]);
 
     try {
+      setInput("");
       const res = await chatBoat(input).unwrap();
       console.log("chat response", res);
 
@@ -25,8 +25,7 @@ export default function Chatbot() {
         ...prev,
         {
           role: "bot",
-          text: res.message,
-          doctors: res.doctors || [],
+          text: res.replay
         },
       ]);
       setInput("");
@@ -35,9 +34,7 @@ export default function Chatbot() {
     }
   };
 
-  const handleDetailsPage = (doctorId:string)=>{
-    navigate(`/doctor-details/${doctorId}`);
-  }
+  const loading = isLoading;
 
   return (
     <div className="flex flex-col w-80 h-96 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
@@ -59,30 +56,20 @@ export default function Chatbot() {
                   : "bg-gray-200 text-gray-900"
               }`}
             >
-              <p>{msg.text}</p>
-
-             
-              {msg?.doctors && msg?.doctors?.length > 0 && (
-                <div className="mt-2 space-y-2">
-                  {msg?.doctors.map((doc, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-2 bg-white rounded-lg shadow-sm p-2 border border-gray-200"
-                      onClick={()=>handleDetailsPage(doc?._id)}
-                    >
-                      <img
-                        src={doc.profile_img}
-                        alt={doc.name}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <span className="font-medium text-sm">{doc.name}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+             <p>{msg.text}</p>
             </div>
           </div>
         ))}
+            {loading && (
+            <div className="flex justify-start">
+        <div className="px-3 py-2 rounded-xl max-w-[75%] bg-gray-200 text-gray-900 flex items-center space-x-1">
+          <span className="animate-pulse">.</span>
+          <span className="animate-pulse delay-150">.</span>
+          <span className="animate-pulse delay-300">.</span>
+        </div>
+      </div>
+
+      )}
       </div>
 
      

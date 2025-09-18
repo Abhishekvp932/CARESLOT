@@ -12,6 +12,9 @@ import { INotification } from '../../models/interface/INotification';
 
 import { IWalletRepository } from '../../interface/wallet/IWalletRepository';
 import { IWalletHistoryRepository } from '../../interface/walletHistory/IWalletHistoryRepository';
+import { IWalletHistory } from '../../models/interface/IWallet.history';
+import { IWallet } from '../../models/interface/IWallet';
+import logger from '../../utils/logger';
 
 export class AppoinmentService implements IAppoinmentService {
   constructor(
@@ -121,9 +124,15 @@ export class AppoinmentService implements IAppoinmentService {
                     
                     `
         );
-      } catch (error: any) {
-        throw new Error(error);
-      }
+      } catch (error: unknown) {
+  if (error instanceof Error) {
+    logger.error(error.message);
+    throw new Error(error.message);
+  } else {
+    logger.error('Unknown error', error);
+    throw new Error('Something went wrong');
+  }
+}
     })();
 
     return response;
@@ -147,23 +156,64 @@ export class AppoinmentService implements IAppoinmentService {
 
    if(!patient){
     throw new Error('Patient not found');
-   }
+   } 
 
-  //  let userWallet = null;
-  //  let role = null;
-
-   const userWallet = await this._walletRepository.findByUserId(patientId);
-   
-    
-  //     const payload = {
-  //     userId:patientId,
-  //     role:'patient',
-
-  //  }
 
 
    const doctorId = String(appoinment?.doctorId);
-   
+
+
+      const doctorWallet = await this._walletRepository.findByUserId(doctorId);
+
+      await this._walletRepository.findByIdAndUpdate(doctorWallet?._id as string,{$inc:{balance:-Number(appoinment?.amount)}});
+
+      const newWalletHistory:Partial<IWalletHistory> = {  
+         walletId:new Types.ObjectId(doctorWallet?._id as string),
+         appoinmentId:new Types.ObjectId(appoinment?._id as string),
+         transactionId:new Types.ObjectId(appoinment?.transactionId),
+           amount:Number(appoinment?.amount),
+         status:'success',
+         type:'debit',
+         source:'cancel appoinment',
+      };
+
+      await this._walletHistoryRepository.create(newWalletHistory);
+      const userWallet = await this._walletRepository.findByUserId(patientId);
+
+      if(!userWallet){
+        const newWalletData:Partial<IWallet> = {
+           userId:new Types.ObjectId(patientId),
+           role:'patient',
+           balance:Number(appoinment?.amount)
+        };
+        const wallet = await this._walletRepository.create(newWalletData);
+
+        const newWalletHistory:Partial<IWalletHistory> = {
+         walletId:new Types.ObjectId(wallet?._id as string),
+         appoinmentId:new Types.ObjectId(appoinment?._id as string),
+         transactionId:new Types.ObjectId(appoinment?.transactionId),
+         amount:Number(appoinment?.amount),
+         type:'credit',
+         status:'success',
+         source:'refund',         
+        };
+
+        await this._walletHistoryRepository.create(newWalletHistory);
+      }else{
+
+         const newWalletHistory:Partial<IWalletHistory> = {
+         walletId:new Types.ObjectId(userWallet?._id as string),
+         appoinmentId:new Types.ObjectId(appoinment?._id as string),
+         transactionId:new Types.ObjectId(appoinment?.transactionId),
+         amount:Number(appoinment?.amount),
+         type:'credit',
+         status:'success',
+         source:'refund',         
+        };
+        await this._walletHistoryRepository.create(newWalletHistory);
+        await this._walletRepository.findByIdAndUpdate(userWallet?._id as string,{$inc:{balance:Number(appoinment?.amount)}});
+             }
+         
    if(!doctorId){
     throw new Error('Doctor id not found');
    }

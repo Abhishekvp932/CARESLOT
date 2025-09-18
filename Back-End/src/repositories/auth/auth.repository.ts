@@ -4,6 +4,7 @@ import { Profile } from 'passport-google-oauth20';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import { BaseRepository } from '../base.repository';
 import { IPatient } from '../../models/interface/IPatient';
+import { FilterQuery } from 'mongoose';
 
 export class PatientRepository extends BaseRepository<IPatient> implements IpatientRepository {
   constructor(){
@@ -52,7 +53,7 @@ export class PatientRepository extends BaseRepository<IPatient> implements Ipati
     });
     return await user.save();
   }
-  async updatePasswordWithEmail(email: string, update:any) {
+  async updatePasswordWithEmail(email: string, update:Partial<IPatient>) {
     return  await this.model.findOneAndUpdate(
       {email},
       {$set:{password:update}},
@@ -60,11 +61,11 @@ export class PatientRepository extends BaseRepository<IPatient> implements Ipati
     );
   }
 
-   async findAllWithPagination(skip: number, limit: number,filter?:Partial<IPatient>): Promise<IPatient[]> {
+   async findAllWithPagination(skip: number, limit: number,filter: FilterQuery<IPatient>={}): Promise<IPatient[]> {
         return this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean();
      }
      
-          async countAll(filter?:Partial<IPatient>): Promise<number> {
+          async countAll(filter: FilterQuery<IPatient>={}): Promise<number> {
               return this.model.countDocuments(filter);
           }
    

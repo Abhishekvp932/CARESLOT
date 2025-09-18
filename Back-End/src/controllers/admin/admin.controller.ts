@@ -195,67 +195,8 @@ export class AdminController implements IAdminController {
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
     }
   }
-  async editDoctorProfile(req: Request, res: Response): Promise<void> {
-    try {
-      const { id: doctorId } = req.params;
-      const rawData = req.body;
 
-      const files = req.files as {
-        [key: string]: Express.Multer.File[];
-      };
 
-      const data: any = {
-        name: rawData.name,
-        email: rawData.email,
-        phone: rawData.phone,
-        DOB: rawData.DOB,
-        gender: rawData.gender,
-      };
-
-      if (files?.profileImage?.[0]) {
-        data.profile_img = files.profileImage[0].path;
-      }
-
-      data.qualifications = {
-        degree: rawData.degree,
-        institution: rawData.institution,
-        specialization: rawData.specialization,
-        medicalSchool: rawData.medicalSchool,
-        experince: parseInt(rawData.experince),
-        graduationYear: parseInt(rawData.graduationYear),
-        license: rawData.license,
-        about: rawData.about,
-        fees: parseInt(rawData.fees),
-      };
-
-      if (files?.educationCertificate?.[0]) {
-        data.qualifications.educationCertificate =
-          files.educationCertificate[0].path;
-      } else if (
-        rawData.educationCertificate &&
-        typeof rawData.educationCertificate === 'string'
-      ) {
-        data.qualifications.educationCertificate = rawData.educationCertificate;
-      }
-
-      if (files?.experienceCertificate?.[0]) {
-        data.qualifications.experienceCertificate =
-          files.experienceCertificate[0].path;
-      } else if (
-        rawData.experienceCertificate &&
-        typeof rawData.experienceCertificate === 'string'
-      ) {
-        data.qualifications.experienceCertificate =
-          rawData.experienceCertificate;
-      }
-
-      const result = await this._adminService.editDoctorProfile(doctorId, data);
-      res.status(HttpStatus.OK).json(result);
-    } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
-    }
-  }
   async addUser(req: Request, res: Response): Promise<void> {
     try {
       const { name, email, phone, gender, dob, password } = req.body;

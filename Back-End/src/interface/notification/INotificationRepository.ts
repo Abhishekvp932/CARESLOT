@@ -1,4 +1,5 @@
 
+import { UpdateResult } from 'mongoose';
 import { INotification } from '../../models/interface/INotification';
 
 export interface INotificationRepository {
@@ -8,4 +9,5 @@ export interface INotificationRepository {
    findByIdAndUpdate(notificationId:string):Promise<INotification | null>;
    findByIdAndDelete(notificationId:string):Promise<INotification | null>;
    deleteAllByUserId(userId:string):Promise<void>;
+   updateAllNotificationByUserId(userId:string):Promise<UpdateResult>;
 }

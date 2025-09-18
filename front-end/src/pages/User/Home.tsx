@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { useGetAllApprovedDoctorsQuery } from '@/features/users/userApi'
 import { useGetMeQuery } from '@/features/auth/authApi'
 import Chatbot from '@/components/common/user/Chatboat';
-
+import Image from '../../assets/unnamed.png'
 
 
 
@@ -76,7 +76,7 @@ useEffect(() => {
             </div>
           </div>
           <div className="hero-image">
-            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&h=400&fit=crop" alt="Healthcare" />
+            <img src={Image} alt="Healthcare" />
           </div>
         </div>
       </section>
