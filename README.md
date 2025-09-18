@@ -27,7 +27,7 @@ CareSlot is a **doctor appointment booking application** that allows patients to
 - **Database:** MongoDB  
 - **Real-Time Communication:** Socket.IO (chat & notifications), WebRTC (video calls)  
 - **Architecture:** Repository Pattern, SOLID Principles  
-- **Payments:** Razorpay (or your integrated provider)  
+- **Payments:** Razorpay
 
 ---
 
