@@ -6,7 +6,7 @@ import { AppointmentDoctorDTO } from '../../types/AppoinmentsAndDoctorDto';
 import { DoctorDTO } from '../../types/doctor.dto';
 import { doctorDetails } from '../../types/doctorDetails';
 import { DoctorListResult } from '../../types/doctorListResult';
-import { IGeneratedSlot } from '../../types/SlotTypes';
+import { IGeneratedSlot } from '../../types/SlotTypesDTO';
 import { SpecializationsList } from '../../types/specializationsList';
 import { UserDTO } from '../../types/user.dto';
 

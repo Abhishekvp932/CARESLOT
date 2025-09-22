@@ -1,4 +1,4 @@
-import { IBreakTime, IDaySlot } from '../types/SlotTypes';
+import { IBreakTime, IDaySlot } from '../types/SlotTypesDTO';
 import { getNextDateOfWeek } from './getDayOfWeek';
 import { genarateSlots } from './SlotUtlity';
 

@@ -20,7 +20,7 @@ import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRep
 import { IAppoinment } from '../../models/interface/IAppoinments';
 import { AppointmentDoctorDTO } from '../../types/AppoinmentsAndDoctorDto';
 import { IPatient } from '../../models/interface/IPatient';
-import { IBookedSlot, IDoctorSlotDoc, IDoctorSlotTime, IGeneratedSlot } from '../../types/SlotTypes';
+import { IBookedSlot, IDoctorSlotDoc, IDoctorSlotTime, IGeneratedSlot } from '../../types/SlotTypesDTO';
 export class PatientService implements IPatientService {
   constructor(
     private _patientRepository: IpatientRepository,
