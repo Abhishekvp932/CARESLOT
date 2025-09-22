@@ -1,13 +1,14 @@
 export const Routers = {
     adminRouters:{
         users:'/users',
-        usersId:'/users/:Id',
+        usersId:'/users/:id',
         doctors:'/doctors',
         doctorsId:'/doctors/:id',
         doctorId:'/doctor/:id',
         verificationList:'/verification-list',
         doctorDetails:'/doctor-details/:id',
-        appoinments:'/appoinments'
+        appoinments:'/appoinments',
+        slotsAndAppoinments:'/getSlots/:doctorId',
     },
     appoinmentRouters:{
         appoinments:'/appoinment',
@@ -55,7 +56,8 @@ export const Routers = {
     },
     paymentRouters:{
         order:'/order',
-        verifyOrder:'/verifyOrder'
+        verifyOrder:'/verifyOrder',
+        walletPayment:'/wallet-payment'
     },
     slotRouters:{
         slots:'/slots',

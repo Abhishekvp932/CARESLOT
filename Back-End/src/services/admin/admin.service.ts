@@ -21,12 +21,17 @@ import redisClient from '../../config/redisClient';
 import { verifyAccessToken } from '../../utils/jwt';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
 import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
+
+import { ISlots } from '../../models/interface/ISlots';
+import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
+import { ISlotRepository } from '../../interface/Slots/slotRepository.interface';
 export class AdminService implements IAdminService {
   constructor(
     private _patientRepository: IpatientRepository,
     private _adminRepository: IAdminRepository,
     private _doctorAuthRepository: IDoctorAuthRepository,
-    private _appoinmentRepository: IAppoinmentRepository
+    private _appoinmentRepository: IAppoinmentRepository,
+    private _slotRepository:ISlotRepository,
   ) {}
 
   async findAllUsers(
@@ -667,5 +672,51 @@ The CARESLOT Team`
 
     logger.debug(appoinments);
     return appoinments;
+  }
+
+  async getDoctorSlotAndAppoinment(doctorId: string): Promise<{ slots: ISlots[]; appoinments: AppointmentPatientDTO[];}> {
+    if(!doctorId){
+      throw new Error('Doctor id not found');
+    }
+    const limit = 0;
+    const skip = 0;
+    const doctor = await this._doctorAuthRepository.findById(doctorId);
+    if(!doctor){
+      throw new Error('Doctor Not found');
+    }
+    const slots = await this._slotRepository.findByDoctorId(doctor?._id as string);
+
+    if(!slots){
+      throw new Error('No slot found');
+    }
+    const appoinmentList = await this._appoinmentRepository.findAppoinmentsByDoctor(doctor?._id as string,skip,limit);
+    logger.info('suttu');
+    logger.debug(appoinmentList);
+    const appoinments: AppointmentPatientDTO[] = appoinmentList.map(
+      (app) => ({
+        _id: app._id as string,
+        doctorId: app.doctorId.toString(),
+        transactionId: app.transactionId?.toString(),
+        amount: app.amount,
+        status: app.status,
+        slot: {
+          date: app.slot.date,
+          startTime: app.slot.startTime,
+          endTime: app.slot.endTime,
+        },
+        patientId: {
+          _id: app.patientId._id.toString(),
+          name: app.patientId.name,
+          email: app.patientId.email,
+          phone: app.patientId.phone,
+          profile_img: app.patientId.profile_img,
+        },
+        createdAt: app.createdAt,
+        updatedAt: app.updatedAt,
+      })
+    );
+
+    logger.debug(slots);
+    return {slots:slots,appoinments:appoinments};
   }
 }

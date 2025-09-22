@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth/auth.service';
 import { PatientRepository } from '../repositories/auth/auth.repository';
 import { DoctorAuthRepository } from '../repositories/doctors/doctor.auth.repository';
 import { AdminRepository } from '../repositories/admin/admin.repository';
+import { IBaseUser } from '../utils/IBaseUser';
 dotenv.config();
 
 export const confiqurePassport = () => {
@@ -28,8 +29,9 @@ export const confiqurePassport = () => {
     )
   );
 
-  passport.serializeUser((user:any, done) => {
-    done(null, user._id);
+  passport.serializeUser((user:unknown, done) => {
+    const typedUser = user as IBaseUser;
+    done(null, typedUser._id);
   });
   passport.deserializeUser(async (id: string, done) => {
     try {

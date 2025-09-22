@@ -30,8 +30,8 @@ const router = express.Router();
 
 router
   .route(Routers.appoinmentRouters.appoinments)
-  .post(appoinmentController.createAppoinment.bind(appoinmentController));
+  .post(authMiddleware.protect,authMiddleware.isBlockedOrNot,authMiddleware.authorizeRole('patients'),appoinmentController.createAppoinment.bind(appoinmentController));
 
   router.route(Routers.appoinmentRouters.appoinmentCancel)
-  .patch(authMiddleware.isBlockedOrNot,authMiddleware.protect,appoinmentController.cancelAppoinment.bind(appoinmentController));
+  .patch(authMiddleware.isBlockedOrNot,authMiddleware.protect,authMiddleware.authorizeRole('patients'),appoinmentController.cancelAppoinment.bind(appoinmentController));
 export default router;

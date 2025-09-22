@@ -97,6 +97,12 @@ export const adminApi = api.injectEndpoints({
             method:'GET'
         }),
       }),
+      getAllDoctorSlotsAndAppoinments:builder.query({
+        query:(doctorId)=>({
+            url:`/admin/getSlots/${doctorId}`,
+            method:'GET'
+        }),
+      }),
     }),
 });
 
@@ -114,5 +120,6 @@ export const {
     useEditDoctorDataMutation,
     useAddUserMutation,
     useAddDoctorMutation,
-    useGetAllAdminAppoinmentsQuery
+    useGetAllAdminAppoinmentsQuery,
+    useGetAllDoctorSlotsAndAppoinmentsQuery,
 } = adminApi

@@ -39,4 +39,8 @@ router
   .route(Routers.paymentRouters.verifyOrder)
   .post(paymentController.verifyOrder.bind(paymentController));
 
+
+  router.route(Routers.paymentRouters.walletPayment)
+  .post(paymentController.walletPayment.bind(paymentController));
+  
 export default router;

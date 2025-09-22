@@ -46,9 +46,13 @@ export function SessionCard() {
   const patientId = patient?._id as string;
 
   const [page, setPage] = useState(1);
-  const limit = 3; // backend will use this
+  const limit = 8; // backend will use this
 
-  const { data = {}, refetch, isFetching } = useGetAllPatientAppoinmentsQuery({
+  const {
+    data = {},
+    refetch,
+    isFetching,
+  } = useGetAllPatientAppoinmentsQuery({
     patientId,
     page,
     limit,
@@ -61,9 +65,9 @@ export function SessionCard() {
   }, [page, refetch]);
 
   const appoinments = data?.data || [];
-  const totalPages = data?.totalPages || 1;   // ✅ use backend value
-  const totalItems = data?.totalItem || 0;    // ✅ use backend value
-  const currentPage = data?.currentPage || page; // ✅ use backend value
+  const totalPages = data?.totalPages || 1;
+  const totalItems = data?.totalItem || 0;
+  const currentPage = data?.currentPage || page;
 
   const handleCancelAppoinment = async (appoinmentId: string) => {
     try {
@@ -117,9 +121,10 @@ export function SessionCard() {
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div>
                         <h3 className="font-semibold text-lg text-card-foreground mb-1">
-                          {appoinment?.doctorId?.name}
+                          Dr Name - {appoinment?.doctorId?.name}
                         </h3>
                         <p className="text-muted-foreground text-sm">
+                          specialization -{" "}
                           {appoinment?.doctorId?.qualifications?.specialization}
                         </p>
                       </div>
@@ -135,11 +140,45 @@ export function SessionCard() {
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-sm text-card-foreground">
                         <Calendar className="w-4 h-4 text-primary" />
-                        <span>{appoinment?.slot?.date}</span>
+                        <span>
+                          Booking Date -{" "}
+                          {appoinment?.createdAt &&
+                            new Date(appoinment?.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                              }
+                            )}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-card-foreground">
+                        <Calendar className="w-4 h-4 text-primary" />
+                        <span>
+                          Appoinment Date -{" "}
+                          {appoinment?.slot?.date &&
+                            new Date(appoinment?.slot?.date).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                              }
+                            )}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-card-foreground">
                         <Clock className="w-4 h-4 text-primary" />
-                        <span>{appoinment?.slot?.startTime}</span>
+                        <span>
+                          Appointment Time -{" "}
+                          {appoinment?.slot?.startTime &&
+                            new Date(
+                              `1970-01-01T${appoinment.slot.startTime}:00`
+                            ).toLocaleTimeString([], {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            })}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -177,9 +216,7 @@ export function SessionCard() {
                       <DropdownMenuItem>Get Directions</DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() =>
-                          handleCancelAppoinment(appoinment?._id)
-                        }
+                        onClick={() => handleCancelAppoinment(appoinment?._id)}
                       >
                         Cancel Appointment
                       </DropdownMenuItem>
@@ -231,9 +268,7 @@ export function SessionCard() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setPage((p) => Math.min(totalPages, p + 1))
-                  }
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
                 >
                   Next

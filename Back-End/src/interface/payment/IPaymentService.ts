@@ -15,4 +15,9 @@ export interface IPaymentService {
     amount: string,
     paymentMethod:string
   ): Promise<{ status: string,patientNotification:INotification | null,doctorNotification:INotification | null }>;
+
+  walletPayment(doctorId:string,date:string,startTime:string,endTime:string,patientId:string,amount:string):
+  Promise<{status:string,patientNotification:INotification | null,doctorNotification:INotification | null}>;
+
+
 }

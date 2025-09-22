@@ -5,7 +5,7 @@ import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
 import { IpatientRepository } from '../../interface/auth/auth.interface';
 import { IDoctor } from '../../models/interface/IDoctor';
-import { ISlots } from '../../models/interface/ISlots';
+
 import { ISlotRepository } from '../../interface/Slots/slotRepository.interface';
 import { DoctorDTO } from '../../types/doctor.dto';
 import { DoctorListResult } from '../../types/doctorListResult';
@@ -20,6 +20,7 @@ import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRep
 import { IAppoinment } from '../../models/interface/IAppoinments';
 import { AppointmentDoctorDTO } from '../../types/AppoinmentsAndDoctorDto';
 import { IPatient } from '../../models/interface/IPatient';
+import { IBookedSlot, IDoctorSlotDoc, IDoctorSlotTime, IGeneratedSlot } from '../../types/SlotTypes';
 export class PatientService implements IPatientService {
   constructor(
     private _patientRepository: IpatientRepository,
@@ -225,26 +226,30 @@ export class PatientService implements IPatientService {
   async getDoctorSlots(
     doctorId: string,
     targetDate: string
-  ): Promise<ISlots[]> {
+  ): Promise<IGeneratedSlot[]> {
     const doctor = await this._doctorRepository.findById(doctorId);
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
    
 
+    logger.info('suttu');
+
     const doctorSlots = await this._slotsRepository.findByDoctorId(doctorId);
-    const slots: any[] = [];
+    const slots: IGeneratedSlot[] = [];
 
     const doctorAppoinments = await this._appoinmentRepo.findByDoctorId(
       doctorId
     );
 
-    const bookedSlot = doctorAppoinments.map((appt) => ({
+    const bookedSlot:IBookedSlot[] = doctorAppoinments.map((appt) => ({
       date: appt?.slot?.date,
       startTime: appt?.slot?.startTime,
       endTime: appt?.slot?.endTime,
+      status:appt?.status
     }));
 
+     logger.debug(bookedSlot);
     const today = targetDate ? new Date(targetDate) : new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -253,8 +258,8 @@ export class PatientService implements IPatientService {
     // endOfWeek.setDate(today.getDate() + (7 - today.getDay()));
     endOfWeek.setHours(23, 59, 59, 999);
 
-    doctorSlots?.forEach((slotDoc) => {
-      slotDoc?.slotTimes.forEach((slot) => {
+    doctorSlots?.forEach((slotDoc:IDoctorSlotDoc) => {
+      slotDoc?.slotTimes.forEach((slot:IDoctorSlotTime) => {
         const dayDate = getNextDateOfWeek(slot?.daysOfWeek);
 
         // if(targetDay < new Date()) return;
@@ -291,7 +296,9 @@ export class PatientService implements IPatientService {
 
           return { startTime: brStart, endTime: brEnd };
         });
-
+      
+        const now = new Date();
+        
         const slotsArray = genarateSlots(
           startTime,
           endTime,
@@ -312,8 +319,14 @@ export class PatientService implements IPatientService {
                   s.endTime.toLocaleTimeString('en-GB', {
                     hour: '2-digit',
                     minute: '2-digit',
-                  })
+                  }) && b.status === 'pending'
             );
+          }).filter((s)=>{
+            const slotDate = s.startTime;
+            if(slotDate.toDateString() === now.toDateString()){
+              return slotDate >= now;
+            }
+            return true;
           })
           .map((s) => ({
             startTime: s.startTime.toLocaleTimeString('en-GB', {
@@ -333,6 +346,8 @@ export class PatientService implements IPatientService {
         slots.push(...slotsArray);
       });
     });
+
+    logger.debug(slots);
 
     return slots;
   }

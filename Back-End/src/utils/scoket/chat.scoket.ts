@@ -51,6 +51,17 @@ export function initChatSocket(io: Server) {
       }
     });
 
+    socket.on('markAsRead', async ({ chatId, userId }) => {
+  
+    await messageRepo.findByChatIdAndUpdate(
+      { chatId, sender: { $ne: userId }, read: false },
+      { $set: { read: true } }
+    );
+
+  io.to(socket.id).emit('messagesRead', { chatId });
+});
+
+
     socket.on('sendMessage', async (messageData) => {
       try {
         io.to(messageData.chatId).emit('receiveMessage', messageData);
@@ -61,6 +72,7 @@ export function initChatSocket(io: Server) {
             content: messageData?.content || '',
             timestamp: new Date().toISOString(),
           },
+          unreadIncrement:1
         });
       } catch (error) {
         console.error('Error saving message:', error);

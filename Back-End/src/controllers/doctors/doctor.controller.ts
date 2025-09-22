@@ -55,7 +55,7 @@ export class DoctorController implements IDoctorController {
       const err = error as Error;
       res
         .status(HttpStatus.BAD_REQUEST)
-        .json({ msg: 'qualification error msg' });
+        .json({ msg: err.message });
     }
   }
   async getDoctorProfile(req: Request, res: Response): Promise<void> {

@@ -35,7 +35,7 @@ import { AppointmentHistory } from "./pages/Admin/Appoinment"
 import UserWallet from "./pages/User/Wallet"
 import { UserMessagingPage } from "./pages/User/UserMessage"
 import { DoctorMessagingPage } from "./pages/Doctor/DoctorMessage"
-
+import AboutPage from "./pages/User/AboutPage"
 function App() {
 
   return (
@@ -57,6 +57,7 @@ function App() {
         <Route path = '/sessions' element={<UserLayout><SessionCard/></UserLayout>}/>
         <Route path='/wallet' element = {<UserLayout><UserWallet/></UserLayout>}/>
         <Route path="/chat" element = {<UserLayout><UserMessagingPage/></UserLayout>}/>
+        <Route path="/about-page" element = {<AboutPage/>}/>
         <Route path="/kyc-submit" element ={
           <KYC/>
           }

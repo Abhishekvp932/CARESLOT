@@ -15,7 +15,6 @@ import { IService } from '../../interface/auth/IService.interface';
 import { MailService } from '../mail.service';
 import { IPatient } from '../../models/interface/IPatient';
 import { IBaseUser } from '../../utils/IBaseUser';
-import { HttpStatus } from '../../utils/httpStatus';
 import { IpatientRepository } from '../../interface/auth/auth.interface';
 import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
 import { IAdminRepository } from '../../interface/admin/admin.repo.interface';
@@ -25,6 +24,8 @@ import { IDoctor } from '../../models/interface/IDoctor';
 import { IAdmin } from '../../models/interface/IAdmin';
 import { LogoutRequest } from '../../types/auth';
 import { UserDTO } from '../../types/user.dto';
+import { Request, Response } from 'express';
+import logger from '../../utils/logger';
 
 export class AuthService implements IService {
   constructor(
@@ -359,12 +360,11 @@ export class AuthService implements IService {
     return { msg: SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
   }
 
-  async refreshAccessToken(req: any, res: any): Promise<any> {
+  async refreshAccessToken(req: Request, res: Response): Promise<{msg:string}> {
     const sessionId = req.cookies?.sessionId;
 
     if (!sessionId) {
       throw new Error('No session id found');
-      return;
     }
 
     const storedRefreshToken = await redisClient.get(`refresh:${sessionId}`);
@@ -377,10 +377,10 @@ export class AuthService implements IService {
 
     if (!decoded) {
       res.clearCookie('sessionId');
-      return res.status(403).json({ msg: 'Invalid or expired refresh token' });
+      return {msg:'Invalid or expired refresh token'};
     }
 
-    let user: any;
+    let user: IPatient | IDoctor | IAdmin | null = null;
     if (decoded.role === 'patients') {
       user = await this._patientRepository.findById(decoded.id);
     } else if (decoded.role === 'doctors') {
@@ -389,12 +389,16 @@ export class AuthService implements IService {
       user = await this._adminRepository.findById(decoded.id);
     }
 
+    logger.info('refresh access token user data');
+    logger.debug(user);
+
+
     if (!user) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
 
     const payload: TokenPayload = {
-      id: user._id.toString(),
+      id: user._id as string,
       email: user.email,
       role: user.role,
     };
@@ -408,8 +412,10 @@ export class AuthService implements IService {
       EX: 7 * 24 * 60 * 60,
     });
 
-    return res.status(HttpStatus.OK).json({ msg: 'token refreshed' });
+    return { msg: 'token refreshed' };
   }
+
+
 
   async getMe({ sessionId }: LogoutRequest): Promise<Partial<IPatient>> {
     const token = await redisClient.get(`access:${sessionId}`);

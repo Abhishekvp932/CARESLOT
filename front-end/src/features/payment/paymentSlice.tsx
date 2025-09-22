@@ -36,12 +36,19 @@ export const paymentApi = api.injectEndpoints({
                 },
             }),
          }),
+         walletPayment:builder.mutation({
+            query:(paymentData)=>({
+                url:'/payment/wallet-payment',
+                method:'POST',
+                body:paymentData
+            }),
+         }),
     })
 });
 
 export const {
     useCreateOrderMutation,
     useVerifyOrderMutation,
-
+    useWalletPaymentMutation,
 } = paymentApi
  

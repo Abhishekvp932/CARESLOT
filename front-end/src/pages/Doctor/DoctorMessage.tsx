@@ -18,14 +18,13 @@ import type { RootState } from "@/app/store";
 
 import EmojiPicker from "emoji-picker-react";
 
-
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { useDeleteMessageMutation } from "@/features/chat/chatApi";
+// import { useDeleteMessageMutation } from "@/features/chat/chatApi";
 import { useGetDoctorMessagesQuery } from "@/features/chat/chatApi";
 import {
   Send,
@@ -36,6 +35,7 @@ import {
   Stethoscope,
   ImageIcon,
 } from "lucide-react";
+import DoctorDetailsPage from "../Admin/DoctorDetails";
 
 interface Message {
   id: string;
@@ -45,6 +45,22 @@ interface Message {
   timestamp: string;
   type: "text" | "image";
   image?: string;
+  read:boolean;
+}
+
+interface IConversation {
+  _id: string;
+  lastMessage?: {
+    content: string;
+    timestamp: Date;
+  };
+  isActive: boolean;
+  patiendId?: {
+    _id: string;
+    profile_img: string;
+    name: string;
+  };
+  unreadCount:number;
 }
 
 export function DoctorMessagingPage() {
@@ -53,18 +69,40 @@ export function DoctorMessagingPage() {
   const [selectedConversation, setSelectedConversation] = useState<
     string | null
   >(null);
-  const [showEmoji,setShowEmoji] = useState(false)
+  const [conversationss, setConversation] = useState<IConversation[]>([]);
+  const [showEmoji, setShowEmoji] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [isTyping, setIsTyping] = useState(false);
- 
+
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
   const doctorId = doctor?._id as string;
- const [deleteMessage] = useDeleteMessageMutation();
-  const { data = [], refetch: chatRefetch } = useGetDoctorChatQuery({
-    doctorId,
-  });
+
+  const { data: conversations = [], refetch: chatRefetch } =
+    useGetDoctorChatQuery({
+      doctorId,
+    });
+
+  useEffect(() => {
+    if (!Array.isArray(conversations)) return;
+
+    setConversation((prev) => {
+      const newData = conversations.map((c: IConversation) => ({
+        _id: c._id,
+        lastMessage: c.lastMessage,
+        isActive: c.isActive,
+        patiendId: c.patiendId,
+        unreadCount:c.unreadCount,
+      }));
+
+      const isSame =
+        prev.length === newData.length &&
+        prev.every((p, i) => p._id === newData[i]._id);
+
+      return isSame ? prev : newData;
+    });
+  }, [conversations]);
 
   const { data: messagess = [], refetch } = useGetDoctorMessagesQuery(
     selectedConversation,
@@ -73,18 +111,21 @@ export function DoctorMessagingPage() {
     }
   );
 
-
-  const conversations = Array.isArray(data) ? data : [];
+  // const conversations = Array.isArray(data) ? data : [];
 
   const [sendMessage] = useSendMessageMutation();
 
   useEffect(() => {
-    chatRefetch();
     if (selectedConversation) {
       refetch();
     }
   }, [selectedConversation, refetch]);
 
+  useEffect(() => {
+    if (doctorId) {
+      chatRefetch();
+    }
+  }, [doctorId, chatRefetch]);
   useEffect(() => {
     conversations.forEach((chat) => socket.emit("joinRoom", chat._id));
   }, [conversations]);
@@ -94,10 +135,36 @@ export function DoctorMessagingPage() {
       if (msg.chatId === selectedConversation) {
         setMessages((prev) => [...prev, msg]);
       }
+
+      setConversation((prev) => {
+        const updated = prev.map((c) =>
+          c._id === msg.chatId
+            ? {
+                ...c,
+                lastMessage: {
+                  content: msg.content,
+                  timestamp: new Date(),
+                },
+              }
+            : c
+        );
+
+        const sorted = updated.sort((a, b) => {
+          const timeA = a?.lastMessage?.timestamp
+            ? new Date(a.lastMessage.timestamp).getTime()
+            : 0;
+          const timeB = b?.lastMessage?.timestamp
+            ? new Date(b.lastMessage.timestamp).getTime()
+            : 0;
+          return timeB - timeA;
+        });
+
+        return [...sorted];
+      });
     };
     socket.on("receiveMessage", handleReceiveMessage);
     return () => {
-      socket.off("receiveMessage", handleReceiveMessage)
+      socket.off("receiveMessage", handleReceiveMessage);
     };
   }, [selectedConversation]);
 
@@ -128,6 +195,20 @@ export function DoctorMessagingPage() {
       const res = await sendMessage(formData).unwrap();
       console.log("Message sent:", res);
       socket.emit("sendMessage", res);
+
+      setConversation((prev) =>
+        prev.map((c) =>
+          c._id === res.chatId
+            ? {
+                ...c,
+                lastMessage: {
+                  content: res.content || "Image",
+                  timestamp: new Date(),
+                },
+              }
+            : c
+        )
+      );
     } catch (err) {
       console.error("Error sending message:", err);
     }
@@ -138,8 +219,6 @@ export function DoctorMessagingPage() {
       setMessages([]);
       return;
     }
-
-    setMessages([]);
     refetch();
   }, [selectedConversation, refetch]);
 
@@ -190,73 +269,124 @@ export function DoctorMessagingPage() {
     }, 2000);
   };
 
+  useEffect(() => {
+    const handleTypingEvent = (data: { chatId: string; sender: string }) => {
+      if (data.chatId === selectedConversation && data.sender !== doctorId) {
+        setIsTyping(true);
+      }
+    };
+
+    const handleStopTypingEvent = (data: {
+      chatId: string;
+      sender: string;
+    }) => {
+      if (data.chatId === selectedConversation && data.sender !== doctorId) {
+        setIsTyping(false);
+      }
+    };
+
+    socket.on("typing", handleTypingEvent);
+    socket.on("stopTyping", handleStopTypingEvent);
+
+    return () => {
+      socket.off("typing", handleTypingEvent);
+      socket.off("stopTyping", handleStopTypingEvent);
+    };
+  }, [selectedConversation, doctorId]);
 
   useEffect(() => {
-  const handleTypingEvent = (data: { chatId: string; sender: string }) => {
-    if (data.chatId === selectedConversation && data.sender !== doctorId) {
-      setIsTyping(true);
-    }
-  };
+    if (!doctorId) return;
 
-  const handleStopTypingEvent = (data: { chatId: string; sender: string }) => {
-    if (data.chatId === selectedConversation && data.sender !== doctorId) {
-      setIsTyping(false);
-    }
-  };
+    socket.emit("addUser", { userId: doctorId, role: "doctor" });
 
-  socket.on("typing", handleTypingEvent);
-  socket.on("stopTyping", handleStopTypingEvent);
+    const handleOnlineUsers = (
+      users: Record<string, { socketId: string; role: string }>
+    ) => {
+      setOnlineUsers(users);
+    };
 
-  return () => {
-    socket.off("typing", handleTypingEvent);
-    socket.off("stopTyping", handleStopTypingEvent);
-  };
-}, [selectedConversation, doctorId]);
+    socket.on("onlineUsers", handleOnlineUsers);
 
+    return () => {
+      socket.off("onlineUsers", handleOnlineUsers);
+    };
+  }, [doctorId]);
 
-
-
-useEffect(() => {
-  if (!doctorId) return;
-
-  
-  socket.emit("addUser", { userId: doctorId, role: "doctor" });
-
-  const handleOnlineUsers = (users: Record<string, { socketId: string, role: string }>) => {
-    setOnlineUsers(users);
-  };
-
- 
-  socket.on("onlineUsers", handleOnlineUsers);
-
-  return () => {
-    socket.off("onlineUsers", handleOnlineUsers);
-  };
-}, [doctorId]);
-
-
-const handleMessageDelete = async(messageId:string,chatId:string)=>{
-  socket.emit("deleteMessage", { messageId, chatId });
+  const handleMessageDelete = async (messageId: string, chatId: string) => {
+    socket.emit("deleteMessage", { messageId, chatId });
 
     //  try {
     //     const res = await deleteMessage(messageId).unwrap();
-         chatRefetch();
-        refetch();
+    chatRefetch();
+    refetch();
     //     console.log(res);
     //  } catch (error) {
     //   console.log(error);
     //  }
-}
-
-useEffect(() => {
-  socket.on("messageDeleted", (deletedMessageId: string) => {
-    setMessages((prev) => prev.filter(msg => msg?.id !== deletedMessageId));
-  });
-
-  return () => {
-    socket.off("messageDeleted");
   };
-}, []);
+
+  useEffect(() => {
+    socket.on("messageDeleted", (deletedMessageId: string) => {
+      setMessages((prev) => prev.filter((msg) => msg?.id !== deletedMessageId));
+    });
+
+    return () => {
+      socket.off("messageDeleted");
+    };
+  }, []);
+
+const handleConversationClick = (conversation: IConversation) => {
+    setSelectedConversation(conversation?._id);
+
+    socket.emit("markAsRead", {
+      chatId: conversation._id,
+      userId: doctorId,
+    });
+  };
+    
+  useEffect(() => {
+    if (!socket) return;
+  
+    socket.on("messagesRead", ({ chatId }) => {
+      setConversation(prev =>
+        prev.map(c => (c._id === chatId ? { ...c, unreadCount: 0 } : c))
+      );
+    });
+  
+    return () =>{
+      socket.off("messagesRead");
+    }
+  }, [socket]);
+  
+
+
+  useEffect(() => {
+      if (!socket) return;
+  
+      socket.on(
+        "updateConversation",
+        ({ chatId, lastMessage, unreadIncrement }) => {
+          setConversation((prev) =>
+            prev.map((c) =>
+              c._id === chatId
+                ? {
+                    ...c,
+                    lastMessage,
+                    unreadCount:
+                      lastMessage.sender !== doctorId
+                        ? (c.unreadCount || 0) + unreadIncrement
+                        : c.unreadCount,
+                  }
+                : c
+            )
+          );
+        }
+      );
+  
+      return () => {
+        socket.off("updateConversation");
+      };
+    }, [socket, doctorId]);
 
   const removeSelectedImage = () => setSelectedImage(null);
 
@@ -274,7 +404,7 @@ useEffect(() => {
 
         <ScrollArea className="flex-1">
           <div className="p-2">
-            {[...conversations]
+            {[...conversationss]
               .sort((a, b) => {
                 const timeA = a?.lastMessage?.timestamp
                   ? new Date(a.lastMessage.timestamp).getTime()
@@ -297,8 +427,8 @@ useEffect(() => {
                         : ""
                     }`}
                     onClick={() => {
-                      setSelectedConversation(conversation._id);
-                      setSelectedPatient(conversation.patiendId);
+                      handleConversationClick(conversation);
+                      setSelectedPatient(conversation?.patiendId);
                     }}
                   >
                     <div className="flex items-start gap-3">
@@ -320,19 +450,26 @@ useEffect(() => {
                             {conversation?.patiendId?.name}
                           </h3>
 
-                                                
-                             {isOnline && (
-                          <span className="bg-green-500 text-white border border-white">online</span>
-                        )}
+                          {isOnline && (
+                            <span className="bg-green-500 text-white border border-white text-xs px-1 rounded">
+                              online
+                            </span>
+                          )}
 
-                          {conversation?.unread > 0 && (
+                       {conversation.unreadCount > 0 && (
+                            <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                              {conversation.unreadCount}
+                            </span>
+                          )}
+
+                          {/* {conversation?.unread > 0 && (
                             <div className="ml-2 h-5 w-5 flex items-center justify-center text-xs rounded-full bg-red-600 text-white">
                               {conversation.unread}
                             </div>
-                          )}
+                          )} */}
                         </div>
                         <p className="text-sm truncate">
-                         
+                          {conversation?.lastMessage?.content}
                           <span className="text-xs text-muted-foreground ml-1">
                             {conversation?.lastMessage?.timestamp
                               ? new Date(
@@ -351,47 +488,44 @@ useEffect(() => {
       </div>
 
       <div className="flex-1 flex flex-col">
-          {selectedPatient ? (
+        {selectedPatient ? (
           <div className="p-4 border-b border-border bg-card flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={selectedPatient?.profile_img} />
-                <AvatarFallback>
-                  <Stethoscope className="h-5 w-5" />
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="font-semibold">{selectedPatient?.name}</h2>
-                {isTyping && (
-                  <div>
-                    <p>Typing...</p>
-                  </div>
-                )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={selectedPatient?.profile_img} />
+                  <AvatarFallback>
+                    <Stethoscope className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h2 className="font-semibold">{selectedPatient?.name}</h2>
+                  {isTyping && (
+                    <div>
+                      <p>Typing...</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm">
+                  <Phone className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Video className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Calendar className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="sm">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Phone className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="sm">
-                
-                <Video className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="sm">
-                <Calendar className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="sm">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
-        </div>
-          ):(
-            <div>
-
-            </div>
-          )}
+        ) : (
+          <div></div>
+        )}
 
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-full px-4 py-2">
@@ -423,7 +557,12 @@ useEffect(() => {
                             side="top"
                             className="w-32"
                           >
-                            <DropdownMenuItem className="text-red-600" onClick={()=> handleMessageDelete(msg?.id,msg?.chatId)}>
+                            <DropdownMenuItem
+                              className="text-red-600"
+                              onClick={() =>
+                                handleMessageDelete(msg?.id, msg?.chatId)
+                              }
+                            >
                               Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -485,24 +624,21 @@ useEffect(() => {
               <ImageIcon className="h-4 w-4" />
             </Button>
 
+            <Button variant="outline" onClick={() => setShowEmoji(!showEmoji)}>
+              😀
+            </Button>
 
-             <Button variant="outline" onClick={() => setShowEmoji(!showEmoji)}>
-        😀
-      </Button>
-
-      {/* Emoji Picker */}
-      {showEmoji && (
-        <div className="absolute bottom-14 right-10 z-50">
-          <EmojiPicker
-            onEmojiClick={(emojiObject) =>
-            {
-              setMessage((prev) => prev + emojiObject.emoji);
-               setShowEmoji(false);
-            }
-            }
-          />
-        </div>
-      )}
+            {/* Emoji Picker */}
+            {showEmoji && (
+              <div className="absolute bottom-14 right-10 z-50">
+                <EmojiPicker
+                  onEmojiClick={(emojiObject) => {
+                    setMessage((prev) => prev + emojiObject.emoji);
+                    setShowEmoji(false);
+                  }}
+                />
+              </div>
+            )}
 
             <Input
               placeholder="Type your message..."

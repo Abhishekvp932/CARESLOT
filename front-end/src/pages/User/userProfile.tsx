@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const userId = user?._id;
+  const userId = user?._id as string;
 
   const {
     data = {},
@@ -151,7 +151,6 @@ const UserProfile = () => {
         </Card>
       </div>
 
-      {/* Recent Appointments */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-900">
           Recent Appointments

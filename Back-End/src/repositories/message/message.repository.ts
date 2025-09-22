@@ -1,3 +1,4 @@
+import { FilterQuery, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
 import { IMessageRepository } from '../../interface/message/IMessageRepository';
 import Message from '../../models/implementation/message.model';
 import { IMessage } from '../../models/interface/IMessage';
@@ -16,5 +17,8 @@ export class MessageRepository extends BaseRepository <IMessage> implements IMes
 
     async findByIdAndDelete(messageId: string): Promise<IMessage | null> {
         return await Message.findByIdAndDelete(messageId);
+    }
+    async findByChatIdAndUpdate(filter:FilterQuery<IMessage>,update:UpdateQuery<IMessage>): Promise<UpdateWriteOpResult> {
+        return await Message.updateMany(filter,update);
     }
 }

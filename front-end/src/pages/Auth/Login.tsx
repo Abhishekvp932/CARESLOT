@@ -27,7 +27,14 @@ const Login = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   // const admin = useSelector((state:RootState)=> state.admin.admin);
-  // const user = useSelector((state:RootState)=> state.auth.user);
+  const user = useSelector((state:RootState)=> state.auth.user);
+
+
+  useEffect(()=>{
+    if(user){
+      navigate('/');
+    }
+  })
   const [login, { isLoading }] = useLoginMutation();
 
 

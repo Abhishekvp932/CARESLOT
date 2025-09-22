@@ -4,6 +4,7 @@ import { IBaseUser } from '../../utils/IBaseUser';
 import { IPatient } from '../../models/interface/IPatient';
 import { LogoutRequest} from '../../types/auth';
 import { UserDTO } from '../../types/user.dto';
+import { Request, Response } from 'express';
 
 export interface IService{
      login(email:string,password:string) :Promise<{msg:string,user:IBaseUser,accessToken:string,refreshToken:string}>;
@@ -16,6 +17,6 @@ export interface IService{
     verifiyEmail(email:string) : Promise <{msg:string}>;
     verifyEmailOTP(email:string,otp:string):Promise<{msg:string}>;
     forgotPassword(email:string,newPassword:string):Promise<{msg:string}>
-    refreshAccessToken(req:any,res:any):Promise<any>;
+    refreshAccessToken(req:Request,res:Response):Promise<{msg:string}>;
     getMe({sessionId}:LogoutRequest):Promise<Partial<IPatient>>;
 }

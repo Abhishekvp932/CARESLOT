@@ -286,4 +286,16 @@ export class AdminController implements IAdminController {
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
     }
   }
+
+  async getDoctorSlotAndAppoinment(req: Request, res: Response): Promise<void> {
+    try {
+      const {doctorId} = req.params;
+      logger.info('slots and appoinment request is comming to the back end');
+      const result = await this._adminService.getDoctorSlotAndAppoinment(doctorId);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      const err = error as Error;
+      res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
+    }
+  }
 }

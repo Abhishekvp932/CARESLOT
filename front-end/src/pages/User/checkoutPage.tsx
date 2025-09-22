@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+
 import { Calendar, Clock, CreditCard, Wallet, CheckCircle } from "lucide-react";
 import Header from "@/layout/Header";
 import Footer from "@/layout/Footer";
@@ -21,10 +21,12 @@ import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 // import { useBookAppoinmentMutation } from "@/features/users/userApi";
+import { useWalletPaymentMutation } from "@/features/payment/paymentSlice";
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [createOrder] = useCreateOrderMutation();
   const [verifyOrder] = useVerifyOrderMutation();
+  const [walletPayment] = useWalletPaymentMutation();
   // const [isProcessing, setIsProcessing] = useState(false);
   const patient = useSelector((state: RootState) => state.auth.user);
 
@@ -68,51 +70,66 @@ export default function CheckoutPage() {
     //  // amount: total,
     //  // };
 
-    if(!paymentMethod){
-      toast.error('Please Selecte a Payment Method')
+    if (!paymentMethod) {
+      toast.error("Please Selecte a Payment Method");
       return;
     }
-     
-    if(paymentMethod === 'Online Payment'){
+
+    if (paymentMethod === "Online Payment") {
       const order = await createOrder(total).unwrap();
-    console.log("response from orders", order);
+      console.log("response from orders", order);
 
-    const options = {
-      key: "rzp_test_REa5si7xp8OFdl",
-      amount: order.amount,
-      currency: order.currency,
-      order_id: order.id,
-      name: "CareSlot",
-      description: "Doctor Appointment Payment",
-      handler: async function (response: any) {
-        // This will run ONLY if checkout is opened & payment success
-        const verify = await verifyOrder({
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature,
-          doctorId: doctorId,
-          patientId: patient?._id,
-          date: time?.date,
-          startTime: time?.startTime,
-          endTime: time?.endTime,
-          amount: total,
-          paymentMethod:paymentMethod,
-        }).unwrap();
-        console.log("verify order", verify);
-        navigate('/');
-      },
-      prefill: {
-        name: patient?.name,
-        email: patient?.email,
-        contact: patient?.phone,
-      },
-      theme: { color: "#3399cc" },
-    };
+      const options = {
+        key: "rzp_test_REa5si7xp8OFdl",
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.id,
+        name: "CareSlot",
+        description: "Doctor Appointment Payment",
+        handler: async function (response) {
+          const verify = await verifyOrder({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            doctorId: doctorId,
+            patientId: patient?._id,
+            date: time?.date,
+            startTime: time?.startTime,
+            endTime: time?.endTime,
+            amount: total,
+            paymentMethod: paymentMethod,
+          }).unwrap();
+          console.log("verify order", verify);
+          navigate("/");
+        },
+        prefill: {
+          name: patient?.name,
+          email: patient?.email,
+          contact: patient?.phone,
+        },
+        theme: { color: "#3399cc" },
+      };
 
-    const rzp = new (window as any).Razorpay(options);
-    rzp.open();
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    }else{
+       try {
+        
+       const payload = { 
+      doctorId: doctorId,
+     date: time?.date,
+      startTime: time?.startTime,
+      endTime: time?.endTime,
+      patientId: patient?._id as string,
+      amount: total,
+      };
+
+        const res = await walletPayment(payload).unwrap();
+        console.log('wallet payment response',res);
+       } catch (error) {
+        console.log(error);
+       }
     }
-
   };
 
   return (
@@ -171,7 +188,12 @@ export default function CheckoutPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Date</p>
                       <p className="text-gray-900">
-                        {time?.date} - {time?.dayOfWeek}
+                        {time?.date &&
+                          new Date(time.date).toLocaleDateString([], {
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        - {time?.dayOfWeek}
                       </p>
                     </div>
                     <div>
@@ -179,7 +201,23 @@ export default function CheckoutPage() {
                         Time Slot
                       </p>
                       <p className="text-gray-900">
-                        {time?.startTime} - {time?.endTime}
+                        {time?.startTime &&
+                          new Date(
+                            `1970-01-01T${time.startTime}:00`
+                          ).toLocaleTimeString([], {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
+                        -
+                        {time?.endTime &&
+                          new Date(
+                            `1970-01-01T${time.endTime}:00`
+                          ).toLocaleTimeString([], {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
                       </p>
                     </div>
                   </div>
@@ -188,7 +226,23 @@ export default function CheckoutPage() {
                       <p className="text-sm font-medium text-gray-500">
                         Duration
                       </p>
-                      {time?.startTime} - {time?.endTime}
+                      {time?.startTime &&
+                        new Date(
+                          `1970-01-01T${time.startTime}:00`
+                        ).toLocaleTimeString([], {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      -
+                      {time?.endTime &&
+                        new Date(
+                          `1970-01-01T${time.endTime}:00`
+                        ).toLocaleTimeString([], {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
                     </div>
                     <div>
                       {/* <p className="text-sm font-medium text-gray-500">Appointment Type</p>
@@ -214,7 +268,10 @@ export default function CheckoutPage() {
                 >
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3 p-4 border rounded-lg">
-                      <RadioGroupItem value="Online Payment" id="Online Payment" />
+                      <RadioGroupItem
+                        value="Online Payment"
+                        id="Online Payment"
+                      />
                       <Label
                         htmlFor="card"
                         className="flex items-center gap-3 cursor-pointer flex-1"

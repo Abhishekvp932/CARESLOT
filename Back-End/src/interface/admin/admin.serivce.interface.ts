@@ -4,6 +4,9 @@ import { UserListResult } from '../../types/userListsResult';
 import { doctorDetails } from '../../types/doctorDetails';
 import { IPatient } from '../../models/interface/IPatient';
 import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
+import { ISlots } from '../../models/interface/ISlots';
+
+import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
 export interface IAdminService {
   findAllUsers(page:number,limit:number,search:string): Promise<UserListResult>;
   findAllDoctors(page:number,limit:number,search:string): Promise<DoctorListResult>;
@@ -38,5 +41,7 @@ export interface IAdminService {
 addDoctor(data:unknown):Promise<{msg:string}>
 
 getAllAppoinments():Promise<AppoinmentPopulatedDTO[]>
+
+getDoctorSlotAndAppoinment(doctorId:string):Promise<{slots:ISlots[],appoinments:AppointmentPatientDTO[]}>
 
 }

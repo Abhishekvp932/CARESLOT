@@ -25,7 +25,7 @@ export class AppoinmentService implements IAppoinmentService {
     private _walletRepository:IWalletRepository,
     private _walletHistoryRepository:IWalletHistoryRepository,
   ) {}
-
+ 
   async createAppoinment(
     data: appoinemntData
   ): Promise<{

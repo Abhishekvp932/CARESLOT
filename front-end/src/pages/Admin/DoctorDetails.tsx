@@ -5,10 +5,18 @@ import { Button } from "@/components/ui/button";
 // CardDescription
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-// import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetEditDoctorDataQuery } from "@/features/admin/adminApi";
 import { useParams } from "react-router-dom";
+import { useGetAllDoctorSlotsAndAppoinmentsQuery } from "@/features/admin/adminApi";
 import {
   ArrowLeft,
   Calendar,
@@ -39,6 +47,10 @@ import {
 export default function DoctorDetailsPage() {
   const { doctorId } = useParams<{ doctorId: string }>();
   const { data: doctor } = useGetEditDoctorDataQuery(doctorId);
+  const { data = [] } = useGetAllDoctorSlotsAndAppoinmentsQuery(doctorId);
+  console.log(data);
+  const appoinments = data?.appoinments || [];
+  const slots = data?.slots || [];
   return (
     <div className="min-h-screen bg-gray-50/50">
       {/* Header */}
@@ -187,10 +199,8 @@ export default function DoctorDetailsPage() {
 
               {/* Overview Tab */}
               <TabsContent value="overview" className="space-y-6">
-                {/* Professional Information */}   
+                {/* Professional Information */}
 
-
-                
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -306,105 +316,97 @@ export default function DoctorDetailsPage() {
               </TabsContent>
 
               {/* Schedule Tab */}
-              {/* <TabsContent value="schedule" className="space-y-6">
+              <TabsContent value="schedule" className="space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Weekly Schedule</CardTitle>
-                    <CardDescription>Doctor's availability throughout the week</CardDescription>
+                    {/* <CardDescription>Doctor's availability throughout the week</CardDescription> */}
                   </CardHeader>
                   <CardContent>
                     <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Day</TableHead>
-                          <TableHead>Morning</TableHead>
-                          <TableHead>Afternoon</TableHead>
+                          <TableHead>Times</TableHead>
+                          <TableHead>Break</TableHead>
                           <TableHead>Status</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        <TableRow>
-                          <TableCell className="font-medium">Monday</TableCell>
-                          <TableCell>9:00 AM - 12:00 PM</TableCell>
-                          <TableCell>2:00 PM - 6:00 PM</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800">
-                              Available
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">Tuesday</TableCell>
-                          <TableCell>9:00 AM - 12:00 PM</TableCell>
-                          <TableCell>2:00 PM - 6:00 PM</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800">
-                              Available
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">Wednesday</TableCell>
-                          <TableCell>9:00 AM - 12:00 PM</TableCell>
-                          <TableCell>-</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                              Partial
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">Thursday</TableCell>
-                          <TableCell>9:00 AM - 12:00 PM</TableCell>
-                          <TableCell>2:00 PM - 6:00 PM</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800">
-                              Available
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">Friday</TableCell>
-                          <TableCell>9:00 AM - 12:00 PM</TableCell>
-                          <TableCell>2:00 PM - 5:00 PM</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800">
-                              Available
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">Saturday</TableCell>
-                          <TableCell>10:00 AM - 1:00 PM</TableCell>
-                          <TableCell>-</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                              Partial
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="font-medium">Sunday</TableCell>
-                          <TableCell>-</TableCell>
-                          <TableCell>-</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-red-100 text-red-800">
-                              Unavailable
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
+                        {Array.isArray(slots) &&
+                          slots.map((slotDoc, index) =>
+                            slotDoc?.slotTimes.map((slot, idx) => slot?.breakTime?.map((slots,index)=>(
+                               <TableRow key={`${index}-${idx}`}>
+                                <TableCell className="font-medium">
+                                  {slot?.daysOfWeek}
+                                </TableCell>
+                                <TableCell>
+                                  {slot?.startTime &&
+                                    new Date(slot.startTime).toLocaleTimeString(
+                                      [],
+                                      {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      }
+                                    )}{" "} 
+                                  to{" "}
+                                  {slot?.endTime &&
+                                    new Date(slot.endTime).toLocaleTimeString(
+                                      [],
+                                      {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      }
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                  {slots?.startTime &&
+                                    new Date(slots.startTime).toLocaleTimeString(
+                                      [],
+                                      {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      }
+                                    )}{" "} 
+                                  to{" "}
+                                  {slots?.endTime &&
+                                    new Date(slots?.endTime).toLocaleTimeString(
+                                      [],
+                                      {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      }
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                  <Badge
+                                    variant="secondary"
+                                    className="bg-green-100 text-green-800"
+                                  >
+                                    {slot?.status
+                                      ? "Available"
+                                      : "Not Available"}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            )))
+                          )}
                       </TableBody>
                     </Table>
                   </CardContent>
                 </Card>
-              </TabsContent> */}
+              </TabsContent>
 
               {/* Appointments Tab */}
-              {/* <TabsContent value="appointments" className="space-y-6">
+              <TabsContent value="appointments" className="space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Recent Appointments</CardTitle>
-                    <CardDescription>Latest patient appointments and their status</CardDescription>
+                    {/* <CardDescription>Latest patient appointments and their status</CardDescription> */}
                   </CardHeader>
                   <CardContent>
                     <Table>
@@ -418,22 +420,38 @@ export default function DoctorDetailsPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        <TableRow>
+                        {Array.isArray(appoinments) && appoinments?.map((app)=>(
+                          <TableRow>
                           <TableCell>
                             <div>
-                              <p className="font-medium">John Smith</p>
-                              <p className="text-sm text-gray-500">john.smith@email.com</p>
+                              <p className="font-medium">{app?.patientId?.name}</p>
+                              <p className="text-sm text-gray-500">
+                                {app?.patientId?.email}
+                              </p>
                             </div>
                           </TableCell>
                           <TableCell>
                             <div>
-                              <p className="font-medium">Jan 15, 2024</p>
-                              <p className="text-sm text-gray-500">10:30 AM</p>
+                              <p className="font-medium">{app?.slot?.date &&
+                          new Date(app?.slot?.date).toLocaleDateString([], {
+                            month: "long",
+                            day: "numeric",
+                          })}</p>
+                              <p className="text-sm text-gray-500">{app?.slot?.startTime &&
+                        new Date(
+                          `1970-01-01T${app?.slot?.startTime}:00`
+                        ).toLocaleTimeString([], {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}</p>
                             </div>
                           </TableCell>
                           <TableCell>Consultation</TableCell>
                           <TableCell>
-                            <Badge className="bg-green-100 text-green-800">Completed</Badge>
+                            <Badge className="bg-green-100 text-green-800">
+                             {app?.status}
+                            </Badge>
                           </TableCell>
                           <TableCell>
                             <Button variant="ghost" size="sm">
@@ -441,57 +459,12 @@ export default function DoctorDetailsPage() {
                             </Button>
                           </TableCell>
                         </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">Emily Davis</p>
-                              <p className="text-sm text-gray-500">emily.davis@email.com</p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">Jan 16, 2024</p>
-                              <p className="text-sm text-gray-500">2:00 PM</p>
-                            </div>
-                          </TableCell>
-                          <TableCell>Follow-up</TableCell>
-                          <TableCell>
-                            <Badge className="bg-blue-100 text-blue-800">Scheduled</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="sm">
-                              View
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">Michael Brown</p>
-                              <p className="text-sm text-gray-500">michael.brown@email.com</p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">Jan 14, 2024</p>
-                              <p className="text-sm text-gray-500">11:15 AM</p>
-                            </div>
-                          </TableCell>
-                          <TableCell>Check-up</TableCell>
-                          <TableCell>
-                            <Badge className="bg-red-100 text-red-800">Cancelled</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="sm">
-                              View
-                            </Button>
-                          </TableCell>
-                        </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   </CardContent>
                 </Card>
-              </TabsContent> */}
+              </TabsContent>
 
               {/* Reviews Tab */}
               {/* <TabsContent value="reviews" className="space-y-6">

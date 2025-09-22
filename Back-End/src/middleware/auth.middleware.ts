@@ -1,5 +1,5 @@
     import { Request, Response, NextFunction } from 'express';
-    import { verifyAccessToken } from '../utils/jwt';
+    import { TokenPayload, verifyAccessToken } from '../utils/jwt';
     import logger from '../utils/logger';
   import redisClient from '../config/redisClient';
 import { HttpStatus } from '../utils/httpStatus';
@@ -106,5 +106,17 @@ export class AuthMiddleware {
           res.status(500).json({ message: 'SERVER_ERROR_AUTH' });
           return;
         }
+      };
+
+      public authorizeRole = (...allowedRoles:string[])=>{
+        return (req:Request,res:Response,next:NextFunction):void=>{
+          const user = req.user as TokenPayload;
+
+          if(!user || !allowedRoles.includes(user.role)){
+            res.status(HttpStatus.FORBIDDEN).json({msg:'Forbidden'});
+            return;
+          }
+          next();
+        };
       };
   }

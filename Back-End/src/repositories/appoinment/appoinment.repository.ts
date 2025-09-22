@@ -42,7 +42,7 @@ export class AppoinmentRepository implements IAppoinmentRepository {
      async findAppoinmentsByPatient(patientId: string,skip:number,limit:number): Promise<(IAppoinment & {doctorId:IDoctorPopulated})[]> {
          const appoinments =  await Appoinment.find({patientId:patientId})
          .populate('doctorId','_id name email phone profile_img qualifications.fees qualifications.specialization')
-          .sort({createdAt:1})
+          .sort({createdAt:-1})
          .skip(skip)
          .limit(limit)
          .lean()

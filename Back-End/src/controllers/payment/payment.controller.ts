@@ -59,4 +59,21 @@ export class PaymentController implements IPaymentController {
       res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
     }
   }
+  async walletPayment(req: Request, res: Response): Promise<void> {
+    try {
+      logger.info('wallet payment request is comming');
+  //      doctorId: '68adb14d2a64e7098a71ebdd',
+  // date: '2025-09-20',
+  // startTime: '09:00',
+  // endTime: '10:00',
+  // patientId: '6891de87a60f4ac81f03e7df',
+  // amount: 650
+      const {doctorId,date,startTime,endTime,patientId,amount} = req.body; 
+      const result = await this._paymentService.walletPayment(doctorId,date,startTime,endTime,patientId,amount);
+      res.status(HttpStatus.CREATED).json(result);
+    } catch (error) {
+      const err = error as Error;
+      res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
+    }
+  }
 }
