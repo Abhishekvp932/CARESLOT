@@ -21,4 +21,15 @@ export class WalletController implements IWalletController {
             res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
         }
     }
+    async getDoctorWalletData(req: Request, res: Response): Promise<void> {
+        try {
+            const {doctorId} = req.params;
+            logger.info('doctor wallet data request is comming');
+            const result = await this._walletService.getDoctorWalletData(doctorId);
+            res.status(HttpStatus.OK).json(result);
+        } catch (error) {
+            const err = error as Error;
+            res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
+        }
+    }
 }

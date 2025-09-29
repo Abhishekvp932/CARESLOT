@@ -23,6 +23,8 @@ import { IChat } from '../../models/interface/IChat';
 import logger from '../../utils/logger';
 import { IAppoinment } from '../../models/interface/IAppoinments';
 import { IChatPopulated } from '../../types/ChatAndDoctorPopulatedDTO';
+import { ICallLogRepository } from '../../interface/callLogs/ICallLogRepository';
+import { ICallLog } from '../../models/interface/ICallLog';
 dotenv.config();
 
 export class PaymentService implements IPaymentService {
@@ -34,7 +36,8 @@ export class PaymentService implements IPaymentService {
     private _patientRepository: IpatientRepository,
     private _walletRepository: IWalletRepository,
     private _walletHistoryRepository: IWalletHistoryRepository,
-    private _chatRepository: IChatRepository
+    private _chatRepository: IChatRepository,
+    private _callLogRepository:ICallLogRepository,
   ) {}
 
   async createOrder(amount: number): Promise<RazorpayOrder> {
@@ -100,7 +103,7 @@ export class PaymentService implements IPaymentService {
       if (!appoinment) {
         throw new Error('appoinment not found');
       }
-
+      
       const newPayment = {
         appoinmentId: new Types.ObjectId(appoinment?._id as string),
         patientId: new Types.ObjectId(patientId as string),
@@ -117,6 +120,20 @@ export class PaymentService implements IPaymentService {
         appoinment?._id as string,
         { transactionId: new Types.ObjectId(payment?._id as string) }
       );
+      logger.info('22');
+     const scheduledStart = new Date(`${appoinment.slot.date}T${appoinment.slot.startTime}`);
+const scheduledEnd = new Date(`${appoinment.slot.date}T${appoinment.slot.endTime}`);
+
+      const newCallLogs:Partial<ICallLog> = {
+         doctorId:new Types.ObjectId(appoinment?.doctorId),
+         patientId:new Types.ObjectId(appoinment?.patientId),
+         appoinmentId:new Types.ObjectId(appoinment?._id as string),
+         startTime:scheduledStart,
+         endTime:scheduledEnd,
+         duration:Math.floor((scheduledEnd.getTime() - scheduledStart.getTime()) / 1000),
+         status: 'scheduled',
+      };
+       await this._callLogRepository.create(newCallLogs);
     const userChat = await this._chatRepository.findPatientChat(patient?._id as string);
      logger.info('user chat');
      logger.debug(userChat);

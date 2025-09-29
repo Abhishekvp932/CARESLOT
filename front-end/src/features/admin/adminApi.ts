@@ -93,7 +93,7 @@ export const adminApi = api.injectEndpoints({
       }),
       getAllAdminAppoinments:builder.query({
         query:()=>({
-            url:'/admin/appoinments',
+            url:`/admin/appoinments`,
             method:'GET'
         }),
       }),

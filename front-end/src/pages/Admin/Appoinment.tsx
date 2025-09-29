@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AppointmentCard } from "@/components/common/admin/appoinment_card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -8,78 +8,29 @@ import { Input } from "@/components/ui/input"
 import { Search, Filter } from "lucide-react"
 
 import { useGetAllAdminAppoinmentsQuery } from "@/features/admin/adminApi"
-// Sample appointment data
-// const sampleAppointments = [
-//   {
-//     id: "1",
-//     title: "Annual Physical Checkup",
-//     date: "March 15, 2024",
-//     time: "10:00 AM",
-//     location: "Main Medical Center, Room 205",
-//     doctor: "Sarah Johnson",
-//     status: "completed" as const,
-//     type: "General Medicine",
-//   },
-//   {
-//     id: "2",
-//     title: "Dental Cleaning",
-//     date: "March 22, 2024",
-//     time: "2:30 PM",
-//     location: "Dental Care Clinic, Suite 3B",
-//     doctor: "Michael Chen",
-//     status: "upcoming" as const,
-//     type: "Dentistry",
-//   },
-//   {
-//     id: "3",
-//     title: "Eye Examination",
-//     date: "March 8, 2024",
-//     time: "11:15 AM",
-//     location: "Vision Center, Floor 2",
-//     doctor: "Emily Rodriguez",
-//     status: "completed" as const,
-//     type: "Ophthalmology",
-//   },
-//   {
-//     id: "4",
-//     title: "Cardiology Consultation",
-//     date: "February 28, 2024",
-//     time: "9:00 AM",
-//     location: "Heart Institute, Room 401",
-//     doctor: "David Kim",
-//     status: "cancelled" as const,
-//     type: "Cardiology",
-//   },
-//   {
-//     id: "5",
-//     title: "Physical Therapy Session",
-//     date: "March 25, 2024",
-//     time: "3:00 PM",
-//     location: "Rehabilitation Center, Gym A",
-//     doctor: "Lisa Thompson",
-//     status: "upcoming" as const,
-//     type: "Physical Therapy",
-//   },
-//   {
-//     id: "6",
-//     title: "Dermatology Screening",
-//     date: "March 5, 2024",
-//     time: "1:45 PM",
-//     location: "Skin Care Center, Room 102",
-//     doctor: "Robert Wilson",
-//     status: "rescheduled" as const,
-//     type: "Dermatology",
-//   },
-// ]
+
 
 export function AppointmentHistory() {
 
-  const {data = {}} = useGetAllAdminAppoinmentsQuery();
-  console.log(data);
-  const appointments = data || []
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
+  
 
+  const [searchTerm, setSearchTerm] = useState("")
+  // const [page, setPage] = useState(1);
+  // const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all")
+  // const limit = 10;
+ 
+const {data = {}} = useGetAllAdminAppoinmentsQuery();
+  console.log(data);
+
+  const appointments = data || []
+  // useEffect(()=>{
+  //   const handler = setTimeout(()=>{
+  //     setDebouncedSearch(searchTerm);
+  //   },5000)
+
+  //   return ()=> clearTimeout(handler);
+  // },[searchTerm]);
 
 
   const handleReschedule = (id: string) => {
@@ -92,13 +43,7 @@ export function AppointmentHistory() {
     // Add cancel logic here
   }
 
-  // const statusCounts = appointments.reduce(
-  //   (acc, appointment) => {
-  //     acc[appointment.status] = (acc[appointment.status] || 0) + 1
-  //     return acc
-  //   },
-  //   {} as Record<string, number>,
-  // )
+
 
   return (
     <div className="space-y-6">
@@ -108,20 +53,6 @@ export function AppointmentHistory() {
         <p className="text-muted-foreground">View and manage your past and upcoming medical appointments</p>
       </div>
 
-      {/* Stats */}
-      {/* <div className="flex flex-wrap gap-4">
-        <Badge variant="outline" className="px-3 py-1">
-          Total: {appointments.length}
-        </Badge>
-        <Badge variant="outline" className="px-3 py-1">
-          Upcoming: {statusCounts.upcoming || 0}
-        </Badge>
-        <Badge variant="outline" className="px-3 py-1">
-          Completed: {statusCounts.completed || 0}
-        </Badge>
-      </div> */}
-
-      {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />

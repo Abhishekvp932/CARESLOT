@@ -27,6 +27,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -44,7 +45,7 @@ const getStatusColor = (status: string) => {
 export function SessionCard() {
   const patient = useSelector((state: RootState) => state.auth.user);
   const patientId = patient?._id as string;
-
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const limit = 8; // backend will use this
 
@@ -91,12 +92,16 @@ export function SessionCard() {
       </Card>
     );
   }
+  const handleVideoCall = (appoinmentId:string)=>{
+    console.log('video call appoinment id ',appoinmentId);
+    navigate(`/video-call/${appoinmentId}`);
+  }
 
   return (
     <div className="space-y-4">
       {/* Appointments Cards */}
       <div className="space-y-4">
-        {appoinments.map((appoinment: any) => (
+        {appoinments.map((appoinment) => (
           <Card
             key={appoinment._id}
             className="bg-card border-border hover:shadow-md transition-shadow duration-200"
@@ -190,9 +195,10 @@ export function SessionCard() {
                       variant="outline"
                       size="sm"
                       className="flex-1 sm:flex-none bg-transparent"
+                      onClick={()=> handleVideoCall(appoinment?._id)}
                     >
                       <Phone className="w-4 h-4 mr-2" />
-                      Call
+                     Video Call
                     </Button>
                     <Button
                       variant="outline"

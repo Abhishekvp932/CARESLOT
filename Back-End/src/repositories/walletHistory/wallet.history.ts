@@ -8,7 +8,7 @@ export class WalletHistoryRepository extends BaseRepository <IWalletHistory> imp
         super(WalletHistory);
     }
     async findByWalletId(walletId: string): Promise<IWalletHistory[]> {
-        return await WalletHistory.find({walletId:walletId});
+        return await WalletHistory.find({walletId:walletId}).sort({createdAt:-1});
     }
     async findByAppoinmentId(appoinmentId: string): Promise<IWalletHistory | null> {
         return await WalletHistory.findOne({appoinmentId:appoinmentId});

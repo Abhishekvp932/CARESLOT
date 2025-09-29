@@ -109,7 +109,7 @@ export const userApi = api.injectEndpoints({
     }),
     deleteAllNotification:builder.mutation({
       query:(userId)=>({
-        url:`/notification/notification/${userId}`,
+        url:`/notification/deleteAll-notification/${userId}`,
         method:"DELETE",
       }),
     }),

@@ -6,7 +6,7 @@ import passport from 'passport';
 import cookieParser from 'cookie-parser';
 
 import { createServer } from 'http';
-import { Server } from 'socket.io';
+import {Server} from 'socket.io';
 
 
 import autRoutes from './routes/auth.route';
@@ -24,9 +24,10 @@ import notificationRoute from './routes/notification.route';
 import paymentRoute from './routes/payment.route';
 import walletRoute from './routes/wallet.route';
 import chatRoute from './routes/chat.route';
-
+import callLogRoute from './routes/callLog.route';
 import { initChatSocket } from './utils/scoket/chat.scoket';
 import logger from './utils/logger';
+import { initVideoCallSocket} from './utils/scoket/video.call.socket';
 
 (async()=>{
   try {
@@ -58,6 +59,7 @@ export const io = new Server(httpServer,{
   },
 });
 initChatSocket(io);
+initVideoCallSocket(io);
 
 io.on('connection',(socket)=>{
   console.log('user connected',socket?.id);
@@ -110,7 +112,7 @@ app.use('/api/notification',notificationRoute);
 app.use('/api/payment',paymentRoute);   
 app.use('/api/wallet',walletRoute);         
 app.use('/api/chat',chatRoute);
-
+app.use('/api/call',callLogRoute);
 
 const PORT = process.env.PORT;
 

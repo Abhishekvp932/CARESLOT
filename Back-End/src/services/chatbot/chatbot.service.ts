@@ -11,7 +11,7 @@ export class ChatbotService implements IChatbotService {
   async processMessage(message: string): Promise<{ replay: string }> {
      const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
-     const model = genAi.getGenerativeModel({model:'gemini-1.5-flash'});
+     const model = genAi.getGenerativeModel({ model: 'gemini-1.5' });
 
      const prompt = `
 You are a medical assistant chatbot for the CareSlot doctor booking website.
@@ -31,7 +31,9 @@ User message: "${message}"
 
       for(let i =0;i<3;i++){
         try {
-          result = await model.generateContent(prompt);
+          result = await model.generateContent({
+            contents:[{role:'User',parts:[{text:prompt}]}],
+          });
           break;
         } catch (err) {
           logger.debug(err);

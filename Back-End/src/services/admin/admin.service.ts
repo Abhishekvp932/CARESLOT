@@ -633,6 +633,10 @@ The CARESLOT Team`
     return { msg: 'New doctor added successfully' };
   }
   async getAllAppoinments(): Promise<AppoinmentPopulatedDTO[]> {
+     
+  
+
+
     const appoinmentsList = await this._appoinmentRepository.findAll();
 
     if (!appoinmentsList) {

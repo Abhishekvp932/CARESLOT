@@ -28,7 +28,7 @@ const navItems = [
   { title: "Schedule & Timing", url: "/doctor/time-shedule", icon: Clock },
   { title: "Patients", url: "#patients", icon: Users },
   { title: "Appointments", url: "/doctor/appoinment", icon: Calendar },
-  { title: "Medical Records", url: "#records", icon: FileText },
+  { title: "Wallet", url: "/doctor/wallet", icon: FileText },
   { title: "Messages", url: "/doctor/chat", icon: Mail,},
   { title: "Settings", url: "#settings", icon: Settings },
 ];

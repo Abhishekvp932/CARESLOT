@@ -21,9 +21,9 @@ import {
   ArrowLeft,
   Calendar,
   Clock,
-  Edit,
+
   Mail,
-  MapPin,
+
   Phone,
   Star,
   Users,
@@ -32,7 +32,7 @@ import {
   Stethoscope,
   UserCheck,
   UserX,
-  MoreHorizontal,
+
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -41,7 +41,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
+
 } from "@/components/ui/dropdown-menu";
 
 export default function DoctorDetailsPage() {

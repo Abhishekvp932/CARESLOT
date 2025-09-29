@@ -12,7 +12,9 @@ const router = express.Router();
 
 router
   .route(Routers.notificationRouters.notificationWithPatientId)
-  .get(notificationController.getUserNotification.bind(notificationController))
+  .get(notificationController.getUserNotification.bind(notificationController));
+
+  router.route(Routers.notificationRouters.deleteAllNotification)
   .delete(
     notificationController.deleteAllNotification.bind(notificationController)
   );

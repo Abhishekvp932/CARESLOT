@@ -86,6 +86,12 @@ export const doctorApi = api.injectEndpoints({
         method:'GET'
       }),
     }),
+    getDoctorWallet:builder.query({
+      query:({doctorId})=>({
+        url:`/wallet/doctorWallet/${doctorId}`,
+        method:'GET'
+      }),
+    }),
   }),
 });
 
@@ -98,4 +104,5 @@ export const {
   useDeleteSlotMutation,
   useReApplyDataMutation,
   useGetAllAppoinmentsQuery,
+  useGetDoctorWalletQuery,
 } = doctorApi;

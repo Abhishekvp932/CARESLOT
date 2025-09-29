@@ -1,5 +1,5 @@
 
-import { Routes,Route } from "react-router-dom"
+import { Routes,Route} from "react-router-dom"
 import UserHome from './pages/User/Home'
 import Login from "./pages/Auth/Login"
 import Signup from "./pages/Auth/Signup"
@@ -36,6 +36,9 @@ import UserWallet from "./pages/User/Wallet"
 import { UserMessagingPage } from "./pages/User/UserMessage"
 import { DoctorMessagingPage } from "./pages/Doctor/DoctorMessage"
 import AboutPage from "./pages/User/AboutPage"
+import UserVideoCall from "./pages/User/VideoCallPage"
+import DoctorVideoCall from "./pages/Doctor/DoctorVideoCall"
+import DoctorWalletPage from "./pages/Doctor/DoctorWallet"
 function App() {
 
   return (
@@ -58,6 +61,8 @@ function App() {
         <Route path='/wallet' element = {<UserLayout><UserWallet/></UserLayout>}/>
         <Route path="/chat" element = {<UserLayout><UserMessagingPage/></UserLayout>}/>
         <Route path="/about-page" element = {<AboutPage/>}/>
+        <Route path="/video-call/:appoinmentId" element = {<UserVideoCall/>}/>
+
         <Route path="/kyc-submit" element ={
           <KYC/>
           }
@@ -81,6 +86,8 @@ function App() {
            <Route path="/doctor/time-shedule" element = {<TimeShedule/>}/>
            <Route path="/doctor/appoinment" element = {<AppointmentsListDoctor/>}/>
            <Route path="/doctor/chat" element = {<DoctorMessagingPage/>}/>
+           <Route path="/doctor/video-call/:appoinmentId" element={<DoctorVideoCall/>}/>
+           <Route path="/doctor/wallet" element={<DoctorWalletPage/>}/>
      </Routes>
    </div>
   )

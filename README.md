@@ -1,5 +1,3 @@
-# CARESLOT
-
 # CareSlot 🩺  
 
 CareSlot is a **doctor appointment booking application** that allows patients to connect with doctors online without physically visiting hospitals. It provides a seamless healthcare experience through **online consultations, real-time communication, and secure payments**.  

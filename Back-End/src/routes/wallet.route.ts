@@ -20,6 +20,7 @@ const router = express.Router();
 router.route(Routers.walletRouters.userWalletData)
 .get(authMiddleWare.protect,authMiddleWare.isBlockedOrNot,walletController.getUserWalletData.bind(walletController));
 
-
+router.route(Routers.walletRouters.doctorWalletData)
+.get(authMiddleWare.protect,authMiddleWare.isBlockedOrNot,walletController.getDoctorWalletData.bind(walletController));
 
 export default router;

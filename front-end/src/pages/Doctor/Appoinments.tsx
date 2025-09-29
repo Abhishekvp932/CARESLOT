@@ -15,6 +15,7 @@ import { DoctorSidebar } from "@/layout/doctor/sideBar"
 import { useGetAllAppoinmentsQuery } from "@/features/docotr/doctorApi"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/store"
+import { useNavigate } from "react-router-dom"
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -33,7 +34,7 @@ export default function AppointmentsListDoctor() {
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [page, setPage] = useState<number>(1)
   const limit = 10
-
+const navigate = useNavigate();
   const doctor = useSelector((state: RootState) => state.doctor.doctor)
   const doctorId = doctor?._id as string
 
@@ -53,7 +54,7 @@ export default function AppointmentsListDoctor() {
   const filteredAppointments =
     statusFilter === "all"
       ? appointments
-      : appointments.filter((a: any) => a?.status === statusFilter)
+      : appointments.filter((a) => a?.status === statusFilter)
 
   // Reset to first page when filter changes
   const handleStatusFilter = (status: string) => {
@@ -70,6 +71,12 @@ export default function AppointmentsListDoctor() {
   useEffect(() => {
     refetch()
   }, [page, statusFilter, refetch])
+
+
+  const handleVideoCall = (appoinmentId:string)=>{
+    console.log('appoinment id is comming',appoinmentId)
+    navigate(`/doctor/video-call/${appoinmentId}`);
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -174,7 +181,7 @@ export default function AppointmentsListDoctor() {
                       </div>
 
                       <div className="flex space-x-2 pt-2">
-                        <Button size="sm" className="flex-1">Start Visit</Button>
+                        <Button size="sm" className="flex-1" onClick={()=> handleVideoCall(appointment?._id)}>Start Visit</Button>
                         <Button size="sm" variant="outline" className="flex-1">Reschedule</Button>
                       </div>
                     </CardContent>

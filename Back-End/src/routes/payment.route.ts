@@ -10,6 +10,7 @@ import { PatientRepository } from '../repositories/auth/auth.repository';
 import { WalletHistoryRepository } from '../repositories/walletHistory/wallet.history';
 import { WalletRepository } from '../repositories/wallet/wallet.repository';
 import { ChatRepository } from '../repositories/chat/chat.repository';
+import { CallLogRepository } from '../repositories/callLogs/callLog.repository';
 import { Routers } from '../utils/Routers';
 const router = express.Router();
 const paymentRepository = new PaymentRepository();
@@ -20,6 +21,7 @@ const patientRepository = new PatientRepository();
 const walletRepository = new WalletRepository();
 const walletHistoryRepository = new WalletHistoryRepository();
 const chatRepository = new ChatRepository();
+const callLogRepository = new CallLogRepository();
 const paymentService = new PaymentService(
   paymentRepository,
   appoinmentRepository,
@@ -28,7 +30,8 @@ const paymentService = new PaymentService(
   patientRepository,
   walletRepository,
   walletHistoryRepository,
-  chatRepository
+  chatRepository,
+  callLogRepository,
 );
 const paymentController = new PaymentController(paymentService);
 

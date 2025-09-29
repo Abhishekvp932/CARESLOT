@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 // import { useBookAppoinmentMutation } from "@/features/users/userApi";
 import { useWalletPaymentMutation } from "@/features/payment/paymentSlice";
+// import { any } from "zod";
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [createOrder] = useCreateOrderMutation();
@@ -126,8 +127,9 @@ export default function CheckoutPage() {
 
         const res = await walletPayment(payload).unwrap();
         console.log('wallet payment response',res);
-       } catch (error) {
+       } catch (error:any) {
         console.log(error);
+        toast.error(error?.data?.msg)
        }
     }
   };
