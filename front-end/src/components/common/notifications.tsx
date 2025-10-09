@@ -1,4 +1,4 @@
-import { Check, Trash2 } from "lucide-react";
+import { Check, Trash2, Bell, CheckCheck } from "lucide-react";
 import { useGetUserNotificationQuery } from "@/features/users/userApi";
 import { useReadAllNotificationMutation } from "@/features/users/userApi";
 import { useNotificationUnreadMutation } from "@/features/users/userApi";
@@ -13,9 +13,13 @@ interface Notification {
   isRead: boolean;
   createdAt: string;
 }
-
-export default function NotificationComponent({ patientId }) {
-  const { data, isLoading, isError, refetch } = useGetUserNotificationQuery({ patientId });
+interface Props {
+  patientId:string
+}
+export default function NotificationComponent({ patientId }:Props) {
+  const { data, isLoading, isError, refetch } = useGetUserNotificationQuery({
+    patientId,
+  });
 
   useEffect(() => {
     if (patientId) {
@@ -27,24 +31,41 @@ export default function NotificationComponent({ patientId }) {
   const [notificationDelete] = useNotificationDeleteMutation();
   const [deleteAllNotification] = useDeleteAllNotificationMutation();
   const [readAllNotification] = useReadAllNotificationMutation();
+
   const notifications: Notification[] = Array.isArray(data)
-    ? data.map((n:Notification) => ({
-        _id: n._id,
-        title: n.title,
-        message: n.message,
-        isRead: n.isRead,
-        createdAt: n.createdAt,
-      })).sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
+    ? data
+        .map((n: Notification) => ({
+          _id: n._id,
+          title: n.title,
+          message: n.message,
+          isRead: n.isRead,
+          createdAt: n.createdAt,
+        }))
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
     : [];
 
   const unreadNotifications = notifications.filter((n) => !n.isRead);
   const readNotifications = notifications.filter((n) => n.isRead);
 
-  if (isLoading) return <p className="p-4 text-gray-500">Loading notifications...</p>;
-  if (isError) return <p className="p-4 text-red-500">Error loading notifications</p>;
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center">
+        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+        <p className="text-gray-500 text-sm">Loading notifications...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-red-600 font-medium">Error loading notifications</p>
+      </div>
+    );
+  }
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
@@ -76,10 +97,9 @@ export default function NotificationComponent({ patientId }) {
     }
   };
 
-
   const handleMarkAllAsRead = async () => {
     try {
-      console.log('readll all function is working?');
+      console.log("readll all function is working?");
       const res = await readAllNotification(patientId).unwrap();
       console.log(res);
       refetch();
@@ -91,23 +111,30 @@ export default function NotificationComponent({ patientId }) {
   const renderNotification = (notif: Notification) => (
     <div
       key={notif._id}
-      className={`flex justify-between items-start p-3 border-b hover:bg-gray-50 transition ${
+      className={`flex justify-between items-start p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${
         notif.isRead ? "bg-white" : "bg-blue-50"
       }`}
     >
-      <div>
-        <h3 className="font-semibold text-sm">{notif.title}</h3>
-        <p className="text-gray-600 text-sm">{notif.message}</p>
-        <span className="text-xs text-gray-400">
+      <div className="flex-1 mr-3">
+        <div className="flex items-start gap-2 mb-1">
+          {!notif.isRead && (
+            <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></div>
+          )}
+          <h3 className="font-semibold text-gray-900 text-sm">{notif.title}</h3>
+        </div>
+        <p className="text-gray-600 text-sm leading-relaxed ml-4">
+          {notif.message}
+        </p>
+        <span className="text-xs text-gray-400 ml-4 mt-1 inline-block">
           {new Date(notif.createdAt).toLocaleString()}
         </span>
       </div>
 
-      <div className="flex gap-2 ml-2">
+      <div className="flex gap-1 flex-shrink-0">
         {!notif.isRead && (
           <button
             onClick={() => handleMarkAsRead(notif._id)}
-            className="p-1 rounded-full hover:bg-green-100 text-green-600"
+            className="p-2 rounded-lg hover:bg-green-100 text-green-600 transition-colors"
             title="Mark as Read"
           >
             <Check size={16} />
@@ -115,7 +142,7 @@ export default function NotificationComponent({ patientId }) {
         )}
         <button
           onClick={() => handleDelete(notif._id)}
-          className="p-1 rounded-full hover:bg-red-100 text-red-600"
+          className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition-colors"
           title="Delete"
         >
           <Trash2 size={16} />
@@ -125,44 +152,66 @@ export default function NotificationComponent({ patientId }) {
   );
 
   return (
-    <div className="max-h-96 overflow-y-auto border rounded-md">
+    <div className="max-h-[32rem] overflow-hidden rounded-xl bg-white shadow-lg">
       {notifications.length > 0 && (
-        <div className="flex justify-between p-2 bg-gray-50 border-b">
-          <button
-            onClick={handleMarkAllAsRead}
-            className="flex items-center gap-1 text-green-600 text-sm font-medium hover:text-green-800"
-          >
-            <Check size={16} />
-            Read All
-          </button>
+        <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
+          <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+            <Bell className="w-4 h-4 text-blue-600" />
+            Notifications
+          </h2>
+          <div className="flex gap-2">
+            <button
+              onClick={handleMarkAllAsRead}
+              className="flex items-center gap-1 px-3 py-1.5 text-green-600 text-xs font-medium hover:bg-green-50 rounded-lg transition-colors"
+            >
+              <CheckCheck size={14} />
+              Read All
+            </button>
 
-          <button
-            onClick={handleDeleteAll}
-            className="flex items-center gap-1 text-red-600 text-sm font-medium hover:text-red-800"
-          >
-            <Trash2 size={16} />
-            Delete All
-          </button>
+            <button
+              onClick={handleDeleteAll}
+              className="flex items-center gap-1 px-3 py-1.5 text-red-600 text-xs font-medium hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <Trash2 size={14} />
+              Clear All
+            </button>
+          </div>
         </div>
       )}
 
-      <h2 className="px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-100">
-        Unread Notifications ({unreadNotifications.length})
-      </h2>
-      {unreadNotifications.length === 0 ? (
-        <p className="p-4 text-gray-500 text-center">No unread notifications</p>
-      ) : (
-        unreadNotifications.map(renderNotification)
-      )}
+      <div className="overflow-y-auto max-h-[28rem]">
+        {notifications.length === 0 && (
+          <div className="p-12 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Bell className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500 font-medium">No notifications yet</p>
+            <p className="text-gray-400 text-sm mt-1">You're all caught up!</p>
+          </div>
+        )}
 
-      <h2 className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 mt-2">
-        Read Notifications ({readNotifications.length})
-      </h2>
-      {readNotifications.length === 0 ? (
-        <p className="p-4 text-gray-500 text-center">No read notifications</p>
-      ) : (
-        readNotifications.map(renderNotification)
-      )}
+        {unreadNotifications.length > 0 && (
+          <div>
+            <div className="px-4 py-2 bg-blue-50 border-b border-blue-100 sticky top-0 z-10">
+              <h3 className="text-xs font-semibold text-blue-700 uppercase tracking-wide">
+                Unread ({unreadNotifications.length})
+              </h3>
+            </div>
+            {unreadNotifications.map(renderNotification)}
+          </div>
+        )}
+
+        {readNotifications.length > 0 && (
+          <div>
+            <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
+              <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                Read ({readNotifications.length})
+              </h3>
+            </div>
+            {readNotifications.map(renderNotification)}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

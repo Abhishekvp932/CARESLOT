@@ -1,4 +1,5 @@
-import { INotification } from '../../models/interface/INotification';
+
+import { INotificationDto } from '../../types/INotificationDTO';
 import { RazorpayOrder } from '../../utils/RazorpayOrder';
 
 export interface IPaymentService {
@@ -14,10 +15,10 @@ export interface IPaymentService {
     endTime: string,
     amount: string,
     paymentMethod:string
-  ): Promise<{ status: string,patientNotification:INotification | null,doctorNotification:INotification | null }>;
+  ): Promise<{ status: string,patientNotification:INotificationDto | null,doctorNotification:INotificationDto | null }>;
 
   walletPayment(doctorId:string,date:string,startTime:string,endTime:string,patientId:string,amount:string):
-  Promise<{status:string,patientNotification:INotification | null,doctorNotification:INotification | null}>;
+  Promise<{status:string,patientNotification:INotificationDto | null,doctorNotification:INotificationDto | null}>;
 
 
 }

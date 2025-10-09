@@ -8,7 +8,8 @@ import { IService } from '../../interface/auth/IService.interface';
 import redisClient from '../../config/redisClient';
 import { v4 as uuidv4 } from 'uuid';
 import logger from '../../utils/logger';
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IService) {}
@@ -21,17 +22,17 @@ export class AuthController implements IAuthController {
 
       const sessionId = uuidv4();
       await redisClient.set(`access:${sessionId}`, accessToken, {
-        EX: 15 * 60,
+        EX:Number(process.env.ACCESS_TOKEN_EXPIRE_TIME),
       });
       await redisClient.set(`refresh:${sessionId}`, refreshToken, {
-        EX: 7 * 24 * 60 * 60,
+        EX:Number(process.env.REFRESH_TOKEN_EXPIRE_TIME),
       });
 
       res.cookie('sessionId', sessionId, {
         httpOnly: true,
         secure: false,
         sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge:Number(process.env.REDIS_SESSION_MAX_AGE),
       });
       res
         .status(HttpStatus.OK)

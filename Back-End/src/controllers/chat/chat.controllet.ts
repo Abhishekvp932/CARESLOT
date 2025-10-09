@@ -21,7 +21,7 @@ export class ChatController implements IChatController {
     try {
       logger.info('send message request is working?');
       const { chatId, content, sender, type } = req.body;
-      console.log(req.body);
+   
 
       let imageUrl = null;
 
@@ -31,7 +31,7 @@ export class ChatController implements IChatController {
         imageUrl = files.image[0].path;
       }
 
-      console.log('image', imageUrl);
+     
 
       const result = await this._chatService.sendMessage(
         chatId,

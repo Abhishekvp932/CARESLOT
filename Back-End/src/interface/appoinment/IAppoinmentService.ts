@@ -1,7 +1,8 @@
-import { INotification } from '../../models/interface/INotification';
+
 import { appoinemntData } from '../../types/appoinmentData';
+import { INotificationDto } from '../../types/INotificationDTO';
 
 export interface IAppoinmentService{
-    createAppoinment(data:appoinemntData):Promise<{msg:string,patientNotification:INotification | null,doctorNotification:INotification | null}>
-    cancelAppoinment(appoinmentId:string):Promise<{msg:string,doctorNotification:INotification | null}>
+    createAppoinment(data:appoinemntData):Promise<{msg:string,patientNotification:INotificationDto | null,doctorNotification:INotificationDto | null}>
+    cancelAppoinment(appoinmentId:string):Promise<{msg:string,doctorNotification:INotificationDto | null}>
 }

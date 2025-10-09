@@ -13,7 +13,7 @@ import { io } from '../../server';
 import { MailService } from '../mail.service';
 import { IWalletHistoryRepository } from '../../interface/walletHistory/IWalletHistoryRepository';
 import { IWalletRepository } from '../../interface/wallet/IWalletRepository';
-import { INotification } from '../../models/interface/INotification';
+
 import { IWallet } from '../../models/interface/IWallet';
 import { IWalletHistory } from '../../models/interface/IWallet.history';
 
@@ -25,6 +25,7 @@ import { IAppoinment } from '../../models/interface/IAppoinments';
 import { IChatPopulated } from '../../types/ChatAndDoctorPopulatedDTO';
 import { ICallLogRepository } from '../../interface/callLogs/ICallLogRepository';
 import { ICallLog } from '../../models/interface/ICallLog';
+import { INotificationDto } from '../../types/INotificationDTO';
 dotenv.config();
 
 export class PaymentService implements IPaymentService {
@@ -63,8 +64,8 @@ export class PaymentService implements IPaymentService {
     paymentMethod: string
   ): Promise<{
     status: string;
-    patientNotification: INotification | null;
-    doctorNotification: INotification | null;
+    patientNotification: INotificationDto | null;
+    doctorNotification: INotificationDto | null;
   }> {
     const doctor = await this._doctorRepository.findById(doctorId);
 
@@ -251,7 +252,7 @@ const scheduledEnd = new Date(`${appoinment.slot.date}T${appoinment.slot.endTime
             `Hello ${doctor?.name},
                              A new appointment has been booked.
          
-                             Patient : Dr.${patient?.name},
+                             Patient : ${patient?.name},
                              Date:${date},
                              Time:${startTime} - ${endTime},
                              status : Pending Confirmation,
@@ -296,8 +297,8 @@ const scheduledEnd = new Date(`${appoinment.slot.date}T${appoinment.slot.endTime
     amount: string
   ): Promise<{
     status: string;
-    patientNotification: INotification | null;
-    doctorNotification: INotification | null;
+    patientNotification: INotificationDto | null;
+    doctorNotification: INotificationDto | null;
   }> {
     const fees = Number(amount);
     const doctor = await this._doctorRepository.findById(doctorId);

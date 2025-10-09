@@ -26,7 +26,8 @@ import { LogoutRequest } from '../../types/auth';
 import { UserDTO } from '../../types/user.dto';
 import { Request, Response } from 'express';
 import logger from '../../utils/logger';
-
+import dotenv from 'dotenv';
+dotenv.config();
 export class AuthService implements IService {
   constructor(
     private _patientRepository: IpatientRepository,
@@ -406,10 +407,10 @@ export class AuthService implements IService {
     const newAccessToken = generateAccessToken(payload);
     const newRefreshToken = generateRefreshToken(payload);
     await redisClient.set(`access:${sessionId}`, newAccessToken, {
-      EX: 15 * 60,
+      EX:Number(process.env.ACCESS_TOKEN_EXPIRE_TIME),
     });
     await redisClient.set(`refresh:${sessionId}`, newRefreshToken, {
-      EX: 7 * 24 * 60 * 60,
+      EX:Number(process.env.REFRESH_TOKEN_EXPIRE_TIME),
     });
 
     return { msg: 'token refreshed' };

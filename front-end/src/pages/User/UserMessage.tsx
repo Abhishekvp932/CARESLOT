@@ -350,13 +350,13 @@ useEffect(() => {
                   ...c,
                   lastMessage,
                   unreadCount:
-                    lastMessage.sender !== patientId
-                      ? (c.unreadCount || 0) + unreadIncrement
-                      : c.unreadCount,
+                    lastMessage.sender === patientId
+                      ? c.unreadCount 
+                      : (c.unreadCount || 0 ) + unreadIncrement ,
                 }
               : c
           )
-        );
+        );    
       }
     );
 

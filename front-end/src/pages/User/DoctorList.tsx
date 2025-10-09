@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -16,10 +17,14 @@ import {
   Star,
   Calendar,
   Filter,
-  Heart,
   Award,
   GraduationCap,
   Stethoscope,
+  MapPin,
+  Clock,
+  TrendingUp,
+  Users,
+  CheckCircle2,
 } from "lucide-react";
 import Header from "@/layout/Header";
 import Footer from "@/layout/Footer";
@@ -27,6 +32,7 @@ import { useGetAllApprovedDoctorsQuery } from "@/features/users/userApi";
 import { useNavigate } from "react-router-dom";
 import Pagination from "@/components/common/user/pagination";
 import { useGetAllSpecializationsQuery } from "@/features/users/userApi";
+
 export default function DoctorList() {
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("rating");
@@ -54,218 +60,252 @@ export default function DoctorList() {
     specialty: selectedSpecialty,
   });
   const { data: specializations = [] } = useGetAllSpecializationsQuery({});
-  console.log("spe", specializations);
+  
   const doctors = data?.data || [];
   const totalPages = data?.totalPages || 1;
 
   const isLoading = loading || isFetching;
   const navigate = useNavigate();
+  
   const handleDoctorDetailsPage = async (doctorId: string) => {
-    console.log("passing doctor id", doctorId);
     navigate(`/doctor-details/${doctorId}`);
   };
+  
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
     }
   };
 
-
- 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50">
-        <Header />
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50/50 to-white">
+      <Header />
 
-        <div className="pt-20">
-          <div className="bg-white border-b shadow-sm">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <div className="flex flex-col space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900">
-                      Find Your Doctor
-                    </h1>
-                    <p className="text-gray-600 mt-2">
-                      Book appointments with top-rated healthcare professionals
-                    </p>
-                  </div>
-                  <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
-                    <Stethoscope className="w-4 h-4" />
-                    <span>{doctors.length} doctors available</span>
-                  </div>
-                </div>
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white pt-24 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Stethoscope className="w-4 h-4" />
+              <span>{doctors.length} Expert Doctors Available</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl font-bold">
+              Find Your Perfect Doctor
+            </h1>
+            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+              Connect with top-rated healthcare professionals and book your appointment today
+            </p>
+          </div>
 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      placeholder="Search doctors by name or specialty..."
-                      value={searchTerm}
-                      onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setPage(1);
-                      }}
-                      className="pl-10 h-11"
-                    />
-                  </div>
+          {/* Search and Filters */}
+          <div className="mt-8 bg-white rounded-2xl shadow-xl p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Input
+                  placeholder="Search by doctor name or specialty..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setPage(1);
+                  }}
+                  className="pl-12 h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
 
-                  <div className="flex gap-2">
-                    <Select
-                      value={selectedSpecialty}
-                      onValueChange={setSpecialty}
-                    >
-                      <SelectTrigger className="w-48">
-                        <Filter className="w-4 h-4 mr-2" />
-                        <SelectValue placeholder="select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All Specialties">All Specializations</SelectItem>
-                        {specializations?.map((sp) => (
-                          <SelectItem key={sp} value={sp}>
-                            {sp}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Select value={selectedSpecialty} onValueChange={setSpecialty}>
+                  <SelectTrigger className="w-full sm:w-56 h-12 border-gray-200">
+                    <Filter className="w-4 h-4 mr-2" />
+                    <SelectValue placeholder="All Specializations" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All Specialties">All Specializations</SelectItem>
+                    {specializations?.map((sp) => (
+                      <SelectItem key={sp} value={sp}>
+                        {sp}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-                    <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="rating">Highest Rated</SelectItem>
-                        <SelectItem value="experience">
-                          Most Experienced
-                        </SelectItem>
-                        <SelectItem value="fee">Lowest Fee</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-full sm:w-48 h-12 border-gray-200">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rating">Highest Rated</SelectItem>
+                    <SelectItem value="experience">Most Experienced</SelectItem>
+                    <SelectItem value="fee">Lowest Fee</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          {isLoading ? (
-            <div className="flex justify-center items-center mt-4">
-              {isLoading && (
-                <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
-              )}
+      {/* Main Content */}
+      <div className="flex-grow">
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
+              <p className="text-gray-600 font-medium">Finding the best doctors for you...</p>
             </div>
-          ) : (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {doctors.map((doctor) => (
-                  <Card
-                    key={doctor?.id}
-                    className="hover:shadow-lg transition-shadow duration-200 bg-white"
-                  >
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-4">
-                          <Avatar className="w-16 h-16">
-                            <AvatarImage
-                              src={doctor?.profile_img || "/placeholder.svg"}
-                              alt={doctor?.name}
-                            />
-                            <AvatarFallback>
-                              {doctor?.name
-                                ?.split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-lg text-gray-900">
-                              Dr.{doctor?.name}
+          </div>
+        ) : (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {doctors.length === 0 ? (
+              <div className="text-center py-20">
+                <Stethoscope className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No doctors found</h3>
+                <p className="text-gray-600">Try adjusting your search or filters</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Available Doctors</h2>
+                    <p className="text-gray-600 mt-1">Showing {doctors.length} results</p>
+                  </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {doctors.map((doctor) => (
+                    <Card
+                      key={doctor?.id}
+                      className="group hover:shadow-2xl transition-all duration-300 bg-white border-2 hover:border-blue-200 overflow-hidden"
+                    >
+                      <CardHeader className="pb-4 bg-gradient-to-br from-blue-50 to-white">
+                        <div className="flex items-start gap-4">
+                          <div className="relative">
+                            <Avatar className="w-20 h-20 border-4 border-white shadow-lg">
+                              <AvatarImage
+                                src={doctor?.profile_img || "/placeholder.svg"}
+                                alt={doctor?.name}
+                              />
+                              <AvatarFallback className="bg-blue-600 text-white text-lg font-semibold">
+                                {doctor?.name?.split(" ").map((n) => n[0]).join("")}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-white flex items-center justify-center">
+                              <CheckCircle2 className="w-3 h-3 text-white" />
+                            </div>
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-lg text-gray-900 truncate">
+                              Dr. {doctor?.name}
                             </h3>
-                            <p className="text-blue-600 font-medium">
+                            <Badge className="bg-blue-600 hover:bg-blue-700 text-white mt-1">
                               {doctor?.specialty}
-                            </p>
-                            <div className="flex items-center mt-1">
-                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              <span className="ml-1 text-sm font-medium">
+                            </Badge>
+                            
+                            <div className="flex items-center mt-2 gap-1">
+                              <div className="flex">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-4 h-4 ${
+                                      i < Math.floor(doctor?.rating || 0)
+                                        ? "fill-yellow-400 text-yellow-400"
+                                        : "fill-gray-200 text-gray-200"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-sm font-semibold text-gray-700 ml-1">
                                 {doctor?.rating || "N/A"}
                               </span>
-                              <span className="ml-1 text-sm text-gray-500">
-                                ({doctor?.reviews || 0} reviews)
+                              <span className="text-xs text-gray-500">
+                                ({doctor?.reviews || 0})
                               </span>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </CardHeader>
+                      </CardHeader>
 
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <GraduationCap className="w-4 h-4 mr-2" />
-                          <span>
-                            {doctor?.qualifications?.medicalSchool ||
-                              "Medical School"}
-                          </span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <GraduationCap className="w-4 h-4 mr-2" />
-                          <span>
-                            {doctor?.qualifications?.degree || "Degree"}
-                          </span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Award className="w-4 h-4 mr-2" />
-                          <span>
-                            {doctor?.qualifications?.experince ||
-                              doctor?.qualifications?.experience ||
-                              0}{" "}
-                            years experience
-                          </span>
-                        </div>
-                      </div>
+                      <CardContent className="space-y-4 pt-4">
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-3 text-sm">
+                            <GraduationCap className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {doctor?.qualifications?.degree || "Medical Degree"}
+                              </p>
+                              <p className="text-gray-600 text-xs">
+                                {doctor?.qualifications?.medicalSchool || "Medical School"}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-3 text-sm">
+                            <Award className="w-5 h-5 text-blue-600 shrink-0" />
+                            <span className="text-gray-700">
+                              <span className="font-semibold text-gray-900">
+                                {doctor?.qualifications?.experince || doctor?.qualifications?.experience || 0}+ years
+                              </span>{" "}
+                              experience
+                            </span>
+                          </div>
 
-                      <Separator />
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm text-gray-500">
-                            Consultation Fee
-                          </p>
-                          <p className="font-bold text-lg">
-                            ₹
-                            {doctor?.qualifications?.fees ||
-                              doctor?.consultationFee ||
-                              "N/A"}
-                          </p>
+                          <div className="flex items-center gap-3 text-sm">
+                            <Users className="w-5 h-5 text-blue-600 shrink-0" />
+                            <span className="text-gray-700">
+                              <span className="font-semibold text-gray-900">
+                                {doctor?.reviews || 0}+
+                              </span>{" "}
+                              patients treated
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex gap-2">
+
+                        <Separator />
+
+                        <div className="flex items-center justify-between pt-2">
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">
+                              Consultation Fee
+                            </p>
+                            <p className="text-2xl font-bold text-blue-600">
+                              ₹{doctor?.qualifications?.fees || doctor?.consultationFee || "N/A"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 pt-2">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleDoctorDetailsPage(doctor?._id)}
+                            className="border-blue-600 text-blue-600 hover:bg-blue-50"
                           >
                             <Calendar className="w-4 h-4 mr-1" />
                             View Profile
                           </Button>
-                          <Button size="sm">Book Now</Button>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          )}
-        </div>
-        
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <div className="mt-12">
+                  <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
-      <div>
-         <Footer  />
-      </div>
-    </>
+
+      <Footer />
+    </div>
   );
 }

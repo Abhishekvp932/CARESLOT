@@ -8,13 +8,12 @@ import {Types } from 'mongoose';
 import { MailService } from '../mail.service';
 import { INotificationRepository } from '../../interface/notification/INotificationRepository';
 import { io } from '../../server';
-import { INotification } from '../../models/interface/INotification';
-
 import { IWalletRepository } from '../../interface/wallet/IWalletRepository';
 import { IWalletHistoryRepository } from '../../interface/walletHistory/IWalletHistoryRepository';
 import { IWalletHistory } from '../../models/interface/IWallet.history';
 import { IWallet } from '../../models/interface/IWallet';
 import logger from '../../utils/logger';
+import { INotificationDto } from '../../types/INotificationDTO';
 
 export class AppoinmentService implements IAppoinmentService {
   constructor(
@@ -30,8 +29,8 @@ export class AppoinmentService implements IAppoinmentService {
     data: appoinemntData
   ): Promise<{
     msg: string;
-    patientNotification: INotification | null;
-    doctorNotification: INotification | null;
+    patientNotification: INotificationDto | null;
+    doctorNotification: INotificationDto | null;
   }> {
     const doctorId = data?.doctorId;
     const patientId = data?.patientId;
@@ -139,7 +138,7 @@ export class AppoinmentService implements IAppoinmentService {
   }
 
 
-  async cancelAppoinment(appoinmentId: string):Promise<{msg:string,doctorNotification:INotification | null}>{
+  async cancelAppoinment(appoinmentId: string):Promise<{msg:string,doctorNotification:INotificationDto | null}>{
     
    const appoinment = await this._appoinmentRepository.findById(appoinmentId);
 

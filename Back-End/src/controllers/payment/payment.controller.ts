@@ -13,7 +13,7 @@ export class PaymentController implements IPaymentController {
 
     try {
       const amount = parseInt(req.body.amount);
-      console.log(amount);
+   
 
       const result = await this._paymentService.createOrder(amount);
       res.status(HttpStatus.CREATED).json(result);
@@ -38,7 +38,7 @@ export class PaymentController implements IPaymentController {
         paymentMethod,
       } = req.body;
       logger.debug(req.body);
-      console.log(req.body);
+    
 
       const result = await this._paymentService.verifyOrder(
         razorpay_order_id,

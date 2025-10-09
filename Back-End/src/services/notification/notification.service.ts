@@ -1,20 +1,21 @@
 import { INotificationService } from '../../interface/notification/INotificationService';
 import { INotificationRepository } from '../../interface/notification/INotificationRepository';
-import { INotification } from '../../models/interface/INotification';
+
+import { INotificationDto } from '../../types/INotificationDTO';
 
 export class NotificationService implements INotificationService {
   constructor(private _notificationRepository: INotificationRepository) {}
-  async getUserNotification(patientId: string): Promise<INotification[]> {
+  async getUserNotification(patientId: string): Promise<INotificationDto[]> {
     const notifications = await this._notificationRepository.findByUserId(
       patientId
     );
 
-    console.log('notifcations', notifications);
+   
 
     return notifications;
   }
   async unReadNotification(notificationId: string): Promise<{ msg: string }> {
-    console.log('notification id is comming', notificationId);
+   
     if (!notificationId) {
       throw new Error('notification id not found');
     }

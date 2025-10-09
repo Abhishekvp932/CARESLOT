@@ -1,18 +1,17 @@
-import { IAppoinment } from '../../models/interface/IAppoinments';
-
 import { IPatient } from '../../models/interface/IPatient';
 
 import { AppointmentDoctorDTO } from '../../types/AppoinmentsAndDoctorDto';
 import { DoctorDTO } from '../../types/doctor.dto';
 import { doctorDetails } from '../../types/doctorDetails';
 import { DoctorListResult } from '../../types/doctorListResult';
+import { IAppoinmentDto } from '../../types/IAppoinmentDTO';
 import { IGeneratedSlot } from '../../types/SlotTypesDTO';
 import { SpecializationsList } from '../../types/specializationsList';
 import { UserDTO } from '../../types/user.dto';
 
 export interface IPatientService {
 
-    getResendAppoinments(patientId:string):Promise<{msg:string,doctors:DoctorDTO[],appoinments:IAppoinment[]}>
+    getResendAppoinments(patientId:string):Promise<{msg:string,doctors:DoctorDTO[],appoinments:IAppoinmentDto[]}>
     updateUserProfile(formData:Partial<IPatient>,userId:string,profileImg?:string):Promise<{msg:string}>
     getUserData(userId:string):Promise<{msg:string,users:UserDTO}>
     getAllDoctors(page:number,limit:number,search:string,specialty:string):Promise<DoctorListResult>

@@ -12,7 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthMiddleware } from '../middleware/auth.middleware';
 import { Routers } from '../utils/Routers';
 import { IBaseUser } from '../utils/IBaseUser';
-
+import dotenv from 'dotenv';
+dotenv.config();
 const patientRepository = new PatientRepository();
 const doctorRepository = new DoctorAuthRepository();
 const adminRepository = new AdminRepository();
@@ -70,15 +71,15 @@ router.get(
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
     const sessionId = uuidv4();
-    await redisClient.set(`access:${sessionId}`, accessToken, { EX: 15 * 60 });
+    await redisClient.set(`access:${sessionId}`, accessToken, { EX:Number(process.env.ACCESS_TOKEN_EXPIRE_TIME)});
     await redisClient.set(`refresh:${sessionId}`, refreshToken, {
-      EX: 7 * 24 * 60 * 60,
+      EX:Number(process.env.REFRESH_TOKEN_EXPIRE_TIME),
     });
     res.cookie('sessionId', sessionId, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge:Number(process.env.REDIS_SESSION_MAX_AGE),
     });
 
     return res.redirect('http://localhost:2025/');

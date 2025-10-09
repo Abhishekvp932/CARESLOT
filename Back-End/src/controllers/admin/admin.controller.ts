@@ -278,9 +278,7 @@ export class AdminController implements IAdminController {
   async getAllAppoinments(req: Request, res: Response): Promise<void> {
     try {
       logger.info('admin side appoinment request is comming');
-      //  const page = parseInt(req.query.page as string);
-      //  const limit = parseInt(req.query.limit as string);
-      //  const search = req.query.search as string;
+
        logger.debug(req.query);
       const result = await this._adminService.getAllAppoinments();
       res.status(HttpStatus.OK).json(result);

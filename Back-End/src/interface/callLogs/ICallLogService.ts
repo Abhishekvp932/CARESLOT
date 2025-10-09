@@ -1,5 +1,6 @@
-import { ICallLog } from '../../models/interface/ICallLog';
+
+import { ICallLogDto } from '../../types/ICallLogDTO';
 
 export interface ICallLogService {
-    getCallData(appoinmentId:string):Promise<ICallLog>
+    getCallData(appoinmentId:string):Promise<ICallLogDto>
 }

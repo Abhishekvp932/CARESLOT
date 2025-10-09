@@ -26,13 +26,24 @@ const Login = () => {
   const googleAuth = useGoogleAuth();
   const dispatch = useDispatch<AppDispatch>();
 
-  // const admin = useSelector((state:RootState)=> state.admin.admin);
+  const admin = useSelector((state:RootState)=> state.admin.admin);
+  const doctor = useSelector((state:RootState)=> state.doctor.doctor);
   const user = useSelector((state:RootState)=> state.auth.user);
-
+ 
 
   useEffect(()=>{
     if(user){
       navigate('/');
+    }
+  })
+  useEffect(()=>{
+    if(doctor){
+      navigate('/doctor')
+    }
+  })
+  useEffect(()=>{
+    if(admin){
+      navigate('/admin');
     }
   })
   const [login, { isLoading }] = useLoginMutation();

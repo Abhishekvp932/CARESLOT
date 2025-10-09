@@ -1,5 +1,5 @@
 import { ISlotService } from '../../interface/Slots/slotService.interface';
-import { ISlots } from '../../models/interface/ISlots';
+
 import { ISlotRepository } from '../../interface/Slots/slotRepository.interface';
 import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
@@ -8,6 +8,7 @@ import timeStringToDate from '../../utils/timeStringToDate';
 
 import { RecurrenceSchedule } from '../../utils/AddSlotType';
 import { Types } from 'mongoose';
+import { ISlotDto } from '../../types/ISlotDTO';
 export class SlotService implements ISlotService {
   constructor(
     private _slotRepository: ISlotRepository,
@@ -67,7 +68,7 @@ export class SlotService implements ISlotService {
     return { msg: 'slot created successfully' };
   }
 
-  async getDoctotSlot(doctorId: string): Promise<ISlots[]> {
+  async getDoctotSlot(doctorId: string): Promise<ISlotDto[]> {
     const doctor = await this._doctorRepository.findById(doctorId);
 
     if (!doctor) {

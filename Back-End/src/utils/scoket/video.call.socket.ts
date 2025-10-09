@@ -1,4 +1,5 @@
 import { Server, Socket } from 'socket.io';
+import logger from '../logger';
 
 interface JoinRoomPayload { appointmentId: string; userId: string; }
 interface CallUserPayload { appointmentId: string; offer: RTCSessionDescriptionInit; to: string; }
@@ -12,6 +13,7 @@ export const initVideoCallSocket = (io: Server) => {
     socket.on('join-room', ({ appointmentId }: JoinRoomPayload) => {
       const clients = Array.from(io.sockets.adapter.rooms.get(appointmentId) || []);
       const otherClientId = clients.find(id => id !== socket.id);
+    logger.info('user joined video call room using appoinment id');
       socket.join(appointmentId);
 
       if (otherClientId) {
@@ -19,7 +21,7 @@ export const initVideoCallSocket = (io: Server) => {
         socket.to(otherClientId).emit('user-joined', { userId: socket.id });
       }
     });
-
+    
     socket.on('call-user', ({ offer, to }: CallUserPayload) => {
       socket.to(to).emit('receive-call', { from: socket.id, offer });
     });

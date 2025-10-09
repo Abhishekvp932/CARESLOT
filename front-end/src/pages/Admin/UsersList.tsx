@@ -59,32 +59,6 @@ const UsersList = () => {
     }
   };
 
-  // const handleSave = async (updateUser, userId: string) => {
-  //   const formData = new FormData();
-  //   formData.append("name", updateUser.name);
-
-  //   formData.append("email", updateUser.email);
-  //   formData.append("phone", updateUser.phone);
-  //   formData.append("gender", updateUser.gender);
-  //   formData.append("dob", updateUser.DOB);
-  //   formData.append("profileImage", updateUser.profileImg);
-
-  //   try {
-  //     const res = await updateUserData({
-  //       formData,
-  //       userId: userId,
-  //     }).unwrap();
-
-  //     toast.success(res.msg);
-  //     refetch();
-  //   } catch (error: any) {
-  //     if (error?.data?.msg) {
-  //       toast.error(error.data.msg);
-  //     } else {
-  //       toast.error("User profile updating error");
-  //     }
-  //   }
-  // };
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 

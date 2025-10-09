@@ -1,10 +1,7 @@
 import { Server, Socket } from 'socket.io';
  import { MessageRepository } from '../../repositories/message/message.repository';
-// import { Types } from 'mongoose';
-// import { ChatRepository } from '../../repositories/chat/chat.repository';
- const messageRepo = new MessageRepository(); 
-// // const chatRepo = new ChatRepository();
 
+ const messageRepo = new MessageRepository(); 
 
 
 let onlineUsers: { [userId: string]: { socketId: string; role: 'patient' | 'doctor' } } = {};
@@ -62,22 +59,40 @@ export function initChatSocket(io: Server) {
 });
 
 
-    socket.on('sendMessage', async (messageData) => {
-      try {
-        io.to(messageData.chatId).emit('receiveMessage', messageData);
+   socket.on('sendMessage', async (messageData) => {
+  try {
+   
+    io.to(messageData.chatId).emit('receiveMessage', messageData);
 
-        io.to(messageData.chatId).emit('updateConversation', {
+    const roomSockets = await io.in(messageData.chatId).fetchSockets();
+
+    roomSockets.forEach((s) => {
+      if (s.id === socket.id) {
+        io.to(s.id).emit('updateConversation', {
           chatId: messageData.chatId,
           lastMessage: {
             content: messageData?.content || '',
             timestamp: new Date().toISOString(),
+            sender: messageData.sender,
           },
-          unreadIncrement:1
+          unreadIncrement: 0,  
         });
-      } catch (error) {
-        console.error('Error saving message:', error);
+      } else {
+        io.to(s.id).emit('updateConversation', {
+          chatId: messageData.chatId,
+          lastMessage: {
+            content: messageData?.content || '',
+            timestamp: new Date().toISOString(),
+            sender: messageData.sender,
+          },
+          unreadIncrement: 1,
+        });
       }
     });
+  } catch (error) {
+    console.error('Error saving message:', error);
+  }
+});
 
 
   });

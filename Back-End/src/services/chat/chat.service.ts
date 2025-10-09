@@ -5,11 +5,12 @@ import { IpatientRepository } from '../../interface/auth/auth.interface';
 import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
 import logger from '../../utils/logger';
 import { ChatDTO } from '../../types/UserChatDto';
-import { IMessage } from '../../models/interface/IMessage';
+
 import { IMessageRepository } from '../../interface/message/IMessageRepository';
 import { INotificationRepository } from '../../interface/notification/INotificationRepository';
 import { Types } from 'mongoose';
 import { io } from '../../server';
+import { IMessageDto } from '../../types/IMessageDTO';
 export class ChatService implements IChatService {
   constructor(
     private _chatRepository: IChatRepository,
@@ -57,7 +58,7 @@ export class ChatService implements IChatService {
     sender: string,
     type: string,
     image:string,
-  ): Promise<IMessage | null> {
+  ): Promise<IMessageDto | null> {
     const chat = await this._chatRepository.findById(chatId);
    logger.debug('image is comming',image);
     if (!chat) {
@@ -70,7 +71,7 @@ export class ChatService implements IChatService {
 
             const notif = await this._notificationRepository.create({
               userId:participant?._id.toString(),
-              title:'New Message',
+              title:'New Message' ,
               message:`${content}`,
               isRead:false,
             });
@@ -81,7 +82,7 @@ export class ChatService implements IChatService {
       }
     });
 
-    const newMessage: Partial<IMessage> = {
+    const newMessage: Partial<IMessageDto> = {
       chatId: new Types.ObjectId(chatId),
       sender: new Types.ObjectId(sender),
       type: type,
@@ -122,12 +123,12 @@ export class ChatService implements IChatService {
 
     return chats;
   }
-  async getDoctorMessage(chatId: string): Promise<IMessage[]> {
+  async getDoctorMessage(chatId: string): Promise<IMessageDto[]> {
     const message = await this._messageRepository.findByChatId(chatId);
 
     return message;
   }
-  async getPatientMessage(chatId: string): Promise<IMessage[]> {
+  async getPatientMessage(chatId: string): Promise<IMessageDto[]> {
     const message = await this._messageRepository.findByChatId(chatId);
    logger.debug(message);
     return message;

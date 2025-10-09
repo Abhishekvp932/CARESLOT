@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,9 +31,14 @@ export default function CheckoutPage() {
   // const [isProcessing, setIsProcessing] = useState(false);
   const patient = useSelector((state: RootState) => state.auth.user);
 
-  // const [bookAppoinment] = useBookAppoinmentMutation();
-
   const navigate = useNavigate();
+  // const [bookAppoinment] = useBookAppoinmentMutation();
+   useEffect(()=>{
+    if(!patient){
+      navigate('/login');
+    }
+   },[patient])
+
 
   // const handlePayment = async () => {
   //   setIsProcessing(true);

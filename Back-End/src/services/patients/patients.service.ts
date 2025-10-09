@@ -17,16 +17,17 @@ import { UserDTO } from '../../types/user.dto';
 import { getNextDateOfWeek } from '../../utils/getDayOfWeek';
 import { genarateSlots } from '../../utils/SlotUtlity';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
-import { IAppoinment } from '../../models/interface/IAppoinments';
+
 import { AppointmentDoctorDTO } from '../../types/AppoinmentsAndDoctorDto';
 import { IPatient } from '../../models/interface/IPatient';
 import { IBookedSlot, IDoctorSlotDoc, IDoctorSlotTime, IGeneratedSlot } from '../../types/SlotTypesDTO';
+import { IAppoinmentDto } from '../../types/IAppoinmentDTO';
 export class PatientService implements IPatientService {
   constructor(
     private _patientRepository: IpatientRepository,
     private _doctorRepository: IDoctorAuthRepository,
     private _slotsRepository: ISlotRepository,
-    private _appoinmentRepo: IAppoinmentRepository
+    private _appoinmentRepository: IAppoinmentRepository
   ) {}
 
   async getResendAppoinments(
@@ -34,9 +35,9 @@ export class PatientService implements IPatientService {
   ): Promise<{
     msg: string;
     doctors: DoctorDTO[];
-    appoinments: IAppoinment[];
+    appoinments: IAppoinmentDto[];
   }> {
-    const appoinments = await this._appoinmentRepo.findByPatientId(patientId);
+    const appoinments = await this._appoinmentRepository.findByPatientId(patientId);
 
     if (!appoinments) {
       throw new Error('Appoinment not found');
@@ -238,7 +239,7 @@ export class PatientService implements IPatientService {
     const doctorSlots = await this._slotsRepository.findByDoctorId(doctorId);
     const slots: IGeneratedSlot[] = [];
 
-    const doctorAppoinments = await this._appoinmentRepo.findByDoctorId(
+    const doctorAppoinments = await this._appoinmentRepository.findByDoctorId(
       doctorId
     );
 
@@ -477,12 +478,12 @@ export class PatientService implements IPatientService {
       throw new Error('Patient not found');
     }
     const [appoinmentList,total] = await Promise.all([
-      this._appoinmentRepo.findAppoinmentsByPatient(
+      this._appoinmentRepository.findAppoinmentsByPatient(
       patient?._id as string,
       skip,
       limit,
     ),
-    this._appoinmentRepo.countPatientAppoinment(patientId)
+    this._appoinmentRepository.countPatientAppoinment(patientId)
     ]);
 
     if (!appoinmentList) {

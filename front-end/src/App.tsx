@@ -39,6 +39,8 @@ import AboutPage from "./pages/User/AboutPage"
 import UserVideoCall from "./pages/User/VideoCallPage"
 import DoctorVideoCall from "./pages/Doctor/DoctorVideoCall"
 import DoctorWalletPage from "./pages/Doctor/DoctorWallet"
+import ContactPage from "./pages/User/Contact-page"
+
 function App() {
 
   return (
@@ -62,7 +64,7 @@ function App() {
         <Route path="/chat" element = {<UserLayout><UserMessagingPage/></UserLayout>}/>
         <Route path="/about-page" element = {<AboutPage/>}/>
         <Route path="/video-call/:appoinmentId" element = {<UserVideoCall/>}/>
-
+        <Route path="/contact" element = {<ContactPage/>}/>
         <Route path="/kyc-submit" element ={
           <KYC/>
           }

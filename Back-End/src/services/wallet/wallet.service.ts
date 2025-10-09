@@ -3,7 +3,8 @@ import { IWalletRepository } from '../../interface/wallet/IWalletRepository';
 import { IWalletHistoryRepository } from '../../interface/walletHistory/IWalletHistoryRepository';
 
 import {walletHistoryAndPagination } from '../../types/walletHistoryAndPagination';
-import { IWalletHistory } from '../../models/interface/IWallet.history';
+
+import { IWalletHistoryDto } from '../../types/IWalletHistoryDTO';
 export class WalletService implements IWalletService {
     constructor (
         private _walletRepository:IWalletRepository,
@@ -33,7 +34,7 @@ export class WalletService implements IWalletService {
             balance:wallet?.balance
         };
     }
-    async getDoctorWalletData(doctorId: string): Promise<{ balance: number; history: IWalletHistory[]; }> {
+    async getDoctorWalletData(doctorId: string): Promise<{ balance: number; history: IWalletHistoryDto[]; }> {
         if(!doctorId){
             throw new Error('Doctor id is not found');
         }

@@ -21,10 +21,9 @@ import redisClient from '../../config/redisClient';
 import { verifyAccessToken } from '../../utils/jwt';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
 import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
-
-import { ISlots } from '../../models/interface/ISlots';
 import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
 import { ISlotRepository } from '../../interface/Slots/slotRepository.interface';
+import { ISlotDto } from '../../types/ISlotDTO';
 export class AdminService implements IAdminService {
   constructor(
     private _patientRepository: IpatientRepository,
@@ -69,7 +68,6 @@ export class AdminService implements IAdminService {
       role: user?.role,
       createdAt: user?.createdAt,
       updatedAt: user?.updatedAt,
-      profile_img: user?.profile_img,
     }));
 
     return { users, total };
@@ -678,7 +676,7 @@ The CARESLOT Team`
     return appoinments;
   }
 
-  async getDoctorSlotAndAppoinment(doctorId: string): Promise<{ slots: ISlots[]; appoinments: AppointmentPatientDTO[];}> {
+  async getDoctorSlotAndAppoinment(doctorId: string): Promise<{ slots: ISlotDto[]; appoinments: AppointmentPatientDTO[];}> {
     if(!doctorId){
       throw new Error('Doctor id not found');
     }
