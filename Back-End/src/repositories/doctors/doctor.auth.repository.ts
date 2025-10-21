@@ -1,4 +1,4 @@
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
 import Doctor from '../../models/implementation/doctor.model';
 import { Profile } from 'passport-google-oauth20';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
@@ -61,9 +61,9 @@ export class DoctorAuthRepository extends BaseRepository<IDoctor> implements IDo
      return await this.model.findByIdAndDelete(id);
    }
 
-   async findAllWithPagination(skip: number, limit: number,  filter: FilterQuery<IDoctor> = {}): Promise<IDoctor[]> {
+   async findAllWithPagination(skip: number, limit: number,  filter: FilterQuery<IDoctor> = {},sortCondition?: Record<string, 1 | -1>): Promise<IDoctor[]> {
       return this.model.find(filter)
-      .sort({createdAt:-1})
+      .sort(sortCondition)
       .skip(skip)
       .limit(limit)
       .lean();

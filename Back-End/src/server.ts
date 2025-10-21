@@ -25,6 +25,7 @@ import paymentRoute from './routes/payment.route';
 import walletRoute from './routes/wallet.route';
 import chatRoute from './routes/chat.route';
 import callLogRoute from './routes/callLog.route';
+import ratingRoute from './routes/rating.route'
 import { initChatSocket } from './utils/scoket/chat.scoket';
 import logger from './utils/logger';
 import { initVideoCallSocket} from './utils/scoket/video.call.socket';
@@ -113,7 +114,7 @@ app.use('/api/payment',paymentRoute);
 app.use('/api/wallet',walletRoute);         
 app.use('/api/chat',chatRoute);
 app.use('/api/call',callLogRoute);
-
+app.use('/api/rating',ratingRoute);
 const PORT = process.env.PORT;
 
 

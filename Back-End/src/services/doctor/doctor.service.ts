@@ -2,14 +2,14 @@ import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import {
   IDoctor,
   QualificationInput,
-} from '../../interface/doctor/doctor.service.interface';
+} from '../../interface/doctor/IDoctorService';
 
 import { MailService } from '../mail.service';
 import { DoctorProfileInput } from '../../types/doctor';
 import { UploadedFiles } from '../../types/doctor';
 
-import { IpatientRepository } from '../../interface/auth/auth.interface';
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import { IpatientRepository } from '../../interface/auth/IAuthInterface';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
 import { IDoctor as IDoctorData } from '../../models/interface/IDoctor';
 
 import { doctorDetails } from '../../types/doctorDetails';
@@ -275,7 +275,7 @@ The CareSlot Team`
 
     return response;
   }
-  async getAllAppoinments(doctorId: string,page:number,limit:number): Promise<{appoinments:AppointmentPatientDTO[],total:number}> {
+  async getAllAppoinments(doctorId: string,page:number,limit:number,status:string): Promise<{appoinments:AppointmentPatientDTO[],total:number}> {
      
     const skip = (page-1) * limit;
 
@@ -284,11 +284,22 @@ The CareSlot Team`
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
+    let filter = {};
+
+     if(status === 'pending'){
+      filter = {status:'pending'};
+     }else if(status === 'confirmed'){
+      filter = {status:'confirmed'};
+     }else if(status ==='cancelled'){
+      filter = {status:'cancelled'};
+     }
+
     const [appoinmentWithPatients,total] = await Promise.all([
        this._appoinmentRepository.findAppoinmentsByDoctor(
         doctor?._id as string,
         skip,
         limit,
+        filter
       ),
       this._appoinmentRepository.countDoctorAppoinment(doctorId)
     ]);

@@ -1,7 +1,7 @@
-import IAdminController from '../../interface/admin/admin.controller.interface';
+import IAdminController from '../../interface/admin/IAdminController';
 import { Request, Response } from 'express';
 import { HttpStatus } from '../../utils/httpStatus';
-import { IAdminService } from '../../interface/admin/admin.serivce.interface';
+import { IAdminService } from '../../interface/admin/IAdminService';
 import { IDoctor } from '../../models/interface/IDoctor';
 import logger from '../../utils/logger';
 export class AdminController implements IAdminController {
@@ -278,9 +278,10 @@ export class AdminController implements IAdminController {
   async getAllAppoinments(req: Request, res: Response): Promise<void> {
     try {
       logger.info('admin side appoinment request is comming');
-
-       logger.debug(req.query);
-      const result = await this._adminService.getAllAppoinments();
+       
+      const status = req.query.status as string;
+             
+      const result = await this._adminService.getAllAppoinments(status);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
       const err = error as Error;

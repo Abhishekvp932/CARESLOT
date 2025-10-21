@@ -1,12 +1,12 @@
-import { IPatientService } from '../../interface/patients/IPatient.service';
+import { IPatientService } from '../../interface/patients/IPatientService';
 
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
-import { IpatientRepository } from '../../interface/auth/auth.interface';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
+import { IpatientRepository } from '../../interface/auth/IAuthInterface';
 import { IDoctor } from '../../models/interface/IDoctor';
 
-import { ISlotRepository } from '../../interface/Slots/slotRepository.interface';
+import { ISlotRepository } from '../../interface/Slots/ISlotRepository';
 import { DoctorDTO } from '../../types/doctor.dto';
 import { DoctorListResult } from '../../types/doctorListResult';
 import { SpecializationsList } from '../../types/specializationsList';
@@ -133,7 +133,8 @@ export class PatientService implements IPatientService {
     page: number,
     limit: number,
     search: string,
-    specialty: string
+    specialty: string,
+    sortBy:string
   ): Promise<DoctorListResult> {
     const skip = (page - 1) * limit;
     const searchFilter = {
@@ -155,9 +156,23 @@ export class PatientService implements IPatientService {
         ? { 'qualifications.specialization': specialty }
         : {}),
     };
-
+        let sortCondition: Record<string, 1 | -1> = {};
+        switch (sortBy){
+          case 'rating':
+            sortCondition = {avgRating:-1};
+            break;
+            case 'experience':
+             sortCondition = { 'qualifications.experince': -1 };
+             break;
+             case 'fee':
+              sortCondition = { 'qualifications.fees': 1 };
+              break;
+              default:
+                sortCondition = {createdAt:-1};
+                break;
+        }
     const [doctorList, total] = await Promise.all([
-      this._doctorRepository.findAllWithPagination(skip, limit, searchFilter),
+      this._doctorRepository.findAllWithPagination(skip, limit, searchFilter,sortCondition),
       this._doctorRepository.countAll(searchFilter),
     ]);
 
@@ -167,7 +182,6 @@ export class PatientService implements IPatientService {
     const doctors: DoctorDTO[] = doctorList.map((doctor) => ({
       _id: String(doctor?._id),
       name: doctor?.name,
-      role: doctor?.role,
       updatedAt: doctor?.updatedAt,
       createdAt: doctor?.createdAt,
       profile_img: doctor?.profile_img,
@@ -178,21 +192,15 @@ export class PatientService implements IPatientService {
           doctor?.qualifications?.experince !== undefined
             ? Number(doctor.qualifications.experince)
             : undefined,
-        educationCertificate: doctor?.qualifications?.educationCertificate,
-        experienceCertificate: doctor?.qualifications?.experienceCertificate,
-        graduationYear:
-          doctor?.qualifications?.graduationYear !== undefined
-            ? Number(doctor.qualifications.graduationYear)
-            : undefined,
         specialization: doctor?.qualifications?.specialization,
         medicalSchool: doctor?.qualifications?.medicalSchool,
-        about: doctor?.qualifications?.about,
         fees:
           doctor?.qualifications?.fees !== undefined
             ? Number(doctor.qualifications.fees)
             : undefined,
-        lisence: doctor?.qualifications?.lisence,
       },
+      totalRating:doctor?.totalRating,
+      avgRating:doctor?.avgRating
     }));
 
     return { doctors, total };
@@ -219,6 +227,8 @@ export class PatientService implements IPatientService {
             ? Number(doctors.qualifications.fees)
             : undefined,
       },
+      totalRating:doctors.totalRating,
+      avgRating:doctors.avgRating,
     };
 
     return doctor;

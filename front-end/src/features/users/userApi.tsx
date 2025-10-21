@@ -23,8 +23,8 @@ export const userApi = api.injectEndpoints({
         transformResponse: (response) => response.users,
     }),
     getAllApprovedDoctors:builder.query({
-      query:({page,limit,search,specialty})=>({
-        url:`/patient/doctors?page=${page}&limit=${limit}&search=${search}&specialty=${specialty}`,
+      query:({page,limit,search,specialty,sortBy})=>({
+        url:`/patient/doctors?page=${page}&limit=${limit}&search=${search}&specialty=${specialty}&sortBy=${sortBy}`,
         method:"GET"
       }),
     }),
@@ -137,6 +137,19 @@ export const userApi = api.injectEndpoints({
         method:'GET',
       }),
     }),
+    addRating:builder.mutation({
+      query:({doctorId,patientId,rating,review})=>({
+        url:`/rating/rating/${doctorId}`,
+        method:'POST',
+        body:{patientId,rating,review}
+      })
+    }),
+    findDoctorRatings:builder.query({
+      query:(doctorId)=>({
+        url:`rating/rating/${doctorId}`,
+        method:'GET',
+      }),
+    }),
   }),
 });
 
@@ -162,6 +175,7 @@ export const {
    useCancelAppoinmentMutation,
    useGetWalletDataQuery,
    useReadAllNotificationMutation,
-
+   useAddRatingMutation,
+   useFindDoctorRatingsQuery,
   }
    = userApi;

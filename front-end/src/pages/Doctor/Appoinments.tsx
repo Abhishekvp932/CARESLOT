@@ -42,6 +42,7 @@ const navigate = useNavigate();
     doctorId,
     page,
     limit,
+    status:statusFilter,
   })
 
   // Extract backend data
@@ -50,13 +51,7 @@ const navigate = useNavigate();
   const totalPages = Number(data?.totalPages) || 1
   const totalItem = Number(data?.totalItem) || 0
 
-  // Filter appointments by status
-  const filteredAppointments =
-    statusFilter === "all"
-      ? appointments
-      : appointments.filter((a) => a?.status === statusFilter)
 
-  // Reset to first page when filter changes
   const handleStatusFilter = (status: string) => {
     setStatusFilter(status)
     setPage(1)
@@ -121,9 +116,9 @@ const navigate = useNavigate();
             </div>
 
             {/* Appointment Cards */}
-            {filteredAppointments.length > 0 ? (
+            {appointments.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filteredAppointments.map((appointment: any) => (
+                {appointments.map((appointment: any) => (
                   <Card key={appointment._id} className="hover:shadow-md transition-shadow">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">

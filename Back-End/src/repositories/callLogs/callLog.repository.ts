@@ -1,6 +1,6 @@
 import { ICallLogRepository } from '../../interface/callLogs/ICallLogRepository';
 import { ICallLog } from '../../models/interface/ICallLog';
-import CallLog from '../../models/implementation/ICallLog.model';
+import CallLog from '../../models/implementation/callLog.model';
 import { BaseRepository } from '../base.repository';
 
 export class CallLogRepository extends BaseRepository <ICallLog> implements ICallLogRepository {

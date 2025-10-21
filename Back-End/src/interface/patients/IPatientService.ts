@@ -14,7 +14,7 @@ export interface IPatientService {
     getResendAppoinments(patientId:string):Promise<{msg:string,doctors:DoctorDTO[],appoinments:IAppoinmentDto[]}>
     updateUserProfile(formData:Partial<IPatient>,userId:string,profileImg?:string):Promise<{msg:string}>
     getUserData(userId:string):Promise<{msg:string,users:UserDTO}>
-    getAllDoctors(page:number,limit:number,search:string,specialty:string):Promise<DoctorListResult>
+    getAllDoctors(page:number,limit:number,search:string,specialty:string,sortBy:string):Promise<DoctorListResult>
     getDoctorDetails(doctorId:string):Promise<doctorDetails>
     getDoctorSlots(doctorId:string,targetDate:string):Promise<IGeneratedSlot[]>
     getAllspecializations():Promise<SpecializationsList>

@@ -1,7 +1,7 @@
 import { IAppoinment } from '../../models/interface/IAppoinments';
 import Appoinment from '../../models/implementation/appoinment.model';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
-import { Types } from 'mongoose';
+import { FilterQuery, Types } from 'mongoose';
 
 import { IPatientPopulated } from '../../types/AppointsAndPatientsDto';
 import { IDoctorPopulated } from '../../types/AppoinmentsAndDoctorDto';
@@ -29,8 +29,8 @@ export class AppoinmentRepository implements IAppoinmentRepository {
          return await Appoinment.findByIdAndUpdate(appoinmentId ,update,{new:true});
      }
 
-     async findAppoinmentsByDoctor(doctorId: string,skip:number,limit:number): Promise<(IAppoinment & {patientId:IPatientPopulated})[]> {
-       const appointments = await Appoinment.find({ doctorId })
+     async findAppoinmentsByDoctor(doctorId: string,skip:number,limit:number,filter?:FilterQuery<IAppoinment>): Promise<(IAppoinment & {patientId:IPatientPopulated})[]> {
+       const appointments = await Appoinment.find({ doctorId,...filter })
     .populate('patientId', '_id name email phone profile_img')
     .sort({createdAt:1})
     .skip(skip)
@@ -51,8 +51,8 @@ export class AppoinmentRepository implements IAppoinmentRepository {
          return appoinments as unknown as (IAppoinment & {doctorId:IDoctorPopulated})[];
      }
 
-     async findAll(): Promise<AppoinmentPopulatedDTO[]> {
-         const appoinment = await Appoinment.find()
+     async findAll(filter:FilterQuery<IAppoinment>): Promise<AppoinmentPopulatedDTO[]> {
+         const appoinment = await Appoinment.find(filter)
          .populate('doctorId','_id name email phone profile_img qualifications.fees qualifications.specialization')
          .populate('patientId', '_id name email phone profile_img')
          .lean()
@@ -66,5 +66,14 @@ export class AppoinmentRepository implements IAppoinmentRepository {
      }
      async countDoctorAppoinment(doctorId: string): Promise<number> {
          return await Appoinment.countDocuments({doctorId:doctorId});
+     }
+
+     async findByOneSlot(doctorId: string, slotDate: string, startTime: string): Promise<IAppoinment | null> {
+      return Appoinment.findOne({
+      doctorId,
+      'slot.date': slotDate,
+      'slot.startTime': startTime,
+      status: { $in: ['pending','confirmed','rescheduled'] }
+    });
      }
 }

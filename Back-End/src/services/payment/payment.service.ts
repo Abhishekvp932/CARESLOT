@@ -3,8 +3,8 @@ import { IPaymentRepository } from '../../interface/payment/IPaymentRepository';
 import { razorpay } from '../../config/razorpayClient';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
 import { INotificationRepository } from '../../interface/notification/INotificationRepository';
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
-import { IpatientRepository } from '../../interface/auth/auth.interface';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
+import { IpatientRepository } from '../../interface/auth/IAuthInterface';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { Types } from 'mongoose';
@@ -74,10 +74,15 @@ export class PaymentService implements IPaymentService {
     }
 
     const patient = await this._patientRepository.findById(patientId);
-
+   
     if (!patient) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
+     const appoinmentExists = await this._appoinmentRepository.findByOneSlot(doctorId,date,startTime);
+
+     if(appoinmentExists){
+      throw new Error('Appointment already booked');
+     }
 
     const body = orderId + '|' + paymentId;
 

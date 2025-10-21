@@ -2,7 +2,7 @@ import { CommonCardView } from "@/components/common/commonCardView";
 import { CommonTableView } from "@/components/common/commonTableView";
 import { useGetAllDoctorsQuery } from "@/features/admin/adminApi";
 import ActionMenu from "@/components/common/actionMenu";
-import { Edit, Plus, Eye } from "lucide-react";
+import { Plus, Eye } from "lucide-react";
 import { useBlockDoctorMutation } from "@/features/admin/adminApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
@@ -10,6 +10,16 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import RejectionReasonModal from "@/components/common/admin/rejectionReasonModal";
+
+interface Doctors {
+  _id?: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: Date;
+  isBlocked: boolean;
+  isApproved: boolean;
+}
 
 const DoctorsList = () => {
   const [blockDoctor] = useBlockDoctorMutation();
@@ -21,6 +31,7 @@ const DoctorsList = () => {
   const [loading, setLoading] = useState(false);
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(true);
+  const [doctors, setDoctors] = useState<Doctors[]>([]);
   const limit = 10;
 
   useEffect(() => {
@@ -35,39 +46,52 @@ const DoctorsList = () => {
 
   const {
     data = {},
-    refetch,
+
     isFetching,
   } = useGetAllDoctorsQuery({
     page,
     limit,
     search: debouncedSearch,
   });
+
   console.log(data);
-  const doctors = data?.data || [];
-  console.log("doctors", doctors);
+  useEffect(() => {
+    if (data?.data) {
+      setDoctors(data?.data);
+    }
+  }, [data]);
+
   const totalPages = data?.totalPages || 1;
 
   const isLoading = loading || isFetching;
 
   useEffect(() => {
     setIsOpen(false);
-    refetch();
   }, []);
   const handleDoctorBlockAndUnBlock = async (
     doctorId: string,
     isBlocked: boolean,
-    reason:string,
+    reason: string
   ) => {
     try {
       const res = await blockDoctor({
         doctorId,
         isBlocked: !isBlocked,
-        reason
+        reason,
       }).unwrap();
       toast.success(res.msg);
       setIsOpen(false);
-      refetch();
-    } catch (error:  any) {
+      setDoctors((prevDoctors) => {
+        if (Array.isArray(prevDoctors)) {
+        
+          return prevDoctors.map((doctor) =>
+            doctor._id === doctorId ? { ...doctor, isBlocked: !isBlocked } : doctor
+          );
+        }
+        
+        return prevDoctors;
+      });
+    } catch (error: any) {
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
@@ -76,14 +100,10 @@ const DoctorsList = () => {
     }
   };
 
-  // const handleEdit = (doctorId: string) => {
-  //   navigate(`/admin/doctor-edit/${doctorId}`);
-  // };
-
   const handleDoctorDetailsPage = (doctorId: string) => {
     navigate(`/admin/doctor-details/${doctorId}`);
   };
-  
+
   const columns = [
     { label: "Name", accessor: "name" },
     { label: "Email", accessor: "email" },
@@ -108,7 +128,7 @@ const DoctorsList = () => {
                 setSelectedDoctorId(item._id);
                 setIsOpen(true);
               } else {
-                handleDoctorBlockAndUnBlock(item._id,true);
+                handleDoctorBlockAndUnBlock(item._id, true);
               }
             }}
             className={`px-3 py-1 rounded text-white hover:opacity-90 ${
@@ -117,11 +137,16 @@ const DoctorsList = () => {
           >
             {item.isBlocked ? "Unblock" : "Block"}
           </button>
-           <RejectionReasonModal open={isOpen} title="Blocking Reason" onOpenChange={setIsOpen} onSave={(reason)=>{
-              if(selectedDoctorId){
-                handleDoctorBlockAndUnBlock(selectedDoctorId,false,reason);
+          <RejectionReasonModal
+            open={isOpen}
+            title="Blocking Reason"
+            onOpenChange={setIsOpen}
+            onSave={(reason) => {
+              if (selectedDoctorId) {
+                handleDoctorBlockAndUnBlock(selectedDoctorId, false, reason);
               }
-           }}/>
+            }}
+          />
           <button
             className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
             onClick={() => handleDoctorDetailsPage(item?._id)}
@@ -229,17 +254,16 @@ const DoctorsList = () => {
                     }
                   />
                 </div>
-                 <button
-            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
-            onClick={() => handleDoctorDetailsPage(user?._id)}
-          >
-            <Eye size={16} />
-            view
-          </button>
+                <button
+                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+                  onClick={() => handleDoctorDetailsPage(user?._id)}
+                >
+                  <Eye size={16} />
+                  view
+                </button>
               </div>
             )}
           />
-         
         </div>
       )}
       <ToastContainer autoClose={2000} />

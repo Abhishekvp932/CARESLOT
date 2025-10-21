@@ -20,7 +20,7 @@ export function AppointmentHistory() {
   const [statusFilter, setStatusFilter] = useState<string>("all")
   // const limit = 10;
  
-const {data = {}} = useGetAllAdminAppoinmentsQuery();
+const {data = {}} = useGetAllAdminAppoinmentsQuery({status:statusFilter});
   console.log(data);
 
   const appointments = data || []
@@ -54,7 +54,7 @@ const {data = {}} = useGetAllAdminAppoinmentsQuery();
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
+        {/* <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search appointments, doctors, or specialties..."
@@ -62,7 +62,7 @@ const {data = {}} = useGetAllAdminAppoinmentsQuery();
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
           />
-        </div>
+        </div> */}
 
         <div className="flex gap-2">
           <Button
@@ -86,6 +86,13 @@ const {data = {}} = useGetAllAdminAppoinmentsQuery();
             onClick={() => setStatusFilter("completed")}
           >
             Completed
+          </Button>
+          <Button
+            variant={statusFilter === "cancelled" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter("cancelled")}
+          >
+            Cancelled
           </Button>
         </div>
       </div>

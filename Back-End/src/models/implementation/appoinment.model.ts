@@ -34,10 +34,8 @@ const appoinmentSchema = new Schema<(IAppoinment)>({
 },{timestamps:true});
 
 
-appoinmentSchema.index(
-  { doctorId: 1, 'slot.date': 1, 'slot.startTime': 1 },
-  { unique: true }
-);
+
+
 
 const Appoinment = mongoose.model<IAppoinment>('Appoinment',appoinmentSchema);
 export default Appoinment;

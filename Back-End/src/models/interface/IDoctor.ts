@@ -33,4 +33,6 @@ export interface IDoctor extends Document {
   rejectionReason?:string;
   blockReason?:string;
   otpExpire?: Date;
+  totalRating?:number;
+  avgRating?:number;
 }

@@ -1,4 +1,4 @@
-import { Types } from 'mongoose';
+import { FilterQuery, Types } from 'mongoose';
 import { IAppoinment } from '../../models/interface/IAppoinments';
 import { IPatientPopulated } from '../../types/AppointsAndPatientsDto';
 import { IDoctorPopulated } from '../../types/AppoinmentsAndDoctorDto';
@@ -9,10 +9,11 @@ export interface IAppoinmentRepository{
     findByDoctorId(doctorId:string):Promise<IAppoinment[]>;
     findByPatientId(patientId:string):Promise<IAppoinment[]>;
     findByIdAndUpdate(appoinmentId:string | Types.ObjectId,update:Partial<IAppoinment>):Promise<IAppoinment | null>;
-    findAppoinmentsByDoctor(doctorId:string,skip:number,limit:number):Promise<(IAppoinment & {patientId:IPatientPopulated})[]>;
+    findAppoinmentsByDoctor(doctorId:string,skip:number,limit:number,filter?:FilterQuery<IAppoinment>):Promise<(IAppoinment & {patientId:IPatientPopulated})[]>;
     findAppoinmentsByPatient(patientId:string,skip:number,limit:number):Promise<(IAppoinment & {doctorId:IDoctorPopulated})[]>;
-    findAll():Promise<AppoinmentPopulatedDTO[]>;
+    findAll(filter:FilterQuery<IAppoinment>):Promise<AppoinmentPopulatedDTO[]>;
     countPatientAppoinment(patientId:string):Promise<number>;
     countDoctorAppoinment(doctorId:string):Promise<number>;
+    findByOneSlot(doctorId:string,slotDate:string,startTime:string):Promise<IAppoinment | null>;
 
 }

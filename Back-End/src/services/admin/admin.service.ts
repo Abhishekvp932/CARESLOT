@@ -1,13 +1,13 @@
-import { IAdminService } from '../../interface/admin/admin.serivce.interface';
+import { IAdminService } from '../../interface/admin/IAdminService';
 
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import { hashPassword } from '../../utils/hash';
 import { IDoctor } from '../../models/interface/IDoctor';
 
-import { IDoctor as Idoctors } from '../../interface/doctor/doctor.service.interface';
-import { IpatientRepository } from '../../interface/auth/auth.interface';
-import { IAdminRepository } from '../../interface/admin/admin.repo.interface';
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import { IDoctor as Idoctors } from '../../interface/doctor/IDoctorService';
+import { IpatientRepository } from '../../interface/auth/IAuthInterface';
+import { IAdminRepository } from '../../interface/admin/IAdminRepository';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
 import { IPatient } from '../../models/interface/IPatient';
 import { DoctorListResult } from '../../types/doctorListResult';
 import { UserListResult } from '../../types/userListsResult';
@@ -22,7 +22,7 @@ import { verifyAccessToken } from '../../utils/jwt';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
 import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
 import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
-import { ISlotRepository } from '../../interface/Slots/slotRepository.interface';
+import { ISlotRepository } from '../../interface/Slots/ISlotRepository';
 import { ISlotDto } from '../../types/ISlotDTO';
 export class AdminService implements IAdminService {
   constructor(
@@ -112,34 +112,9 @@ export class AdminService implements IAdminService {
       isBlocked: doctor?.isBlocked,
       isApproved: doctor?.isApproved,
       name: doctor?.name,
-      DOB: doctor?.DOB,
-      gender: doctor?.gender,
       role: doctor?.role,
       updatedAt: doctor?.updatedAt,
       createdAt: doctor?.createdAt,
-      profile_img: doctor?.profile_img,
-      qualifications: {
-        degree: doctor?.qualifications?.degree,
-        institution: doctor?.qualifications?.institution,
-        experince:
-          doctor?.qualifications?.experince !== undefined
-            ? Number(doctor.qualifications.experince)
-            : undefined,
-        educationCertificate: doctor?.qualifications?.educationCertificate,
-        experienceCertificate: doctor?.qualifications?.experienceCertificate,
-        graduationYear:
-          doctor?.qualifications?.graduationYear !== undefined
-            ? Number(doctor.qualifications.graduationYear)
-            : undefined,
-        specialization: doctor?.qualifications?.specialization,
-        medicalSchool: doctor?.qualifications?.medicalSchool,
-        about: doctor?.qualifications?.about,
-        fees:
-          doctor?.qualifications?.fees !== undefined
-            ? Number(doctor.qualifications.fees)
-            : undefined,
-        lisence: doctor?.qualifications?.lisence,
-      },
     }));
 
     return { doctors, total };
@@ -630,12 +605,18 @@ The CARESLOT Team`
     await this._doctorAuthRepository.create(doctorData);
     return { msg: 'New doctor added successfully' };
   }
-  async getAllAppoinments(): Promise<AppoinmentPopulatedDTO[]> {
-     
-  
+  async getAllAppoinments(status:string): Promise<AppoinmentPopulatedDTO[]> {
+    let filter = {};
 
+    if(status === 'upcoming'){
+      filter = {status:'pending'};
+    }else if(status === 'completed'){
+      filter = {status:'completed'};
+    }else if(status === 'cancelled'){
+      filter = {status : 'cancelled'};
+    }
 
-    const appoinmentsList = await this._appoinmentRepository.findAll();
+    const appoinmentsList = await this._appoinmentRepository.findAll(filter);
 
     if (!appoinmentsList) {
       throw new Error('No Appoinments');
@@ -675,6 +656,8 @@ The CARESLOT Team`
     logger.debug(appoinments);
     return appoinments;
   }
+
+
 
   async getDoctorSlotAndAppoinment(doctorId: string): Promise<{ slots: ISlotDto[]; appoinments: AppointmentPatientDTO[];}> {
     if(!doctorId){

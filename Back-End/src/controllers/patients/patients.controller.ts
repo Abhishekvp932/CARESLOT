@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { IPatientController } from '../../interface/patients/IPatient.controller';
-import { IPatientService } from '../../interface/patients/IPatient.service';
+import { IPatientController } from '../../interface/patients/IPatientController';
+import { IPatientService } from '../../interface/patients/IPatientService';
 import { HttpStatus } from '../../utils/httpStatus';
 import logger from '../../utils/logger';
 export class PatientController implements IPatientController {
@@ -58,11 +58,13 @@ export class PatientController implements IPatientController {
       const limit = parseInt(req.query.limit as string);
       const search = req.query.search as string;
       const specialty = req.query.specialty as string;
+      const sortBy = req.query.sortBy as string;
       const result = await this._patientService.getAllDoctors(
         page,
         limit,
         search,
-        specialty
+        specialty,
+        sortBy,
       );
       res
         .status(HttpStatus.OK)

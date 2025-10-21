@@ -1,6 +1,6 @@
 // import fetch from "node-fetch";
 import { IChatbotService } from '../../interface/chatbot/IChatbot.service';
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
 export class ChatbotService implements IChatbotService {
   constructor(private _doctorRepository: IDoctorAuthRepository) {}
   async processMessage(message: string): Promise<{ replay: string }> {

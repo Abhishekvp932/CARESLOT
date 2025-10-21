@@ -92,8 +92,8 @@ export const adminApi = api.injectEndpoints({
         }),
       }),
       getAllAdminAppoinments:builder.query({
-        query:()=>({
-            url:`/admin/appoinments`,
+        query:({status})=>({
+            url:`/admin/appoinments?status=${status}`,
             method:'GET'
         }),
       }),

@@ -3,8 +3,8 @@
     import logger from '../utils/logger';
   import redisClient from '../config/redisClient';
 import { HttpStatus } from '../utils/httpStatus';
-import { IpatientRepository } from '../interface/auth/auth.interface';
-import { IDoctorAuthRepository } from '../interface/doctor/doctor.auth.interface';
+import { IpatientRepository } from '../interface/auth/IAuthInterface';
+import { IDoctorAuthRepository } from '../interface/doctor/IDoctorRepository';
    import { IBaseUser } from '../utils/IBaseUser';
 
 export class AuthMiddleware {

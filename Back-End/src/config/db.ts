@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import dotenv from 'dotenv';
 import logger from '../utils/logger';
+
 dotenv.config();
 
 const connectDB = async() : Promise <void>=>{
@@ -10,7 +11,8 @@ const connectDB = async() : Promise <void>=>{
        if(!mongoURI){
         throw new Error('Mongodb URI is not define in .env');
        }
-       await mongoose.connect(mongoURI);
+       await mongoose.connect(mongoURI,{autoIndex:true});
+      
        console.log('DataBase connect');
     } catch (error) {
          logger.error(error);

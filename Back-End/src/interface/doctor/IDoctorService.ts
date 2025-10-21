@@ -23,5 +23,5 @@ export interface IDoctor{
     getDoctorProfile(doctorId:string):Promise<{msg:string,doctor:doctorDetails}>
     editDoctorProfile(doctorId:string,body:DoctorProfileInput,files:UploadedFiles):Promise<{msg:string}>
     reApplyDoctor(doctorId:string,body:DoctorProfileInput,files:UploadedFiles):Promise<{msg:string}>;
-    getAllAppoinments(doctorId:string,page:number,limit:number):Promise<{appoinments:AppointmentPatientDTO[],total:number}>
+    getAllAppoinments(doctorId:string,page:number,limit:number,status:string):Promise<{appoinments:AppointmentPatientDTO[],total:number}>
 }

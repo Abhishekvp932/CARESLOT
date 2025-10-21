@@ -1,7 +1,7 @@
-import { ISlotService } from '../../interface/Slots/slotService.interface';
+import { ISlotService } from '../../interface/Slots/ISlotService';
 
-import { ISlotRepository } from '../../interface/Slots/slotRepository.interface';
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import { ISlotRepository } from '../../interface/Slots/ISlotRepository';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import logger from '../../utils/logger';
 import timeStringToDate from '../../utils/timeStringToDate';

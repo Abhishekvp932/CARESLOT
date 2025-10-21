@@ -1,7 +1,7 @@
 
-import Slots from '../../models/implementation/Slotes.model';
+import Slots from '../../models/implementation/slotes.model';
 import { ISlots } from '../../models/interface/ISlots';
-import { ISlotRepository } from '../../interface/Slots/slotRepository.interface';
+import { ISlotRepository } from '../../interface/Slots/ISlotRepository';
 
 export class SlotRepository implements ISlotRepository{
    

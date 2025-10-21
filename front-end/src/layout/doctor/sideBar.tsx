@@ -40,6 +40,11 @@ export function DoctorSidebar({ children }: { children: React.ReactNode }) {
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
   const [showNotification, setNotification] = useState(false);
   // const [Logout] = useLogOutMutation();
+  const [notiCount,setCount] = useState<number>(0)
+
+  const handleNotificationCount = (count:number)=>{
+    setCount(count);
+  }
   const handleLogout = async () => {
     dispatch(logOut());
     navigate("/login");
@@ -73,6 +78,11 @@ export function DoctorSidebar({ children }: { children: React.ReactNode }) {
   onClick={() => setNotification(!showNotification)}
 >
   <span className="text-xl">🔔</span>
+  {notiCount > 0 && (
+    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+      {notiCount}
+    </span>
+  )}
 </button>
 
 <LiveNotifications userId={doctor?._id} />
@@ -80,7 +90,7 @@ export function DoctorSidebar({ children }: { children: React.ReactNode }) {
 {/* Notification Dropdown in top-right */}
 {showNotification && (
   <div className="fixed top-14 right-6 w-96 bg-white border rounded-lg shadow-lg z-50">
-    <NotificationComponent patientId={doctor?._id} />
+    <NotificationComponent patientId={doctor?._id} onCountChange={handleNotificationCount}/>
   </div>
 )}
 

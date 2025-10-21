@@ -11,13 +11,13 @@ import {
   verifyRefreshToken,
 } from '../../utils/jwt';
 import { Profile } from 'passport-google-oauth20';
-import { IService } from '../../interface/auth/IService.interface';
+import { IService } from '../../interface/auth/IAuthService';
 import { MailService } from '../mail.service';
 import { IPatient } from '../../models/interface/IPatient';
 import { IBaseUser } from '../../utils/IBaseUser';
-import { IpatientRepository } from '../../interface/auth/auth.interface';
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
-import { IAdminRepository } from '../../interface/admin/admin.repo.interface';
+import { IpatientRepository } from '../../interface/auth/IAuthInterface';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
+import { IAdminRepository } from '../../interface/admin/IAdminRepository';
 import redisClient from '../../config/redisClient';
 
 import { IDoctor } from '../../models/interface/IDoctor';

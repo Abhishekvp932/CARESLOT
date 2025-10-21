@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Shield, Clock, Users, Heart, Stethoscope, Activity, Award } from "lucide-react";
 import Header from "@/layout/Header";
 import Footer from "@/layout/Footer";
+import Chatbot from "@/components/common/user/Chatboat";
 
 const Index = () => {
   return (
@@ -141,8 +142,9 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-
+     <div>
+      <Chatbot/>
+     </div>
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
         <div className="mx-auto max-w-4xl px-4 text-center space-y-6">
           <Activity className="w-16 h-16 mx-auto text-blue-200" />
@@ -160,7 +162,7 @@ const Index = () => {
           </div>
         </div>
       </section>
-
+    
       <Footer />
     </main>
   );

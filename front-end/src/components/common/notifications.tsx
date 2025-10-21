@@ -15,12 +15,14 @@ interface Notification {
 }
 interface Props {
   patientId:string
+  onCountChange?: (count: number) => void; 
 }
-export default function NotificationComponent({ patientId }:Props) {
+export default function NotificationComponent({ patientId,onCountChange}:Props) {
   const { data, isLoading, isError, refetch } = useGetUserNotificationQuery({
     patientId,
   });
-
+ 
+  
   useEffect(() => {
     if (patientId) {
       refetch();
@@ -50,6 +52,11 @@ export default function NotificationComponent({ patientId }:Props) {
   const unreadNotifications = notifications.filter((n) => !n.isRead);
   const readNotifications = notifications.filter((n) => n.isRead);
 
+useEffect(()=>{
+    if(onCountChange){
+      onCountChange(unreadNotifications.length);
+    }
+  },[unreadNotifications.length]);
   if (isLoading) {
     return (
       <div className="p-8 text-center">

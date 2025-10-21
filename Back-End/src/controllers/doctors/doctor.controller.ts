@@ -1,9 +1,9 @@
-import IDoctorController from '../../interface/doctor/doctor.controller';
+import IDoctorController from '../../interface/doctor/IDoctorController';
 import { HttpStatus } from '../../utils/httpStatus';
 
 import { Request, Response } from 'express';
-import { QualificationInput } from '../../interface/doctor/doctor.service.interface';
-import { IDoctor } from '../../interface/doctor/doctor.service.interface';
+import { QualificationInput } from '../../interface/doctor/IDoctorService';
+import { IDoctor } from '../../interface/doctor/IDoctorService';
 
 import logger from '../../utils/logger';
 export class DoctorController implements IDoctorController {
@@ -119,7 +119,9 @@ export class DoctorController implements IDoctorController {
       const { doctorId } = req.params;
       const page = parseInt(req.query.pagge as string);
       const limit = parseInt(req.query.limit as string);
-      const result = await this._doctorService.getAllAppoinments(doctorId,page,limit);
+      const status = req.query.status as string;
+      logger.debug(status);
+      const result = await this._doctorService.getAllAppoinments(doctorId,page,limit,status);
       res.status(HttpStatus.OK).json({data:result.appoinments,currentPage:page,totalPages: Math.ceil(result.total / limit),totalItem: result.total});
     } catch (error) {
       const err = error as Error;

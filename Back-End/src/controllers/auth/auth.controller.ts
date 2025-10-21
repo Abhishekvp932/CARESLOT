@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import IAuthController from '../../interface/auth/auth.controller';
+import IAuthController from '../../interface/auth/IAuthController';
 
 import { HttpStatus } from '../../utils/httpStatus';
 import { CONTROLLER_MESSAGE } from '../../utils/controllerMessage';
 
-import { IService } from '../../interface/auth/IService.interface';
+import { IService } from '../../interface/auth/IAuthService';
 import redisClient from '../../config/redisClient';
 import { v4 as uuidv4 } from 'uuid';
 import logger from '../../utils/logger';

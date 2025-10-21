@@ -1,8 +1,8 @@
 import { IAppoinmentService } from '../../interface/appoinment/IAppoinmentService';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
 import { appoinemntData } from '../../types/appoinmentData';
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
-import { IpatientRepository } from '../../interface/auth/auth.interface';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
+import { IpatientRepository } from '../../interface/auth/IAuthInterface';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import {Types } from 'mongoose';
 import { MailService } from '../mail.service';

@@ -78,5 +78,9 @@ export const Routers = {
     },
     callLogRouters:{
         getCallData:'/call/:appoinmentId',
+    },
+    ratingRouters:{
+        addRating:'/rating/:doctorId',
+        findDoctorRating:'/rating/:doctorId'
     }
 };

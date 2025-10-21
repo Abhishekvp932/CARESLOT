@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "@/layout/Footer";
 import Header from "@/layout/Header";
 import { useGetDoctorDetailPageQuery } from "@/features/users/userApi";
@@ -10,6 +10,7 @@ import { useGetRelatedDoctorQuery } from "@/features/users/userApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAddRatingMutation } from "@/features/users/userApi";
 import {
   Calendar,
   Clock,
@@ -18,13 +19,40 @@ import {
   CheckCircle2,
   ArrowLeft,
   ArrowRight,
+  User,
 } from "lucide-react";
+
+import AddRatingModal from "@/components/common/AddRatingModal";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/app/store";
+import { toast, ToastContainer } from "react-toastify";
+import { useFindDoctorRatingsQuery } from "@/features/users/userApi";
+
+interface Ratings {
+  doctorId: string;
+  patinetId: { name: string; _id: string };
+  rating: number;
+  comment: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const UserDoctorDetailsPage = () => {
   const { doctorId } = useParams<{ doctorId: string }>();
   const navigate = useNavigate();
-
+  const patient = useSelector((state: RootState) => state.auth.user);
+  const patientId = patient?._id as string;
   const { data: doctor } = useGetDoctorDetailPageQuery(doctorId);
+
+  const [rating, setRatings] = useState<Ratings[]>([]);
+  const { data: ratings = [] } = useFindDoctorRatingsQuery(doctorId);
+
+  useEffect(() => {
+    if (ratings) {
+      setRatings(ratings);
+    }
+  }, [ratings]);
+  console.log("ratings data", rating);
   const { data = {} } = useGetRelatedDoctorQuery({
     doctorId,
     specialization: doctor?.qualifications?.specialization,
@@ -73,11 +101,52 @@ const UserDoctorDetailsPage = () => {
     navigate(`/doctor-details/${doctorId}`);
   };
 
+  const [addRating] = useAddRatingMutation();
+  const handleRatingSubmit = async (rating: number, review: string) => {
+    if (review === "") return;
+    console.log("doctor id and patient id", doctorId, patientId);
+    const res = await addRating({
+      doctorId,
+      patientId,
+      rating,
+      review,
+    }).unwrap();
+    toast.success(res.msg);
+
+    setRatings((prev) => [
+      {
+        doctorId: doctorId!,
+        patinetId: { name: patient?.name, _id: patientId },
+        rating: rating,
+        comment: review,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      ...prev, 
+    ]);
+  };
+
+  const StarRating = ({ value }) => {
+    return (
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`w-5 h-5 transition-colors ${
+              star <= value ? "fill-amber-400 text-amber-400" : "text-gray-300"
+            }`}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
 
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-16">
+        {/* Doctor Profile Card */}
         <Card className="border border-gray-200 shadow-sm mb-8 rounded-2xl bg-white">
           <CardContent className="p-8">
             <div className="flex flex-col lg:flex-row gap-8">
@@ -113,7 +182,12 @@ const UserDoctorDetailsPage = () => {
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-1">
                           <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                          <span className="text-gray-900 font-medium">0.0</span>
+                          <span className="text-gray-900 font-medium">
+                            {doctor?.avgRating}
+                          </span>
+                          <span className="text-gray-500">
+                            ({doctor?.totalRating} reviews)
+                          </span>
                         </div>
                         <span>•</span>
                         <div className="flex items-center gap-1">
@@ -152,6 +226,7 @@ const UserDoctorDetailsPage = () => {
           </CardContent>
         </Card>
 
+        {/* Book Appointment Card */}
         <Card className="border border-gray-200 shadow-sm mb-8 rounded-2xl bg-white">
           <CardContent className="p-8">
             <div className="space-y-6">
@@ -311,6 +386,113 @@ const UserDoctorDetailsPage = () => {
           </CardContent>
         </Card>
 
+        {/* Ratings & Reviews Card - Only History */}
+        <Card className="border border-gray-200 shadow-sm mb-8 rounded-2xl bg-white">
+          <CardContent className="p-8">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">
+                    Ratings & Reviews
+                  </h2>
+                </div>
+
+                {/* Add Rating Modal Component */}
+                <AddRatingModal
+                  doctorId={doctorId}
+                  doctorName={doctor?.name}
+                  onSubmit={handleRatingSubmit}
+                />
+              </div>
+
+              {/* Rating Summary */}
+              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                <div className="flex items-center gap-6">
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-gray-900">
+                      {doctor?.avgRating}
+                    </div>
+                    <StarRating
+                      value={Math.round(parseFloat(doctor?.avgRating))}
+                    />
+                    <div className="text-sm text-gray-600 mt-1">
+                      Based on {doctor?.totalRating} reviews
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    {[5, 4, 3, 2, 1].map((star) => {
+                      const count = rating.filter(
+                        (r) => r.rating === star
+                      ).length;
+                      const percentage =
+                        doctor?.totalRating > 0
+                          ? (count / doctor?.totalRating) * 100
+                          : 0;
+
+                      return (
+                        <div key={star} className="flex items-center gap-3">
+                          <span className="text-sm text-gray-600 w-8">
+                            {star}★
+                          </span>
+                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-amber-400"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                          <span className="text-sm text-gray-600 w-8">
+                            {count}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Reviews List */}
+              <div className="space-y-4">
+                {rating.map((rating) => (
+                  <Card key={rating.id} className="border border-gray-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                          <User className="w-5 h-5 text-gray-600" />
+                        </div>
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-semibold text-gray-900">
+                                {rating?.patientId?.name}
+                              </h4>
+                              <div className="flex items-center gap-2">
+                                <StarRating value={rating.rating} />
+                                <span className="text-sm text-gray-500">
+                                  {new Date(
+                                    rating.createdAt
+                                  ).toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-gray-600 leading-relaxed">
+                            {rating.comment}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Related Specialists Card */}
         <Card className="border border-gray-200 shadow-sm rounded-2xl bg-white">
           <CardContent className="p-8">
             <div className="space-y-6">
@@ -365,7 +547,7 @@ const UserDoctorDetailsPage = () => {
           </CardContent>
         </Card>
       </div>
-
+      <ToastContainer autoClose={200} />
       <Footer />
     </div>
   );

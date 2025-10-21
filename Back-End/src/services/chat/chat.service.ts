@@ -1,8 +1,8 @@
 import { IChatService } from '../../interface/chat/IChatService';
 import { IChatRepository } from '../../interface/chat/IChatRepository';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
-import { IpatientRepository } from '../../interface/auth/auth.interface';
-import { IDoctorAuthRepository } from '../../interface/doctor/doctor.auth.interface';
+import { IpatientRepository } from '../../interface/auth/IAuthInterface';
+import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
 import logger from '../../utils/logger';
 import { ChatDTO } from '../../types/UserChatDto';
 

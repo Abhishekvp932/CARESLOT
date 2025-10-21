@@ -11,7 +11,7 @@ export interface DoctorDTO {
   updatedAt?: Date;
   createdAt?: Date;
   profile_img?: string;
-  qualifications: {
+  qualifications?: {
     degree?: string;
     institution?: string;
     experince?:number;
@@ -24,4 +24,6 @@ export interface DoctorDTO {
     fees?: number;
     lisence?: string;
   };
+  totalRating?:number;
+  avgRating?:number;
 }

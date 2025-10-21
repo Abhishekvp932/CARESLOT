@@ -15,7 +15,7 @@ export interface IDoctorAuthRepository{
    findByIdAndDelete(id:string):Promise<IDoctor | null>
    findAllWithFilter(filter:FilterQuery<IDoctor>):Promise<IDoctor[]>;
    findAll():Promise<IDoctor[]>
-    findAllWithPagination(skip:number,limit:number, filter: FilterQuery<IDoctor>):Promise<IDoctor[]>
+    findAllWithPagination(skip:number,limit:number, filter: FilterQuery<IDoctor>,sortCondition?: Record<string, 1 | -1>):Promise<IDoctor[]>
     countAll(filter: FilterQuery<IDoctor>):Promise<number>
     uploadDocument(doctorId: string, data:Partial<IDoctor>): Promise<IDoctor | null>
     findRelatedDoctors(specialization:string,excludeId:string,limit?:number):Promise<IDoctor[]>

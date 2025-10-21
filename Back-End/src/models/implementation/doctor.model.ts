@@ -75,6 +75,14 @@ const doctorSchema = new Schema<IDoctor>(
     otpExpire: {
       type: Date,
     },
+    totalRating:{
+      type:Number,
+      default:0
+    },
+    avgRating:{
+      type:Number,
+      default : 0,
+    },
   },
   { timestamps: true }
 );

@@ -1,5 +1,5 @@
 import Patient from '../../models/implementation/patient.model';
-import { IpatientRepository } from '../../interface/auth/auth.interface';
+import { IpatientRepository } from '../../interface/auth/IAuthInterface';
 import { Profile } from 'passport-google-oauth20';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import { BaseRepository } from '../base.repository';

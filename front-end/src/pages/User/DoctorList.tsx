@@ -20,8 +20,7 @@ import {
   Award,
   GraduationCap,
   Stethoscope,
-  MapPin,
-  Clock,
+
   TrendingUp,
   Users,
   CheckCircle2,
@@ -58,6 +57,7 @@ export default function DoctorList() {
     limit,
     search: debouncedSearch,
     specialty: selectedSpecialty,
+    sortBy:sortBy,
   });
   const { data: specializations = [] } = useGetAllSpecializationsQuery({});
   
@@ -110,15 +110,15 @@ export default function DoctorList() {
                     setSearchTerm(e.target.value);
                     setPage(1);
                   }}
-                  className="pl-12 h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  className="pl-12 h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <Select value={selectedSpecialty} onValueChange={setSpecialty}>
-                  <SelectTrigger className="w-full sm:w-56 h-12 border-gray-200">
+                  <SelectTrigger className="w-full sm:w-56 h-12 border-gray-200 text-gray-900">
                     <Filter className="w-4 h-4 mr-2" />
-                    <SelectValue placeholder="All Specializations" />
+                    <SelectValue placeholder="All Specializations" className="text-gray-900" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="All Specialties">All Specializations</SelectItem>
@@ -131,9 +131,9 @@ export default function DoctorList() {
                 </Select>
 
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-full sm:w-48 h-12 border-gray-200">
+                  <SelectTrigger className="w-full sm:w-48 h-12 border-gray-200 text-gray-900">
                     <TrendingUp className="w-4 h-4 mr-2" />
-                    <SelectValue />
+                    <SelectValue className="text-gray-900" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="rating">Highest Rated</SelectItem>
@@ -210,7 +210,7 @@ export default function DoctorList() {
                                   <Star
                                     key={i}
                                     className={`w-4 h-4 ${
-                                      i < Math.floor(doctor?.rating || 0)
+                                      i < Math.floor(doctor?.avgRating || 0)
                                         ? "fill-yellow-400 text-yellow-400"
                                         : "fill-gray-200 text-gray-200"
                                     }`}
@@ -218,10 +218,10 @@ export default function DoctorList() {
                                 ))}
                               </div>
                               <span className="text-sm font-semibold text-gray-700 ml-1">
-                                {doctor?.rating || "N/A"}
+                                {doctor?.avgRating || "N/A"}
                               </span>
                               <span className="text-xs text-gray-500">
-                                ({doctor?.reviews || 0})
+                                ({doctor?.totalRating || 0})
                               </span>
                             </div>
                           </div>

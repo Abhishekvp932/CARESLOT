@@ -26,4 +26,6 @@ export interface doctorDetails {
     fees?: number;
     lisence?: string;
   };
+  totalRating?:number;
+  avgRating?:number;
 }

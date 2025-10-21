@@ -1,4 +1,4 @@
-import { IDoctor } from '../doctor/doctor.service.interface';
+import { IDoctor } from '../doctor/IDoctorService';
 import { DoctorListResult } from '../../types/doctorListResult';
 import { UserListResult } from '../../types/userListsResult';
 import { doctorDetails } from '../../types/doctorDetails';
@@ -39,7 +39,7 @@ export interface IAdminService {
 
 addDoctor(data:unknown):Promise<{msg:string}>
 
-getAllAppoinments():Promise<AppoinmentPopulatedDTO[]>
+getAllAppoinments(status:string):Promise<AppoinmentPopulatedDTO[]>
 
 getDoctorSlotAndAppoinment(doctorId:string):Promise<{slots:ISlotDto[],appoinments:AppointmentPatientDTO[]}>
 

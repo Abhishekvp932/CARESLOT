@@ -2,20 +2,32 @@ import { CommonCardView } from "@/components/common/commonCardView";
 import { CommonTableView } from "@/components/common/commonTableView";
 import { useGetAllUsersQuery } from "@/features/admin/adminApi";
 import ActionMenu from "@/components/common/actionMenu";
-import { Edit, Plus } from "lucide-react";
+import {  Plus } from "lucide-react";
 import { useBlockUserMutation } from "@/features/admin/adminApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
-import EditUserModal from "@/components/common/EditUserModal";
+
 import { Button } from "@/components/ui/button";
-import { useUpdateUserDataMutation } from "@/features/admin/adminApi";
+
 import { useAddUserMutation } from "@/features/admin/adminApi";
 import AddUserModal from "./AddUser";
 import { useState } from "react";
+
+interface Users {
+  _id?: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: Date;
+  isBlocked: boolean;
+}
+
+
 const UsersList = () => {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [debounceSearch, setDebounce] = useState("");
+  const [users,setUsers] = useState<Users[]>([]);
   const [loading, setLoading] = useState(false);
   const limit = 10;
 
@@ -31,25 +43,39 @@ const UsersList = () => {
 
   const {
     data = {},
-    refetch,
     isFetching,
   } = useGetAllUsersQuery({ page, limit, search: debounceSearch });
-  const users = data?.data;
+
+
+  useEffect(() => {
+  if (data?.data) {
+    setUsers(data.data); 
+  }
+}, [data]);
   const totalPages = data?.totalPages || 1;
 
   const isLoading = loading || isFetching;
 
   const [blockUser] = useBlockUserMutation();
-  const [updateUserData] = useUpdateUserDataMutation();
+
   const [addUser] = useAddUserMutation();
-  useEffect(() => {
-    refetch();
-  }, []);
+
   const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
     try {
       const res = await blockUser({ userId, isBlocked: !isBlocked }).unwrap();
+      
       toast.success(res.msg);
-      refetch();
+      setUsers((prevUsers) => {
+  if (Array.isArray(prevUsers)) {
+    // return the updated array properly
+    return prevUsers.map((user) =>
+      user._id === userId ? { ...user, isBlocked: !isBlocked } : user
+    );
+  }
+  // if somehow not array, return same state
+  return prevUsers;
+});
+
     } catch (error: any) {
       if (error?.data?.msg) {
         toast.error(error.data.msg);
@@ -78,7 +104,7 @@ const UsersList = () => {
       toast.success(res?.msg);
 
       setIsAddModalOpen(false);
-      refetch();
+    
     } catch (error: any) {
       if (error?.data?.msg) {
         toast.error(error.data.msg);
@@ -88,9 +114,7 @@ const UsersList = () => {
     }
   };
 
-  useEffect(() => {
-    refetch();
-  }, []);
+  
 
   const columns = [
     { label: "Name", accessor: "name" },
