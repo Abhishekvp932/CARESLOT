@@ -8,7 +8,6 @@ import {
   Calendar,
   Clock,
   Phone,
-  MessageSquare,
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,

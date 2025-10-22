@@ -139,6 +139,7 @@ export class PatientService implements IPatientService {
     const skip = (page - 1) * limit;
     const searchFilter = {
       isApproved: true,
+      isBlocked:false,
       ...(search
         ? {
             $or: [

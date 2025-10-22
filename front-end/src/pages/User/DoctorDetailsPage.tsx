@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "@/layout/Footer";
 import Header from "@/layout/Header";
 import { useGetDoctorDetailPageQuery } from "@/features/users/userApi";
@@ -17,8 +17,6 @@ import {
   Star,
   MessageCircle,
   CheckCircle2,
-  ArrowLeft,
-  ArrowRight,
   User,
 } from "lucide-react";
 
@@ -126,14 +124,17 @@ const UserDoctorDetailsPage = () => {
     ]);
   };
 
-  const StarRating = ({ value }) => {
+  interface StarRatingProps {
+    value : string | number;
+  }
+  const StarRating:React.FC<StarRatingProps> =  ({ value }) => {
     return (
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
             className={`w-5 h-5 transition-colors ${
-              star <= value ? "fill-amber-400 text-amber-400" : "text-gray-300"
+              star <= Number(value)? "fill-amber-400 text-amber-400" : "text-gray-300"
             }`}
           />
         ))}
@@ -252,7 +253,7 @@ const UserDoctorDetailsPage = () => {
 
               <div className="flex items-center gap-3">
                 <Button variant="ghost" size="icon" className="rounded-full">
-                  <ArrowLeft className="w-4 h-4" />
+                  
                 </Button>
 
                 <div className="flex gap-3 overflow-x-auto pb-2 flex-1">
@@ -286,7 +287,7 @@ const UserDoctorDetailsPage = () => {
                 </div>
 
                 <Button variant="ghost" size="icon" className="rounded-full">
-                  <ArrowRight className="w-4 h-4" />
+                 
                 </Button>
               </div>
 

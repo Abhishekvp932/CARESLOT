@@ -288,8 +288,8 @@ The CareSlot Team`
 
      if(status === 'pending'){
       filter = {status:'pending'};
-     }else if(status === 'confirmed'){
-      filter = {status:'confirmed'};
+     }else if(status === 'completed'){
+      filter = {status:'completed'};
      }else if(status ==='cancelled'){
       filter = {status:'cancelled'};
      }
