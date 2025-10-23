@@ -85,7 +85,7 @@ const Index = () => {
       <section className="bg-background py-20">
         <div className="mx-auto max-w-7xl px-4">
           <div className="text-center space-y-4 mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold">Why Choose HealthCare+?</h2>
+            <h2 className="text-4xl md:text-5xl font-bold">Why Choose CareSlot?</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Experience modern healthcare with our comprehensive platform designed for your convenience and wellbeing.
             </p>

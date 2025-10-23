@@ -1,12 +1,13 @@
-import { Heart, Shield, Users, Award, Clock, MapPin } from "lucide-react"
+import { Heart, Shield, Users, Award, Clock, MapPin, Linkedin, Instagram } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Header from "@/layout/Header"
 import Footer from "@/layout/Footer"
+import CEO from '../../assets/1745997285118.jpeg'
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-    <Header/>
+      <Header/>
       <section className="relative py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -42,31 +43,6 @@ export default function AboutPage() {
                       A world where quality healthcare is just a click away, empowering individuals to take control of
                       their health journey with confidence and ease.
                     </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="trust-section rounded-2xl p-8 text-center">
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <div className="text-3xl font-bold text-primary">50K+</div>
-                      <div className="text-sm text-muted-foreground">Patients Served</div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-3xl font-bold text-chart-2">1,200+</div>
-                      <div className="text-sm text-muted-foreground">Verified Doctors</div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-3xl font-bold text-chart-3">98%</div>
-                      <div className="text-sm text-muted-foreground">Satisfaction Rate</div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-3xl font-bold text-chart-4">24/7</div>
-                      <div className="text-sm text-muted-foreground">Support Available</div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -139,8 +115,49 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Story Section */}
+      {/* Leadership Team Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4 text-balance">Meet Our Leadership</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
+              Dedicated professionals committed to transforming healthcare delivery
+            </p>
+          </div>
+
+          <div className="flex justify-center">
+            {/* Founder & CEO */}
+            <Card className="border-0 bg-card/50 backdrop-blur-sm overflow-hidden group max-w-md w-full">
+              <CardContent className="p-0">
+                <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 to-chart-2/20 h-80">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-48 h-48 rounded-full bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center text-6xl font-bold text-primary-foreground">
+                      <img src={CEO} alt="" />
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="text-center">
+                    <h3 className="text-2xl font-bold">Abhishek Vp</h3>
+                    <p className="text-primary font-medium">Founder & CEO</p>
+                  </div>
+                  <div className="flex justify-center gap-4 pt-2">
+                    <a href="https://www.linkedin.com/in/abhishek-vp-46aa65327/" target="_blank" className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 transition flex items-center justify-center">
+                      <Linkedin className="w-5 h-5 text-primary" />
+                    </a>
+                    <a href="https://www.instagram.com/abhishekhh.__/" target="_blank" className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 transition flex items-center justify-center">
+                      <Instagram className="w-5 h-5 text-primary" />
+                    </a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Story Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-secondary/30">
         <div className="max-w-4xl mx-auto">
           <div className="space-y-12">
             <div className="text-center space-y-4">
@@ -197,7 +214,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+     
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary/5">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h2 className="text-4xl font-bold text-balance">Ready to Experience Better Healthcare?</h2>
@@ -215,7 +232,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-       <Footer/>
+      <Footer/>
     </div>
   )
 }

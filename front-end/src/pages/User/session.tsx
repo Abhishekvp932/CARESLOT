@@ -197,16 +197,8 @@ export function SessionCard() {
                       onClick={()=> handleVideoCall(appoinment?._id)}
                     >
                       <Phone className="w-4 h-4 mr-2" />
-                     Video Call
+                    Join Call
                     </Button>
-                    {/* <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 sm:flex-none bg-transparent"
-                    >
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Message
-                    </Button> */}
                   </div>
 
                   <DropdownMenu>
@@ -216,9 +208,7 @@ export function SessionCard() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {/* <DropdownMenuItem>Reschedule</DropdownMenuItem>
-                      <DropdownMenuItem>View Details</DropdownMenuItem>
-                      <DropdownMenuItem>Get Directions</DropdownMenuItem> */}
+                      
                       <DropdownMenuItem
                         className="text-destructive"
                         onClick={() => handleCancelAppoinment(appoinment?._id)}

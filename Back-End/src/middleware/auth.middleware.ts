@@ -83,11 +83,11 @@ export class AuthMiddleware {
           let user:IBaseUser | null = null;
           
           user= (await this._patientRepo.findById(decode?.id)) as IBaseUser | null;
-          // let role = 'patients';
+         
 
           if(!user){
             user = await (this._doctorRepo.findById(decode?.id)) as IBaseUser | null;
-            // role = 'doctors';
+           
           }
 
           if(!user){

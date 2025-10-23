@@ -40,7 +40,7 @@ import UserVideoCall from "./pages/User/VideoCallPage"
 import DoctorVideoCall from "./pages/Doctor/DoctorVideoCall"
 import DoctorWalletPage from "./pages/Doctor/DoctorWallet"
 import ContactPage from "./pages/User/Contact-page"
-
+import ServicePage from "./pages/User/servicePage"
 function App() {
 
   return (
@@ -65,6 +65,7 @@ function App() {
         <Route path="/about-page" element = {<AboutPage/>}/>
         <Route path="/video-call/:appoinmentId" element = {<UserVideoCall/>}/>
         <Route path="/contact" element = {<ContactPage/>}/>
+        <Route path="/service" element={<ServicePage/>}/>
         <Route path="/kyc-submit" element ={
           <KYC/>
           }

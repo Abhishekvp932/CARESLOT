@@ -3,7 +3,7 @@ import express from 'express';
 import { CallLogController } from '../controllers/callLog/callLogController';
 import { CallLogService } from '../services/callLog/callLog.service';
 import { CallLogRepository } from '../repositories/callLogs/callLog.repository';
-// import { AuthMiddleware } from '../middleware/auth.middleware';
+
 import { Routers } from '../utils/Routers';
 
 const router = express.Router();

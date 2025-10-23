@@ -94,12 +94,12 @@ const Header = () => {
             >
               Doctors
             </Link>
-            <a
-              href="#services"
+            <Link
+              to="/service"
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
               Services
-            </a>
+            </Link>
             <Link
               to="/about-page"
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"

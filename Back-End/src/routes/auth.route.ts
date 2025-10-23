@@ -22,28 +22,26 @@ const authMiddleware = new AuthMiddleware(patientRepository, doctorRepository);
 const authController = new AuthController(authService);
 const router = express.Router();
 
-// Patient routes
-// login
+
 router.post(
   Routers.authRouters.login,
   authController.login.bind(authController)
 );
-// signup
+
 router.post(
   Routers.authRouters.signup,
   authController.signup.bind(authController)
 );
-// verifyOtp
+
 router.post(
   Routers.authRouters.verifyOtp,
   authController.verifyOTP.bind(authController)
 );
-// google
+
 router.get(
   Routers.authRouters.google,
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
-// me
 router.get(
   Routers.authRouters.me,
   authMiddleware.isBlockedOrNot,
@@ -90,27 +88,27 @@ router.post(
   Routers.authRouters.logout,
   authController.logOut.bind(authController)
 );
-// resend-otp
+
 router.post(
   Routers.authRouters.resendOtp,
   authController.resendOTP.bind(authController)
 );
-// send-otp
+
 router.post(
   Routers.authRouters.sendOtp,
   authController.verfiyEmail.bind(authController)
 );
-// verify-email
+
 router.post(
   Routers.authRouters.verifyEmail,
   authController.verifyEmailOTP.bind(authController)
 );
-// forgot-password
+
 router.post(
   Routers.authRouters.forgotPassword,
   authController.forgotPassword.bind(authController)
 );
-// refresh-token
+
 router.post(
   Routers.authRouters.refreshToken,
   authController.refreshToken.bind(authController)
