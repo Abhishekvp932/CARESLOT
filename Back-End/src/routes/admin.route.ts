@@ -21,10 +21,13 @@ const adminService = new AdminService(
   adminRepository,
   doctorAuthRepository,
   appoinmentRepository,
-  slotRepository,
+  slotRepository
 );
 const adminController = new AdminController(adminService);
-const authMiddleware = new AuthMiddleware(patientRepository, doctorAuthRepository);
+const authMiddleware = new AuthMiddleware(
+  patientRepository,
+  doctorAuthRepository
+);
 const router = express.Router();
 
 router
@@ -82,7 +85,6 @@ router
     adminController.editDoctorData.bind(adminController)
   );
 
-
 router
   .route(Routers.adminRouters.doctorId)
   .patch(
@@ -116,6 +118,15 @@ router
     adminController.getAllAppoinments.bind(adminController)
   );
 
-  router.route(Routers.adminRouters.slotsAndAppoinments)
-  .get(authMiddleware.protect,adminController.getDoctorSlotAndAppoinment.bind(adminController));
+router
+  .route(Routers.adminRouters.slotsAndAppoinments)
+  .get(
+    authMiddleware.protect,
+    adminController.getDoctorSlotAndAppoinment.bind(adminController)
+  );
+
+  router.route(Routers.adminRouters.dashboardData)
+  .get(authMiddleware.protect,authMiddleware.authorizeRole('admin'),
+  adminController.getAdminDashboardData.bind(adminController));
+  
 export default router;

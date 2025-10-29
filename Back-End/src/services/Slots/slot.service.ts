@@ -37,11 +37,14 @@ export class SlotService implements ISlotService {
             startTime: timeStringToDate(b.startTime),
             endTime: timeStringToDate(b.endTime),
           })),
-          status:'Available'
+          status: 'Available',
         })),
       };
 
-      await this._slotRepository.findByIdAndUpdate(doctorId, payloadExistingSlot);
+      await this._slotRepository.findByIdAndUpdate(
+        doctorId,
+        payloadExistingSlot
+      );
       return { msg: 'slot updated successfully' };
     }
 
@@ -59,7 +62,7 @@ export class SlotService implements ISlotService {
           startTime: timeStringToDate(b.startTime),
           endTime: timeStringToDate(b.endTime),
         })),
-        status:'Available'
+        status: 'Available',
       })),
     };
 

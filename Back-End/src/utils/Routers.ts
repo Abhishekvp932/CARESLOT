@@ -1,18 +1,22 @@
+
+
 export const Routers = {
     adminRouters:{
         users:'/users',
-        usersId:'/users/:id',
+        usersId:'/users/:userId',
         doctors:'/doctors',
-        doctorsId:'/doctors/:id',
-        doctorId:'/doctor/:id',
+        doctorsId:'/doctors/:doctorId',
+        doctorId:'/doctor/:doctorId',
         verificationList:'/verification-list',
-        doctorDetails:'/doctor-details/:id',
+        doctorDetails:'/doctor-details/:doctorId',
         appoinments:'/appoinments',
         slotsAndAppoinments:'/getSlots/:doctorId',
+        dashboardData:'/dashboard',
     },
     appoinmentRouters:{
         appoinments:'/appoinment',
         appoinmentCancel:'/appoinment/:appoinmentId',
+        changeStatus:'/change-status/:appoinmentId',
     },
     authRouters:{
       login:'/login',
@@ -32,10 +36,11 @@ export const Routers = {
         chat:'/chat'
     },
     doctorRouters:{
-        kycSubmit:'/kycSubmit/:id',
+        kycSubmit:'/kycSubmit/:doctorId',
         profile:'/profile/:id',
         reApply:'/reApply/:doctorId',
         appoinments:'/appoinments/:doctorId',
+        dashboardData:'/dashboard/:doctorId'
     },
     notificationRouters:{
         notificationWithPatientId:'/notification/:patientId',
@@ -45,14 +50,14 @@ export const Routers = {
     },
     patientRouters:{
         resendAppoinmentsWithPatientId:'/resend-appoinment/:patientId',
-        profile:'/profile/:id',
+        profile:'/profile/:patientId',
         doctors:'/doctors',
-        doctorId:'/doctor/:id',
-        slot:'/slots/:id',
+        doctorId:'/doctor/:doctorId',
+        slot:'/slots/:doctorId',
         specializations:'/specializations',
-        checkout:'/checkout/:id',
+        checkout:'/checkout/:doctorId',
         relatedDoctors:'/related-doctors',
-        changePassword:'/change-password/:id',
+        changePassword:'/change-password/:patientId',
         appoinment:'/appoinment/:patientId'
     },
     paymentRouters:{
@@ -62,7 +67,7 @@ export const Routers = {
     },
     slotRouters:{
         slots:'/slots',
-        slotWithSlotId:'/slots/:id'
+        slotWithSlotId:'/slots/:doctorId'
     },
     walletRouters:{
         userWalletData:'/userWallet/:patientId',
@@ -82,5 +87,9 @@ export const Routers = {
     ratingRouters:{
         addRating:'/rating/:doctorId',
         findDoctorRating:'/rating/:doctorId'
+    },
+    prescriptionRouters:{
+        create:'/prescription',
+        download:'/download/:appoinmentId'
     }
 };

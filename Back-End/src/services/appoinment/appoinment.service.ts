@@ -4,7 +4,7 @@ import { appoinemntData } from '../../types/appoinmentData';
 import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
 import { IpatientRepository } from '../../interface/auth/IAuthInterface';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
-import {Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { MailService } from '../mail.service';
 import { INotificationRepository } from '../../interface/notification/INotificationRepository';
 import { io } from '../../server';
@@ -14,20 +14,21 @@ import { IWalletHistory } from '../../models/interface/IWallet.history';
 import { IWallet } from '../../models/interface/IWallet';
 import logger from '../../utils/logger';
 import { INotificationDto } from '../../types/INotificationDTO';
-
+import { IChatRepository } from '../../interface/chat/IChatRepository';
+import { ICallLogRepository } from '../../interface/callLogs/ICallLogRepository';
 export class AppoinmentService implements IAppoinmentService {
   constructor(
     private _appoinmentRepository: IAppoinmentRepository,
     private _patientRepository: IpatientRepository,
     private _doctorRepository: IDoctorAuthRepository,
     private _notificationRepository: INotificationRepository,
-    private _walletRepository:IWalletRepository,
-    private _walletHistoryRepository:IWalletHistoryRepository,
+    private _walletRepository: IWalletRepository,
+    private _walletHistoryRepository: IWalletHistoryRepository,
+    private _chatRepository:IChatRepository,
+    private _callLogRepository:ICallLogRepository,
   ) {}
- 
-  async createAppoinment(
-    data: appoinemntData
-  ): Promise<{
+
+  async createAppoinment(data: appoinemntData): Promise<{
     msg: string;
     patientNotification: INotificationDto | null;
     doctorNotification: INotificationDto | null;
@@ -124,108 +125,138 @@ export class AppoinmentService implements IAppoinmentService {
                     `
         );
       } catch (error: unknown) {
-  if (error instanceof Error) {
-    logger.error(error.message);
-    throw new Error(error.message);
-  } else {
-    logger.error('Unknown error', error);
-    throw new Error('Something went wrong');
-  }
-}
+        if (error instanceof Error) {
+          logger.error(error.message);
+          throw new Error(error.message);
+        } else {
+          logger.error('Unknown error', error);
+          throw new Error('Something went wrong');
+        }
+      }
     })();
 
     return response;
   }
 
+  async cancelAppoinment(
+    appoinmentId: string
+  ): Promise<{ msg: string; doctorNotification: INotificationDto | null }> {
+    const appoinment = await this._appoinmentRepository.findById(appoinmentId);
 
-  async cancelAppoinment(appoinmentId: string):Promise<{msg:string,doctorNotification:INotificationDto | null}>{
+    if (!appoinment) {
+      throw new Error('Appoinment not found');
+    }
+
+    await this._appoinmentRepository.findByIdAndUpdate(appoinmentId, {
+      status: 'cancelled',
+    });
     
-   const appoinment = await this._appoinmentRepository.findById(appoinmentId);
-
-   if(!appoinment){
-    throw new Error('Appoinment not found');
-   }
 
 
-   await this._appoinmentRepository.findByIdAndUpdate(appoinmentId,{status:'cancelled'});
+    const patientId = String(appoinment.patientId);
+    const patient = await this._patientRepository.findById(patientId);
+       
+    
+
+  
 
 
-   const patientId = String(appoinment.patientId);
-   const patient = await this._patientRepository.findById(patientId); 
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
 
-   if(!patient){
-    throw new Error('Patient not found');
-   } 
-
+    const doctorId = String(appoinment?.doctorId);
 
 
-   const doctorId = String(appoinment?.doctorId);
+    const patientActiveAppoinments = await this._appoinmentRepository.findPatientActiveAppoinments(patientId,doctorId);
+   logger.info('active appoinment count');
+   logger.debug(patientActiveAppoinments);
+      if(patientActiveAppoinments.length === 0){
+        logger.info('1');
+       await this._chatRepository.findByPatientIdAndUpdate(patientId,doctorId,{isActive:false});
+       logger.info('2');
+    }
 
+    const doctorWallet = await this._walletRepository.findByUserId(doctorId);
 
-      const doctorWallet = await this._walletRepository.findByUserId(doctorId);
+    await this._walletRepository.findByIdAndUpdate(
+      doctorWallet?._id as string,
+      { $inc: { balance: -Number(appoinment?.amount) } }
+    );
 
-      await this._walletRepository.findByIdAndUpdate(doctorWallet?._id as string,{$inc:{balance:-Number(appoinment?.amount)}});
+    const newWalletHistory: Partial<IWalletHistory> = {
+      walletId: new Types.ObjectId(doctorWallet?._id as string),
+      appoinmentId: new Types.ObjectId(appoinment?._id as string),
+      transactionId: new Types.ObjectId(appoinment?.transactionId),
+      amount: Number(appoinment?.amount),
+      status: 'success',
+      type: 'debit',
+      source: 'cancel appoinment',
+    };
 
-      const newWalletHistory:Partial<IWalletHistory> = {  
-         walletId:new Types.ObjectId(doctorWallet?._id as string),
-         appoinmentId:new Types.ObjectId(appoinment?._id as string),
-         transactionId:new Types.ObjectId(appoinment?.transactionId),
-           amount:Number(appoinment?.amount),
-         status:'success',
-         type:'debit',
-         source:'cancel appoinment',
+    await this._walletHistoryRepository.create(newWalletHistory);
+    const userWallet = await this._walletRepository.findByUserId(patientId);
+
+    if (!userWallet) {
+      const newWalletData: Partial<IWallet> = {
+        userId: new Types.ObjectId(patientId),
+        role: 'patient',
+        balance: Number(appoinment?.amount),
+      };
+      const wallet = await this._walletRepository.create(newWalletData);
+
+      const newWalletHistory: Partial<IWalletHistory> = {
+        walletId: new Types.ObjectId(wallet?._id as string),
+        appoinmentId: new Types.ObjectId(appoinment?._id as string),
+        transactionId: new Types.ObjectId(appoinment?.transactionId),
+        amount: Number(appoinment?.amount),
+        type: 'credit',
+        status: 'success',
+        source: 'refund',
       };
 
       await this._walletHistoryRepository.create(newWalletHistory);
-      const userWallet = await this._walletRepository.findByUserId(patientId);
+    } else {
+      const newWalletHistory: Partial<IWalletHistory> = {
+        walletId: new Types.ObjectId(userWallet?._id as string),
+        appoinmentId: new Types.ObjectId(appoinment?._id as string),
+        transactionId: new Types.ObjectId(appoinment?.transactionId),
+        amount: Number(appoinment?.amount),
+        type: 'credit',
+        status: 'success',
+        source: 'refund',
+      };
+      await this._walletHistoryRepository.create(newWalletHistory);
+      await this._walletRepository.findByIdAndUpdate(
+        userWallet?._id as string,
+        { $inc: { balance: Number(appoinment?.amount) } }
+      );
+    }
 
-      if(!userWallet){
-        const newWalletData:Partial<IWallet> = {
-           userId:new Types.ObjectId(patientId),
-           role:'patient',
-           balance:Number(appoinment?.amount)
-        };
-        const wallet = await this._walletRepository.create(newWalletData);
+    if (!doctorId) {
+      throw new Error('Doctor id not found');
+    }
+    const doctorNotification = await this._notificationRepository.create({
+      userId: doctorId,
+      title: 'Appoinment cancelld',
+      message: `Your Appoinment Cancelld Patient Name ${patient?.name} time slot ${appoinment?.slot?.date} - ${appoinment?.slot?.startTime}`,
+      isRead: false,
+    });
 
-        const newWalletHistory:Partial<IWalletHistory> = {
-         walletId:new Types.ObjectId(wallet?._id as string),
-         appoinmentId:new Types.ObjectId(appoinment?._id as string),
-         transactionId:new Types.ObjectId(appoinment?.transactionId),
-         amount:Number(appoinment?.amount),
-         type:'credit',
-         status:'success',
-         source:'refund',         
-        };
+    io.to(doctorId).emit('notification', doctorNotification);
 
-        await this._walletHistoryRepository.create(newWalletHistory);
-      }else{
-
-         const newWalletHistory:Partial<IWalletHistory> = {
-         walletId:new Types.ObjectId(userWallet?._id as string),
-         appoinmentId:new Types.ObjectId(appoinment?._id as string),
-         transactionId:new Types.ObjectId(appoinment?.transactionId),
-         amount:Number(appoinment?.amount),
-         type:'credit',
-         status:'success',
-         source:'refund',         
-        };
-        await this._walletHistoryRepository.create(newWalletHistory);
-        await this._walletRepository.findByIdAndUpdate(userWallet?._id as string,{$inc:{balance:Number(appoinment?.amount)}});
-             }
-         
-   if(!doctorId){
-    throw new Error('Doctor id not found');
-   }
-   const doctorNotification = await this._notificationRepository.create({
-    userId:doctorId,
-    title:'Appoinment cancelld',
-    message:`Your Appoinment Cancelld Patient Name ${patient?.name} time slot ${appoinment?.slot?.date} - ${appoinment?.slot?.startTime}`,
-    isRead:false,
-
-   });
-
-   io.to(doctorId).emit('notification',doctorNotification);
-
-    return {msg:'Appoinment cancelled',doctorNotification};
+    return { msg: 'Appoinment cancelled', doctorNotification };
+  }
+  async changeAppoinmentStatus(appoinmentId: string): Promise<{ msg: string; }> {
+    const appoinment = await this._appoinmentRepository.findById(appoinmentId);
+    if(!appoinment){
+      throw new Error('Appoinment Not found');
+    }
+    if(appoinment?.status === 'cancelled'){
+      throw new Error ('Appoinment Already Cancelled');
+    }
+     await this._appoinmentRepository.findByIdAndUpdate(appoinmentId,{status:'completed'});
+     await this._callLogRepository.findByAppoinmentIdAndUpdate(appoinment?._id as string,{status:'completed'});
+    return {msg : 'status changed'};
   }
 }

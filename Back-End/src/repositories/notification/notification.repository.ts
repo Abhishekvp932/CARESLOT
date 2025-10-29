@@ -3,37 +3,42 @@ import { INotificationRepository } from '../../interface/notification/INotificat
 import Notification from '../../models/implementation/notification.model';
 
 import { INotification } from '../../models/interface/INotification';
+import { BaseRepository } from '../base.repository';
+
+export class NotificationRepository extends BaseRepository<INotification> implements INotificationRepository {
+  constructor() {
+    super(Notification);
+  }
+
+  async findByUserId(userId: string): Promise<INotification[]> {
+    return await Notification.find({ userId: userId });
+  }
 
 
-export class NotificationRepository implements INotificationRepository{
-    constructor (){}
+  async findByIdAndUpdate(
+    notificationId: string
+  ): Promise<INotification | null> {
+    return await Notification.findByIdAndUpdate(
+      notificationId,
+      { isRead: true },
+      { new: true }
+    );
+  }
+  async findByIdAndDelete(
+    notificationId: string
+  ): Promise<INotification | null> {
+    return await Notification.findByIdAndDelete(notificationId);
+  }
 
-    async create(notificationData: Partial<INotification>): Promise<INotification | null> {
-        const notification = new Notification(notificationData);
-        await notification.save();
-        return notification;
-    }
+  async deleteAllByUserId(userId: string): Promise<void> {
+    await Notification.deleteMany({ userId });
+    return;
+  }
 
-    async findByUserId(userId: string): Promise<INotification[]> {
-      return await Notification.find({userId:userId});
-    }
-
-    async findById(notificationId: string): Promise<INotification | null> {
-        return await Notification.findById(notificationId);
-    }
-    async findByIdAndUpdate(notificationId: string): Promise<INotification | null> {
-        return await Notification.findByIdAndUpdate(notificationId,{isRead:true},{new:true});   
-    }
-    async findByIdAndDelete(notificationId: string): Promise<INotification | null> {
-        return await Notification.findByIdAndDelete(notificationId);
-    }
-
-   async deleteAllByUserId(userId: string): Promise<void> {
-        await Notification.deleteMany({userId});
-        return;
-   }
-
-   async updateAllNotificationByUserId(userId: string): Promise<UpdateResult> {
-       return await Notification.updateMany({userId:userId},{$set:{isRead:true}});
-   }
+  async updateAllNotificationByUserId(userId: string): Promise<UpdateResult> {
+    return await Notification.updateMany(
+      { userId: userId },
+      { $set: { isRead: true } }
+    );
+  }
 }

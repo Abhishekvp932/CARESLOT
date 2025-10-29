@@ -4,6 +4,6 @@ export interface ISlotRepository{
     create(slotData:Partial<ISlots>):Promise<ISlots | null>
     findByDoctorId(doctorId:string):Promise<ISlots[]>
     findByIdAndDelete(slotId:string):Promise<ISlots | null>
-    findById(id:string):Promise<ISlots | null>
+    findById(slotId:string):Promise<ISlots | null>
     findByIdAndUpdate(doctorId:string,data:Partial<ISlots>):Promise<ISlots | null>;
 }

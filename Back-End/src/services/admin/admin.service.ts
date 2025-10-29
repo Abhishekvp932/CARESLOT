@@ -3,8 +3,6 @@ import { IAdminService } from '../../interface/admin/IAdminService';
 import { SERVICE_MESSAGE } from '../../utils/ServiceMessage';
 import { hashPassword } from '../../utils/hash';
 import { IDoctor } from '../../models/interface/IDoctor';
-
-import { IDoctor as Idoctors } from '../../interface/doctor/IDoctorService';
 import { IpatientRepository } from '../../interface/auth/IAuthInterface';
 import { IAdminRepository } from '../../interface/admin/IAdminRepository';
 import { IDoctorAuthRepository } from '../../interface/doctor/IDoctorRepository';
@@ -24,13 +22,14 @@ import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
 import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
 import { ISlotRepository } from '../../interface/Slots/ISlotRepository';
 import { ISlotDto } from '../../types/ISlotDTO';
+import { AppointmentStatusData, BookingTrendData, DashboardData } from '../../types/IAdminDashboardDataLookup';
 export class AdminService implements IAdminService {
   constructor(
     private _patientRepository: IpatientRepository,
     private _adminRepository: IAdminRepository,
     private _doctorAuthRepository: IDoctorAuthRepository,
     private _appoinmentRepository: IAppoinmentRepository,
-    private _slotRepository:ISlotRepository,
+    private _slotRepository: ISlotRepository
   ) {}
 
   async findAllUsers(
@@ -259,14 +258,14 @@ export class AdminService implements IAdminService {
           );
         }
       } catch (error: unknown) {
-  if (error instanceof Error) {
-    logger.error(error.message);
-    throw new Error(error.message);
-  } else {
-    logger.error('Unknown error', error);
-    throw new Error('Something went wrong');
-  }
-}
+        if (error instanceof Error) {
+          logger.error(error.message);
+          throw new Error(error.message);
+        } else {
+          logger.error('Unknown error', error);
+          throw new Error('Something went wrong');
+        }
+      }
     };
 
     return response;
@@ -376,14 +375,14 @@ Best regards,
 The CARESLOT Team`
         );
       } catch (error: unknown) {
-  if (error instanceof Error) {
-    logger.error(error.message);
-    throw new Error(error.message);
-  } else {
-    logger.error('Unknown error', error);
-    throw new Error('Something went wrong');
-  }
-}
+        if (error instanceof Error) {
+          logger.error(error.message);
+          throw new Error(error.message);
+        } else {
+          logger.error('Unknown error', error);
+          throw new Error('Something went wrong');
+        }
+      }
     };
     return response;
   }
@@ -425,14 +424,14 @@ The CARESLOT Team`
   `
         );
       } catch (error: unknown) {
-  if (error instanceof Error) {
-    logger.error(error.message);
-    throw new Error(error.message);
-  } else {
-    logger.error('Unknown error', error);
-    throw new Error('Something went wrong');
-  }
-}
+        if (error instanceof Error) {
+          logger.error(error.message);
+          throw new Error(error.message);
+        } else {
+          logger.error('Unknown error', error);
+          throw new Error('Something went wrong');
+        }
+      }
     };
 
     return response;
@@ -552,7 +551,7 @@ The CARESLOT Team`
   }
   async editDoctorProfile(
     doctorId: string,
-    data: Partial<Idoctors>
+    data: Partial<IDoctor>
   ): Promise<{ msg: string }> {
     const doctor = await this._doctorAuthRepository.findById(doctorId);
     if (!doctor) {
@@ -605,15 +604,15 @@ The CARESLOT Team`
     await this._doctorAuthRepository.create(doctorData);
     return { msg: 'New doctor added successfully' };
   }
-  async getAllAppoinments(status:string): Promise<AppoinmentPopulatedDTO[]> {
+  async getAllAppoinments(status: string): Promise<AppoinmentPopulatedDTO[]> {
     let filter = {};
 
-    if(status === 'upcoming'){
-      filter = {status:'pending'};
-    }else if(status === 'completed'){
-      filter = {status:'completed'};
-    }else if(status === 'cancelled'){
-      filter = {status : 'cancelled'};
+    if (status === 'upcoming') {
+      filter = { status: 'pending' };
+    } else if (status === 'completed') {
+      filter = { status: 'completed' };
+    } else if (status === 'cancelled') {
+      filter = { status: 'cancelled' };
     }
 
     const appoinmentsList = await this._appoinmentRepository.findAll(filter);
@@ -657,51 +656,105 @@ The CARESLOT Team`
     return appoinments;
   }
 
-
-
-  async getDoctorSlotAndAppoinment(doctorId: string): Promise<{ slots: ISlotDto[]; appoinments: AppointmentPatientDTO[];}> {
-    if(!doctorId){
+  async getDoctorSlotAndAppoinment(
+    doctorId: string
+  ): Promise<{ slots: ISlotDto[]; appoinments: AppointmentPatientDTO[] }> {
+    if (!doctorId) {
       throw new Error('Doctor id not found');
     }
     const limit = 0;
     const skip = 0;
     const doctor = await this._doctorAuthRepository.findById(doctorId);
-    if(!doctor){
+    if (!doctor) {
       throw new Error('Doctor Not found');
     }
-    const slots = await this._slotRepository.findByDoctorId(doctor?._id as string);
-
-    if(!slots){
-      throw new Error('No slot found');
-    }
-    const appoinmentList = await this._appoinmentRepository.findAppoinmentsByDoctor(doctor?._id as string,skip,limit);
-    logger.info('suttu');
-    logger.debug(appoinmentList);
-    const appoinments: AppointmentPatientDTO[] = appoinmentList.map(
-      (app) => ({
-        _id: app._id as string,
-        doctorId: app.doctorId.toString(),
-        transactionId: app.transactionId?.toString(),
-        amount: app.amount,
-        status: app.status,
-        slot: {
-          date: app.slot.date,
-          startTime: app.slot.startTime,
-          endTime: app.slot.endTime,
-        },
-        patientId: {
-          _id: app.patientId._id.toString(),
-          name: app.patientId.name,
-          email: app.patientId.email,
-          phone: app.patientId.phone,
-          profile_img: app.patientId.profile_img,
-        },
-        createdAt: app.createdAt,
-        updatedAt: app.updatedAt,
-      })
+    const slots = await this._slotRepository.findByDoctorId(
+      doctor?._id as string
     );
 
+    if (!slots) {
+      throw new Error('No slot found');
+    }
+    const appoinmentList =
+      await this._appoinmentRepository.findAppoinmentsByDoctor(
+        doctor?._id as string,
+        skip,
+        limit
+      );
+    logger.info('suttu');
+    logger.debug(appoinmentList);
+    const appoinments: AppointmentPatientDTO[] = appoinmentList.map((app) => ({
+      _id: app._id as string,
+      doctorId: app.doctorId.toString(),
+      transactionId: app.transactionId?.toString(),
+      amount: app.amount,
+      status: app.status,
+      slot: {
+        date: app.slot.date,
+        startTime: app.slot.startTime,
+        endTime: app.slot.endTime,
+      },
+      patientId: {
+        _id: app.patientId._id.toString(),
+        name: app.patientId.name,
+        email: app.patientId.email,
+        phone: app.patientId.phone,
+        profile_img: app.patientId.profile_img,
+      },
+      createdAt: app.createdAt,
+      updatedAt: app.updatedAt,
+    }));
+
     logger.debug(slots);
-    return {slots:slots,appoinments:appoinments};
+    return { slots: slots, appoinments: appoinments };
+  }
+  async getAdminDashboardData(filter:string): Promise<DashboardData> {
+
+    const date = new Date();
+    const firstDayOfMonth = new Date(date.getFullYear(),date.getMonth(),1);
+    const lastDayOfMonth = new Date(date.getFullYear(),date.getMonth() + 1,0);
+
+    const firstDayOfWeek = new Date(date);
+    firstDayOfWeek.setDate(date.getDate()-date.getDay());
+    firstDayOfWeek.setHours(0,0,0,0);
+
+    const lastDayOfWeek = new Date(firstDayOfWeek);
+    lastDayOfWeek.setDate(firstDayOfWeek.getDate()+ 6);
+    lastDayOfWeek.setHours(23, 59, 59, 999);
+
+    const startDay = new Date(date);
+    startDay.setHours(0,0,0,0);
+
+    const endDay = new Date(date);
+    endDay.setHours(23, 59, 59, 999);
+
+  let filterType = {};
+
+  if(filter === 'month'){
+    filterType = {createdAt:{$gte:firstDayOfMonth,$lte:lastDayOfMonth}};
+  }else if(filter === 'day'){
+    filterType = {createdAt:{$gte:startDay,$lte:endDay}};
+  }else if(filter === 'week'){
+    filterType = {createdAt:{$gte:firstDayOfWeek,$lte:lastDayOfWeek}};
+  }
+    
+    const dashboardData = await this._appoinmentRepository.adminDashboardData(filterType);
+    logger.debug(dashboardData);
+    const activeDoctorsCount = await this._doctorAuthRepository.countAll({isApproved:true});
+    
+    const doctors = await this._doctorAuthRepository.findTopDoctors();
+
+     const topDoctors:DoctorDTO[] = doctors.map((doctor)=> ({
+       _id:String(doctor?._id),
+      name:doctor?.name || '',
+      avgRating:doctor?.avgRating || 0,
+     }));
+      
+    return {
+    statusSummary: dashboardData.statusSummary as AppointmentStatusData[],
+    monthlyTrend: dashboardData.monthlyTrend as BookingTrendData[],
+    activeDoctorsCount,
+    topDoctors,
+  };
   }
 }

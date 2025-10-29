@@ -10,7 +10,7 @@ import ForgotPassword from "./pages/Auth/forgotPassword"
 import KYC from "./pages/Auth/KycForm"
 // import ProtectDoctorRoute from "./components/routeProtect/doctorRoute"
 import DocumentSubmitted from "./pages/Doctor/document.submited"
-import Dashboard from "./pages/Admin/Dashboard"
+import { AdminDashboard } from "./pages/Admin/Dashboard"
 import UsersList from "./pages/Admin/UsersList"
 import { AdminLayout } from "./layout/admin/AdminLayout"
 import DoctorsList from "./pages/Admin/DoctorsList"
@@ -21,7 +21,6 @@ import DoctorDetails from "@/pages/Admin/PendingDoctorDetailsPage";
 import DoctorEditPage from "./pages/Admin/DoctorEditPage"
 import AddDoctorPage from "./pages/Admin/AddDoctor"
 import DoctorDetailsPage from "./pages/Admin/DoctorDetails"
-import DoctorDashboard from "./pages/Doctor/Dashboard"
 import DoctorProfile from "./pages/Doctor/DoctorProfile"
 import TimeShedule from "./pages/Doctor/TimeShedule"
 import DoctorList from "./pages/User/DoctorList"
@@ -41,6 +40,9 @@ import DoctorVideoCall from "./pages/Doctor/DoctorVideoCall"
 import DoctorWalletPage from "./pages/Doctor/DoctorWallet"
 import ContactPage from "./pages/User/Contact-page"
 import ServicePage from "./pages/User/servicePage"
+import { DoctorDashboard } from "./pages/Doctor/Dashboard"
+
+
 function App() {
 
   return (
@@ -66,13 +68,14 @@ function App() {
         <Route path="/video-call/:appoinmentId" element = {<UserVideoCall/>}/>
         <Route path="/contact" element = {<ContactPage/>}/>
         <Route path="/service" element={<ServicePage/>}/>
+
         <Route path="/kyc-submit" element ={
           <KYC/>
           }
           />
           <Route path="/kyc-success" element = {<DocumentSubmitted/>}/>
           {/* admin */}
-          <Route path="/admin" element={<AdminLayout><Dashboard/> </AdminLayout>}/>
+          <Route path="/admin" element={<AdminLayout><AdminDashboard/> </AdminLayout>}/>
           <Route path="/admin/users" element={<AdminLayout><UsersList/> </AdminLayout>}/>
            <Route path="/admin/doctors" element={<AdminLayout><DoctorsList/> </AdminLayout>}/>
            <Route path="/admin/pending-verification" element={<AdminLayout><VerificationList/> </AdminLayout>}/>

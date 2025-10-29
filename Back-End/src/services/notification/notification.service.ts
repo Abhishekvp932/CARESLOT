@@ -10,12 +10,9 @@ export class NotificationService implements INotificationService {
       patientId
     );
 
-   
-
     return notifications;
   }
   async unReadNotification(notificationId: string): Promise<{ msg: string }> {
-   
     if (!notificationId) {
       throw new Error('notification id not found');
     }
@@ -56,12 +53,12 @@ export class NotificationService implements INotificationService {
 
     return { msg: 'all notification deleted' };
   }
-  async readAllNotification(userId: string): Promise<{ msg: string; }> {
-    if(!userId){
+  async readAllNotification(userId: string): Promise<{ msg: string }> {
+    if (!userId) {
       throw new Error('User Id not found');
     }
-     await this._notificationRepository.updateAllNotificationByUserId(userId);
+    await this._notificationRepository.updateAllNotificationByUserId(userId);
 
-     return {msg:'All Notification Readed'};
+    return { msg: 'All Notification Readed' };
   }
 }

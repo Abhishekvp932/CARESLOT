@@ -17,11 +17,14 @@ dotenv.config();
 const patientRepository = new PatientRepository();
 const doctorRepository = new DoctorAuthRepository();
 const adminRepository = new AdminRepository();
-const authService = new AuthService(patientRepository, doctorRepository, adminRepository);
+const authService = new AuthService(
+  patientRepository,
+  doctorRepository,
+  adminRepository
+);
 const authMiddleware = new AuthMiddleware(patientRepository, doctorRepository);
 const authController = new AuthController(authService);
 const router = express.Router();
-
 
 router.post(
   Routers.authRouters.login,
@@ -69,15 +72,17 @@ router.get(
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
     const sessionId = uuidv4();
-    await redisClient.set(`access:${sessionId}`, accessToken, { EX:Number(process.env.ACCESS_TOKEN_EXPIRE_TIME)});
+    await redisClient.set(`access:${sessionId}`, accessToken, {
+      EX: Number(process.env.ACCESS_TOKEN_EXPIRE_TIME),
+    });
     await redisClient.set(`refresh:${sessionId}`, refreshToken, {
-      EX:Number(process.env.REFRESH_TOKEN_EXPIRE_TIME),
+      EX: Number(process.env.REFRESH_TOKEN_EXPIRE_TIME),
     });
     res.cookie('sessionId', sessionId, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
-      maxAge:Number(process.env.REDIS_SESSION_MAX_AGE),
+      maxAge: Number(process.env.REDIS_SESSION_MAX_AGE),
     });
 
     return res.redirect('http://localhost:2025/');

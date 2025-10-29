@@ -19,7 +19,11 @@ export const confiqurePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const authService = new AuthService(new PatientRepository(),new DoctorAuthRepository(),new AdminRepository());
+          const authService = new AuthService(
+            new PatientRepository(),
+            new DoctorAuthRepository(),
+            new AdminRepository()
+          );
           const user = await authService.findOrCreateGoogleUser(profile);
           return done(null, user);
         } catch (error) {
@@ -29,13 +33,17 @@ export const confiqurePassport = () => {
     )
   );
 
-  passport.serializeUser((user:unknown, done) => {
+  passport.serializeUser((user: unknown, done) => {
     const typedUser = user as IBaseUser;
     done(null, typedUser._id);
   });
   passport.deserializeUser(async (id: string, done) => {
     try {
-      const authService = new AuthService(new PatientRepository(),new DoctorAuthRepository(),new AdminRepository());
+      const authService = new AuthService(
+        new PatientRepository(),
+        new DoctorAuthRepository(),
+        new AdminRepository()
+      );
       const user = await authService.findUserById(id);
       done(null, user);
     } catch (error) {

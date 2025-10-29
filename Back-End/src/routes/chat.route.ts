@@ -16,27 +16,65 @@ const patientRepository = new PatientRepository();
 const doctorRepository = new DoctorAuthRepository();
 const messageRepository = new MessageRepository();
 const notificationRepository = new NotificationRepository();
-const chatService = new ChatService(chatRepository,appoinmentRepository,patientRepository,doctorRepository,messageRepository,notificationRepository);
+const chatService = new ChatService(
+  chatRepository,
+  appoinmentRepository,
+  patientRepository,
+  doctorRepository,
+  messageRepository,
+  notificationRepository
+);
 const chatController = new ChatController(chatService);
-const authMiddleware = new AuthMiddleware(patientRepository,doctorRepository);
+const authMiddleware = new AuthMiddleware(patientRepository, doctorRepository);
 const router = express.Router();
 
-router.route(Routers.chatRouters.getUserChat)
-.get(authMiddleware.protect,authMiddleware.isBlockedOrNot,chatController.getUserChat.bind(chatController));
+router
+  .route(Routers.chatRouters.getUserChat)
+  .get(
+    authMiddleware.protect,
+    authMiddleware.isBlockedOrNot,
+    chatController.getUserChat.bind(chatController)
+  );
 
-router.route(Routers.chatRouters.sendMessage)
-.post(authMiddleware.protect,authMiddleware.isBlockedOrNot,multiFileUpload,chatController.sendMessage.bind(chatController));
+router
+  .route(Routers.chatRouters.sendMessage)
+  .post(
+    authMiddleware.protect,
+    authMiddleware.isBlockedOrNot,
+    multiFileUpload,
+    chatController.sendMessage.bind(chatController)
+  );
 
-router.route(Routers.chatRouters.getDoctorChat)
-.get(authMiddleware.protect,authMiddleware.isBlockedOrNot,chatController.getDoctorChat.bind(chatController));
+router
+  .route(Routers.chatRouters.getDoctorChat)
+  .get(
+    authMiddleware.protect,
+    authMiddleware.isBlockedOrNot,
+    chatController.getDoctorChat.bind(chatController)
+  );
 
-router.route(Routers.chatRouters.getDoctorMessage)
-.get(authMiddleware.protect,authMiddleware.isBlockedOrNot,chatController.getDoctorMessage.bind(chatController));
+router
+  .route(Routers.chatRouters.getDoctorMessage)
+  .get(
+    authMiddleware.protect,
+    authMiddleware.isBlockedOrNot,
+    chatController.getDoctorMessage.bind(chatController)
+  );
 
-router.route(Routers.chatRouters.getPatientMessage)
-.get(authMiddleware.protect,authMiddleware.isBlockedOrNot,chatController.getPatientMessage.bind(chatController));
+router
+  .route(Routers.chatRouters.getPatientMessage)
+  .get(
+    authMiddleware.protect,
+    authMiddleware.isBlockedOrNot,
+    chatController.getPatientMessage.bind(chatController)
+  );
 
-router.route(Routers.chatRouters.deleteMessage)
-.delete(authMiddleware.protect,authMiddleware.isBlockedOrNot,chatController.deleteMessage.bind(chatController));
+router
+  .route(Routers.chatRouters.deleteMessage)
+  .delete(
+    authMiddleware.protect,
+    authMiddleware.isBlockedOrNot,
+    chatController.deleteMessage.bind(chatController)
+  );
 
 export default router;

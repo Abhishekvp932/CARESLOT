@@ -4,6 +4,7 @@ import path from 'path'
 export default defineConfig({
  server:{
   port:2025,
+   strictPort: true,
  },
  plugins:[tailwindcss()],
  resolve:{

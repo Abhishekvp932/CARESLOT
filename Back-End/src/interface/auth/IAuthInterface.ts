@@ -3,10 +3,10 @@ import { IPatient } from '../../models/interface/IPatient';
 import { FilterQuery } from 'mongoose';
 
 export interface IpatientRepository{
-   findById(id:string):Promise<IPatient | null>;
+   findById(patientId:string):Promise<IPatient | null>;
    findByEmail(email:string):Promise<IPatient | null>;
    create(patientData:Partial<IPatient>):Promise<IPatient | null>
-   updateById(id:string,update:Partial<IPatient>):Promise<IPatient | null>
+   updateById(patientId:string,update:Partial<IPatient>):Promise<IPatient | null>
    upsertWithOTP(email:string,otp:string,otpExpire:Date):Promise<IPatient | null>
    verifyOtp(email:string,otp:string):Promise<boolean>
    findByGoogleId(googleId:string):Promise<IPatient | null>

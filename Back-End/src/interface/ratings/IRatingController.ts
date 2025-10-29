@@ -1,6 +1,6 @@
-import { Request,Response } from 'express';
+import { NextFunction, Request,Response } from 'express';
 
 export interface IRatingController {
-    addRating(req:Request,res:Response):Promise<void>;
-    findDoctorRating(req:Request,res:Response):Promise<void>;
+    addRating(req:Request,res:Response,next:NextFunction):Promise<void>;
+    findDoctorRating(req:Request,res:Response,next:NextFunction):Promise<void>;
 }

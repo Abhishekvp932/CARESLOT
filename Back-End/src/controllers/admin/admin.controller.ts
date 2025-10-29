@@ -1,5 +1,5 @@
 import IAdminController from '../../interface/admin/IAdminController';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { HttpStatus } from '../../utils/httpStatus';
 import { IAdminService } from '../../interface/admin/IAdminService';
 import { IDoctor } from '../../models/interface/IDoctor';
@@ -7,28 +7,25 @@ import logger from '../../utils/logger';
 export class AdminController implements IAdminController {
   constructor(private _adminService: IAdminService) {}
 
-  async getAllUsers(req: Request, res: Response): Promise<void> {
+  async getAllUsers(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const page = parseInt(req.query.page as string);
 
       const limit = parseInt(req.query.limit as string);
       const search = req.query.search as string;
       const result = await this._adminService.findAllUsers(page, limit, search);
-      res
-        .status(HttpStatus.OK)
-        .json({
-          data: result.users,
-          currentPage: page,
-          totalPages: Math.ceil(result.total / limit),
-          totalItem: result.total,
-        });
+      res.status(HttpStatus.OK).json({
+        data: result.users,
+        currentPage: page,
+        totalPages: Math.ceil(result.total / limit),
+        totalItem: result.total,
+      });
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
 
-  async getAllDoctors(req: Request, res: Response): Promise<void> {
+  async getAllDoctors(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const page = parseInt(req.query.page as string);
 
@@ -40,23 +37,19 @@ export class AdminController implements IAdminController {
         search
       );
 
-      res
-        .status(HttpStatus.OK)
-        .json({
-          data: result.doctors,
-          currentPage: page,
-          totalPages: Math.ceil(result.total / limit),
-          totalItem: result.total,
-        });
+      res.status(HttpStatus.OK).json({
+        data: result.doctors,
+        currentPage: page,
+        totalPages: Math.ceil(result.total / limit),
+        totalItem: result.total,
+      });
     } catch (error) {
-      const err = error as Error;
-
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
-  async blockAndUnblockUsers(req: Request, res: Response): Promise<void> {
+  async blockAndUnblockUsers(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const { id: userId } = req.params;
+      const { userId } = req.params;
       const { isBlocked } = req.body;
       const result = await this._adminService.blockAndUnblockUsers(
         userId,
@@ -65,15 +58,13 @@ export class AdminController implements IAdminController {
 
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-
-      res.status(HttpStatus.NOT_FOUND).json({ msg: err.message });
+      next(error as Error);
     }
   }
 
-  async blockAndUnblockDoctors(req: Request, res: Response): Promise<void> {
+  async blockAndUnblockDoctors(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const { id: doctorId } = req.params;
+      const { doctorId } = req.params;
 
       const { isBlocked, reason } = req.body;
 
@@ -84,12 +75,10 @@ export class AdminController implements IAdminController {
       );
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-
-      res.status(HttpStatus.NOT_FOUND).json({ msg: err.message });
+      next(error as Error);
     }
   }
-  async findUnprovedDoctors(req: Request, res: Response): Promise<void> {
+  async findUnprovedDoctors(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const page = parseInt(req.query.page as string);
       const limit = parseInt(req.query.limit as string);
@@ -101,64 +90,56 @@ export class AdminController implements IAdminController {
         search
       );
 
-      res
-        .status(HttpStatus.OK)
-        .json({
-          data: result.doctors,
-          currentPage: page,
-          totalPages: Math.ceil(result.total / limit),
-          totalItem: result.total,
-        });
+      res.status(HttpStatus.OK).json({
+        data: result.doctors,
+        currentPage: page,
+        totalPages: Math.ceil(result.total / limit),
+        totalItem: result.total,
+      });
     } catch (error) {
-      const err = error as Error;
-
-      res.status(HttpStatus.NOT_FOUND).json({ msg: err.message });
+      next(error as Error);
     }
   }
-  async doctorApprove(req: Request, res: Response): Promise<void> {
+  async doctorApprove(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const { id: doctorId } = req.params;
+      const { doctorId } = req.params;
 
       const result = await this._adminService.doctorApprove(doctorId);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-
-      res.status(HttpStatus.NOT_FOUND).json({ msg: err.message });
+     next(error as Error);
     }
   }
-  async doctorReject(req: Request, res: Response): Promise<void> {
+  async doctorReject(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const { id: doctorId } = req.params;
+      const {  doctorId } = req.params;
       const { reason } = req.body;
       logger.debug('rejection reason', reason);
       const result = await this._adminService.doctorReject(doctorId, reason);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-
-      res.status(HttpStatus.NOT_FOUND).json({ msg: err.message });
+      next(error as Error);
     }
   }
   async getVerificationDoctorDetails(
     req: Request,
-    res: Response
+    res: Response,
+    next:NextFunction
   ): Promise<void> {
     try {
-      const { id: doctorId } = req.params;
+      const {  doctorId } = req.params;
       const result = await this._adminService.getVerificationDoctorDetails(
         doctorId
       );
 
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+     next(error as Error);
     }
   }
-  async updateUserData(req: Request, res: Response): Promise<void> {
+  async updateUserData(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const { id: userId } = req.params;
+      const {  userId } = req.params;
 
       const formData = req.body;
 
@@ -173,14 +154,13 @@ export class AdminController implements IAdminController {
       );
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
 
-  async editDoctorData(req: Request, res: Response): Promise<void> {
+  async editDoctorData(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id: doctorId } = req.params;
+      const {  doctorId } = req.params;
       logger.info('doctor id comming', doctorId);
       if (!doctorId) {
         res.status(HttpStatus.BAD_REQUEST).json({ msg: 'doctor id not found' });
@@ -191,13 +171,11 @@ export class AdminController implements IAdminController {
       logger.debug(result);
       res.status(HttpStatus.OK).json({ doctor: result });
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+       next(error as Error);
     }
   }
 
-
-  async addUser(req: Request, res: Response): Promise<void> {
+  async addUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { name, email, phone, gender, dob, password } = req.body;
       const imgData = (req.files as { [key: string]: Express.Multer.File[] })
@@ -215,12 +193,11 @@ export class AdminController implements IAdminController {
       );
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+       next(error as Error);
     }
   }
 
-  async addDoctor(req: Request, res: Response): Promise<void> {
+  async addDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const files = req.files as {
         educationCertificate?: Express.Multer.File[];
@@ -270,34 +247,44 @@ export class AdminController implements IAdminController {
       const result = await this._adminService.addDoctor(data);
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
-      const err = error as Error;
-
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ msg: err.message });
+      next(error as Error);
     }
   }
-  async getAllAppoinments(req: Request, res: Response): Promise<void> {
+  async getAllAppoinments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       logger.info('admin side appoinment request is comming');
-       
+
       const status = req.query.status as string;
-             
+
       const result = await this._adminService.getAllAppoinments(status);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
 
-  async getDoctorSlotAndAppoinment(req: Request, res: Response): Promise<void> {
+  async getDoctorSlotAndAppoinment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const {doctorId} = req.params;
+      const { doctorId } = req.params;
       logger.info('slots and appoinment request is comming to the back end');
-      const result = await this._adminService.getDoctorSlotAndAppoinment(doctorId);
+      const result = await this._adminService.getDoctorSlotAndAppoinment(
+        doctorId
+      );
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
+       next(error as Error);
+    }
+  }
+
+  async getAdminDashboardData(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      logger.info('dashboard data fetching request is comming...');
+      const filter = req.query.filter as string;
+      logger.info(filter);
+      const result = await this._adminService.getAdminDashboardData(filter);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error as Error);
     }
   }
 }

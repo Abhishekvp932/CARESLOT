@@ -11,6 +11,7 @@ import {
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
+  Download,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -27,7 +28,7 @@ import type { RootState } from "@/app/store";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 const getStatusColor = (status: string) => {
   switch (status) {
     case "confirmed":
@@ -91,14 +92,32 @@ export function SessionCard() {
       </Card>
     );
   }
-  const handleVideoCall = (appoinmentId:string)=>{
-    console.log('video call appoinment id ',appoinmentId);
+  const handleVideoCall = (appoinmentId: string) => {
+    console.log("video call appoinment id ", appoinmentId);
     navigate(`/video-call/${appoinmentId}`);
-  }
+  };
+
+  const downloadPrescription = async (appointmentId: string) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/prescription/download/${appointmentId}`,
+        { responseType: "blob" }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response?.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Prescription-${appointmentId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error: any) {
+      console.log(error.response?.data?.msg);
+    }
+  };
 
   return (
     <div className="space-y-4">
-      {/* Appointments Cards */}
       <div className="space-y-4">
         {appoinments.map((appoinment) => (
           <Card
@@ -190,31 +209,60 @@ export function SessionCard() {
 
                 <div className="flex flex-col sm:flex-row gap-2 sm:items-start">
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 sm:flex-none bg-transparent"
-                      onClick={()=> handleVideoCall(appoinment?._id)}
-                    >
-                      <Phone className="w-4 h-4 mr-2" />
-                    Join Call
-                    </Button>
+                    {appoinment?.status !== "cancelled" ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 sm:flex-none bg-transparent"
+                        onClick={() => handleVideoCall(appoinment?._id)}
+                      >
+                        <Phone className="w-4 h-4 mr-2" />
+                        Join Call
+                      </Button>
+                    ) : (
+                      <h1></h1>
+                    )}
+                    {appoinment?.status !== "cancelled" && appoinment?.status === 'completed' ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 sm:flex-none bg-transparent"
+                        onClick={() => downloadPrescription(appoinment?._id)}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download Prescription
+                      </Button>
+                    ) : (
+                      <h1></h1>
+                    )}
                   </div>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <button className="btn btn-outline btn-sm">
                         <MoreHorizontal className="w-4 h-4" />
-                      </Button>
+                      </button>
                     </DropdownMenuTrigger>
+
                     <DropdownMenuContent align="end">
-                      
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => handleCancelAppoinment(appoinment?._id)}
-                      >
-                        Cancel Appointment
-                      </DropdownMenuItem>
+                      {appoinment?.status === "pending" && (
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() =>
+                            handleCancelAppoinment(appoinment?._id)
+                          }
+                        >
+                          Cancel Appointment
+                        </DropdownMenuItem>
+                      )}
+
+                      {appoinment?.status === "cancelled" && (
+                        <DropdownMenuItem disabled>Cancelled</DropdownMenuItem>
+                      )}
+
+                      {appoinment?.status === "completed" && (
+                        <DropdownMenuItem disabled>Completed</DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

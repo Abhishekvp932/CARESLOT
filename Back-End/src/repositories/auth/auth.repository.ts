@@ -6,15 +6,17 @@ import { BaseRepository } from '../base.repository';
 import { IPatient } from '../../models/interface/IPatient';
 import { FilterQuery } from 'mongoose';
 
-export class PatientRepository extends BaseRepository<IPatient> implements IpatientRepository {
-  constructor(){
+export class PatientRepository
+  extends BaseRepository<IPatient>
+  implements IpatientRepository
+{
+  constructor() {
     super(Patient);
   }
- 
 
-    async updateById(id: string, update: Partial<IPatient>) {
-      return await this.model.findByIdAndUpdate(id, update, { new: true });
-    }
+  async updateById(patientId: string, update: Partial<IPatient>) {
+    return await this.model.findByIdAndUpdate(patientId, update, { new: true });
+  }
   async upsertWithOTP(email: string, otp: string, otpExpire: Date) {
     return Patient.findOneAndUpdate(
       { email },
@@ -29,11 +31,11 @@ export class PatientRepository extends BaseRepository<IPatient> implements Ipati
       !user ||
       user.otp !== otp ||
       !user.otpExpire ||
-      new Date() > new Date (user.otpExpire)
-    ){
-       throw new Error(SERVICE_MESSAGE.INVALID_OTP_EXPIRE_OTP);
+      new Date() > new Date(user.otpExpire)
+    ) {
+      throw new Error(SERVICE_MESSAGE.INVALID_OTP_EXPIRE_OTP);
     }
-      
+
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpire = undefined;
@@ -53,20 +55,28 @@ export class PatientRepository extends BaseRepository<IPatient> implements Ipati
     });
     return await user.save();
   }
-  async updatePasswordWithEmail(email: string, update:Partial<IPatient>) {
-    return  await this.model.findOneAndUpdate(
-      {email},
-      {$set:{password:update}},
-      {new:true}
+  async updatePasswordWithEmail(email: string, update: Partial<IPatient>) {
+    return await this.model.findOneAndUpdate(
+      { email },
+      { $set: { password: update } },
+      { new: true }
     );
   }
 
-   async findAllWithPagination(skip: number, limit: number,filter: FilterQuery<IPatient>={}): Promise<IPatient[]> {
-        return this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean();
-     }
-     
-          async countAll(filter: FilterQuery<IPatient>={}): Promise<number> {
-              return this.model.countDocuments(filter);
-          }
-   
+  async findAllWithPagination(
+    skip: number,
+    limit: number,
+    filter: FilterQuery<IPatient> = {}
+  ): Promise<IPatient[]> {
+    return this.model
+      .find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+  }
+
+  async countAll(filter: FilterQuery<IPatient> = {}): Promise<number> {
+    return this.model.countDocuments(filter);
+  }
 }

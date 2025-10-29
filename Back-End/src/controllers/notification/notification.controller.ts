@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { INotificationController } from '../../interface/notification/INotificationController';
 import { INotificationService } from '../../interface/notification/INotificationService';
 import { HttpStatus } from '../../utils/httpStatus';
@@ -6,7 +6,11 @@ import logger from '../../utils/logger';
 
 export class NotificationController implements INotificationController {
   constructor(private _notificationService: INotificationService) {}
-  async getUserNotification(req: Request, res: Response): Promise<void> {
+  async getUserNotification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { patientId } = req.params;
       logger.info('pateint id is coming in notification controller');
@@ -17,11 +21,14 @@ export class NotificationController implements INotificationController {
 
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
-  async unReadNotification(req: Request, res: Response): Promise<void> {
+  async unReadNotification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { notificationId } = req.params;
 
@@ -30,12 +37,15 @@ export class NotificationController implements INotificationController {
       );
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
 
-  async deleteNotification(req: Request, res: Response): Promise<void> {
+  async deleteNotification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { notificationId } = req.params;
       const result = await this._notificationService.deleteNotification(
@@ -43,11 +53,14 @@ export class NotificationController implements INotificationController {
       );
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
-  async deleteAllNotification(req: Request, res: Response): Promise<void> {
+  async deleteAllNotification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { patientId } = req.params;
       const result = await this._notificationService.deleteAllNotification(
@@ -55,21 +68,24 @@ export class NotificationController implements INotificationController {
       );
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
-  async readAllNotification(req: Request, res: Response): Promise<void> {
-   try {
+  async readAllNotification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      logger.info('read all notification request is comming...');
+      const { userId } = req.params;
 
-    logger.info('read all notification request is comming...');
-     const {userId} = req.params;
-
-    const result = await this._notificationService.readAllNotification(userId);
-    res.status(HttpStatus.OK).json(result);
-   } catch (error) {
-    const err = error as Error;
-    res.status(HttpStatus.BAD_REQUEST).json({msg:err.message});
-   }
+      const result = await this._notificationService.readAllNotification(
+        userId
+      );
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error as Error);
+    }
   }
 }

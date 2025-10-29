@@ -6,7 +6,7 @@ export interface IDoctorAuthRepository{
    findById(id:string):Promise<IDoctor | null>;
    findByEmail(email:string):Promise<IDoctor | null>;
    create(patientData:Partial<IDoctor>):Promise<IDoctor | null>
-   updateById(id:string,update:UpdateQuery<IDoctor>):Promise<IDoctor | null>
+   updateById(doctorId:string,update:UpdateQuery<IDoctor>):Promise<IDoctor | null>
    upsertWithOTP(email:string,otp:string,otpExpire:Date):Promise<IDoctor | null>
    verifyOtp(email:string,otp:string):Promise<boolean>
    findByGoogleId(googleId:string):Promise<IDoctor | null>
@@ -20,5 +20,5 @@ export interface IDoctorAuthRepository{
     uploadDocument(doctorId: string, data:Partial<IDoctor>): Promise<IDoctor | null>
     findRelatedDoctors(specialization:string,excludeId:string,limit?:number):Promise<IDoctor[]>
     findAppoinmentDoctors(filter:FilterQuery<IDoctor>):Promise<IDoctor[]>;
-
+    findTopDoctors():Promise<IDoctor[]>;
 }

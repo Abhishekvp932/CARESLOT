@@ -4,6 +4,7 @@ import tseslint from 'typescript-eslint';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
+  { ignores: ['dist/**', 'node_modules/**'],},
 
   {
     files: ['**/*.{js,mjs,cjs}'],
@@ -25,6 +26,7 @@ export default defineConfig([
       parser: tseslint.parser,
       parserOptions: {
         project: './tsconfig.json',
+        tsconfigRootDir:import.meta.dirname,
         sourceType: 'module',
       },
       globals: globals.node,

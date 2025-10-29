@@ -1,15 +1,19 @@
 import IDoctorController from '../../interface/doctor/IDoctorController';
 import { HttpStatus } from '../../utils/httpStatus';
 
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { QualificationInput } from '../../interface/doctor/IDoctorService';
-import { IDoctor } from '../../interface/doctor/IDoctorService';
+import { IDoctorService } from '../../interface/doctor/IDoctorService';
 
 import logger from '../../utils/logger';
 export class DoctorController implements IDoctorController {
-  constructor(private _doctorService: IDoctor) {}
+  constructor(private _doctorService: IDoctorService) {}
 
-  async uploadDocuments(req: Request, res: Response): Promise<void> {
+  async uploadDocuments(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const files = req.files as {
         educationCertificate?: Express.Multer.File[];
@@ -17,7 +21,7 @@ export class DoctorController implements IDoctorController {
         profileImage?: Express.Multer.File[];
       };
 
-      const { id: doctorId } = req.params;
+      const { doctorId } = req.params;
 
       const {
         degree,
@@ -52,25 +56,29 @@ export class DoctorController implements IDoctorController {
       );
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
-      const err = error as Error;
-      res
-        .status(HttpStatus.BAD_REQUEST)
-        .json({ msg: err.message });
+      next(error as Error);
     }
   }
-  async getDoctorProfile(req: Request, res: Response): Promise<void> {
+  async getDoctorProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { id: doctorId } = req.params;
 
       const result = await this._doctorService.getDoctorProfile(doctorId);
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
 
-  async editDoctorProfile(req: Request, res: Response): Promise<void> {
+  async editDoctorProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { id: doctorId } = req.params;
 
@@ -88,11 +96,14 @@ export class DoctorController implements IDoctorController {
 
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
-  async reApplyDoctor(req: Request, res: Response): Promise<void> {
+  async reApplyDoctor(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { doctorId } = req.params;
 
@@ -108,12 +119,15 @@ export class DoctorController implements IDoctorController {
       );
       res.status(HttpStatus.OK).json(result);
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
     }
   }
 
-  async getAllAppoinments(req: Request, res: Response): Promise<void> {
+  async getAllAppoinments(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       logger.info('appoinment request is comming');
       const { doctorId } = req.params;
@@ -121,11 +135,31 @@ export class DoctorController implements IDoctorController {
       const limit = parseInt(req.query.limit as string);
       const status = req.query.status as string;
       logger.debug(status);
-      const result = await this._doctorService.getAllAppoinments(doctorId,page,limit,status);
-      res.status(HttpStatus.OK).json({data:result.appoinments,currentPage:page,totalPages: Math.ceil(result.total / limit),totalItem: result.total});
+      const result = await this._doctorService.getAllAppoinments(
+        doctorId,
+        page,
+        limit,
+        status
+      );
+      res.status(HttpStatus.OK).json({
+        data: result.appoinments,
+        currentPage: page,
+        totalPages: Math.ceil(result.total / limit),
+        totalItem: result.total,
+      });
     } catch (error) {
-      const err = error as Error;
-      res.status(HttpStatus.BAD_REQUEST).json({ msg: err.message });
+      next(error as Error);
+    }
+  }
+  async getDoctorDashboardData(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      logger.info('doctor dashboard request is comming ...');
+      const {doctorId} = req.params;
+      const filter = req.query.filter as string;
+      const result = await this._doctorService.getDoctorDashboardData(doctorId,filter);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
     }
   }
 }

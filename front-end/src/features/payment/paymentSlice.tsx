@@ -1,10 +1,11 @@
 import { api } from "@/app/api";
+import { API_ROUTES } from "@/constants/apiRoutes";
 
 export const paymentApi = api.injectEndpoints({
     endpoints : (builder) => ({
          createOrder:builder.mutation({
             query:(amount)=>({
-                url : '/payment/order',
+                url : API_ROUTES.PAYMENT.CREATE_ORDER,
                 method:'POST',
                 body:{amount}
             }),
@@ -21,7 +22,7 @@ export const paymentApi = api.injectEndpoints({
                 amount,
                 paymentMethod,
             })=>({
-                url:'/payment/verifyOrder',
+                url:API_ROUTES.PAYMENT.VERIFY_ORDER,
                 method:'POST',
                 body:{razorpay_order_id
                     ,razorpay_payment_id,
@@ -38,7 +39,7 @@ export const paymentApi = api.injectEndpoints({
          }),
          walletPayment:builder.mutation({
             query:(paymentData)=>({
-                url:'/payment/wallet-payment',
+                url:API_ROUTES.PAYMENT.WALLET_PAYMENT,
                 method:'POST',
                 body:paymentData
             }),

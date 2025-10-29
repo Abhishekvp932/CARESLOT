@@ -19,7 +19,10 @@ const doctorService = new DoctorService(
 );
 
 const doctorController = new DoctorController(doctorService);
-const authMiddleware = new AuthMiddleware(patientRepository, doctorAuthRepository);
+const authMiddleware = new AuthMiddleware(
+  patientRepository,
+  doctorAuthRepository
+);
 
 router.post(
   Routers.doctorRouters.kycSubmit,
@@ -53,4 +56,13 @@ router
     authMiddleware.isBlockedOrNot,
     doctorController.getAllAppoinments.bind(doctorController)
   );
+
+
+router
+    .route(Routers.doctorRouters.dashboardData)
+    .get(
+      authMiddleware.protect,
+      authMiddleware.isBlockedOrNot,
+      doctorController.getDoctorDashboardData.bind(doctorController)
+    );
 export default router;

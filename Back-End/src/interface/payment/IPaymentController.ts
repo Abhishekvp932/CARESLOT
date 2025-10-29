@@ -1,8 +1,8 @@
 
 
-import {Request,Response} from 'express';
+import {NextFunction, Request,Response} from 'express';
 export interface IPaymentController {
-    createOrder(req:Request,res:Response):Promise<void>;
-    verifyOrder(req:Request,res:Response):Promise<void>;
-    walletPayment(req:Request,res:Response):Promise<void>;
+    createOrder(req:Request,res:Response,next:NextFunction):Promise<void>;
+    verifyOrder(req:Request,res:Response,next:NextFunction):Promise<void>;
+    walletPayment(req:Request,res:Response,next:NextFunction):Promise<void>;
 }

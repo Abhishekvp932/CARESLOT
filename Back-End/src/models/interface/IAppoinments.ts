@@ -7,6 +7,6 @@ export interface IAppoinment extends Document{
    transactionId?:Types.ObjectId;
    amount:string;
    status?: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'rescheduled';
-   createdAt?:Date;
+   createdAt:Date;
    updatedAt?:Date;
 }  

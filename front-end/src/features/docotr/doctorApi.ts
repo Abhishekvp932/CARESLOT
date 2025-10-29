@@ -1,4 +1,6 @@
 import { api } from "@/app/api";
+import { API_ROUTES } from "@/constants/apiRoutes";
+
 
 export const doctorApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -34,7 +36,7 @@ export const doctorApi = api.injectEndpoints({
         formData.append("experienceCertificate", experienceCertificate[0]);
         formData.append("profileImage", profileImage[0]);
         return {
-          url: `/doctor/kycSubmit/${doctorId}`,
+          url: API_ROUTES.DOCTOR.KYC_SUBMIT(doctorId),
           method: "POST",
           body: formData,
         };
@@ -42,54 +44,73 @@ export const doctorApi = api.injectEndpoints({
     }),
     getDoctorData: builder.query({
       query: (doctorId: string) => ({
-        url: `/doctor/profile/${doctorId}`,
+        url: API_ROUTES.DOCTOR.PROFILE(doctorId),
         method: "GET",
       }),
       transformResponse: (response) => response.doctor,
     }),
     editDoctorData: builder.mutation({
       query: ({ doctorId, formData }) => ({
-        url: `/doctor/profile/${doctorId}`,
+        url: API_ROUTES.DOCTOR.PROFILE(doctorId),
         method: "PUT",
         body: formData,
       }),
     }),
     slotAdd: builder.mutation({
       query: ({ data }) => ({
-        url: "/slots/slots",
+        url: API_ROUTES.SLOT.ADD,
         method: "POST",
         body: data,
       }),
     }),
     getDoctorSlots:builder.query({
       query: (doctorId: string) => ({
-        url: `/slots/slots/${doctorId}`,
+        url: API_ROUTES.SLOT.GET_BY_DOCTOR(doctorId),
         method: "GET",
       }),
     }),
     deleteSlot:builder.mutation({
       query:(slotId:string)=>({
-        url:`/slots/slots/${slotId}`,
+        url:API_ROUTES.SLOT.DELETE(slotId),
         method:"DELETE"
       }),
     }),
     reApplyData:builder.mutation({
       query:({doctorId,formData})=>({
-        url:`/doctor/reApply/${doctorId}`,
+        url:API_ROUTES.DOCTOR.RE_APPLY(doctorId),
         method:"PUT",
         body:formData,
       }),
     }),
     getAllAppoinments:builder.query({
       query:({doctorId,page,limit,status})=>({
-        url:`/doctor/appoinments/${doctorId}?page=${page}&limit=${limit}&status=${status}`,
+        url:API_ROUTES.DOCTOR.APPOINTMENTS(doctorId,page,limit,status),
         method:'GET'
       }),
     }),
     getDoctorWallet:builder.query({
       query:({doctorId})=>({
-        url:`/wallet/doctorWallet/${doctorId}`,
+        url:API_ROUTES.WALLET.DOCTOR(doctorId),
         method:'GET'
+      }),
+    }),
+    getDoctorDashboardData:builder.query({
+      query:({doctorId,period})=>({
+        url:API_ROUTES.DOCTOR.GET_DASHBOARD_DATA(doctorId,period),
+        method:'GET'
+      }),
+    }),
+    createPrescription:builder.mutation({
+      query:(data)=>({
+       url:API_ROUTES.PRESCRIPTION.CREATE,
+       method:'POST',
+       body:data,
+      }),
+    }),
+    changeAppoinmentStatus:builder.mutation({
+      query:(appoinmentId:string)=>({
+        url:API_ROUTES.APPOINTMENT.CHANGE_STATUS(appoinmentId),
+        method:'PATCH',
       }),
     }),
   }),
@@ -105,4 +126,7 @@ export const {
   useReApplyDataMutation,
   useGetAllAppoinmentsQuery,
   useGetDoctorWalletQuery,
+  useGetDoctorDashboardDataQuery,
+  useCreatePrescriptionMutation,
+  useChangeAppoinmentStatusMutation
 } = doctorApi;

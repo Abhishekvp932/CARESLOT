@@ -4,5 +4,5 @@ export const multiFileUpload = cloudUpload.fields([
   { name: 'educationCertificate', maxCount: 1 },
   { name: 'experienceCertificate', maxCount: 1 },
   { name: 'profileImage', maxCount: 1 },
-  {name:'image',maxCount:1}
+  { name: 'image', maxCount: 1 },
 ]);

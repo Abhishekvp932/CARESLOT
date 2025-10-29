@@ -367,6 +367,11 @@ useEffect(() => {
 
   const removeSelectedImage = () => setSelectedImage(null);
 
+
+  const currentConversation = conversationss.find(
+  (c) => c._id === selectedConversation
+);
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -573,7 +578,8 @@ useEffect(() => {
         </div>
 
         {/* Input fixed */}
-        <div className="p-4 border-t border-border bg-card flex-shrink-0">
+       {currentConversation?.isActive ? (
+                <div className="p-4 border-t border-border bg-card flex-shrink-0">
           {selectedImage && (
             <div className="mb-3 p-2 bg-accent/20 border rounded-lg">
               <div className="flex items-center justify-between">
@@ -638,6 +644,12 @@ useEffect(() => {
             </Button>
           </div>
         </div>
+        
+       ):(
+        <div>
+         <h1 style={{color:'red'}}>You can't message with this doctor because you don't have any active appointments</h1>
+        </div>
+       )}
       </div>
     </div>
   );

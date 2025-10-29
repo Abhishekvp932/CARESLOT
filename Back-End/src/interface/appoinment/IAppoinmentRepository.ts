@@ -3,6 +3,8 @@ import { IAppoinment } from '../../models/interface/IAppoinments';
 import { IPatientPopulated } from '../../types/AppointsAndPatientsDto';
 import { IDoctorPopulated } from '../../types/AppoinmentsAndDoctorDto';
 import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
+import { DashboardData } from '../../types/IAdminDashboardDataLookup';
+import { DoctorDashboardData } from '../../types/IDoctorDashboardDto';
 export interface IAppoinmentRepository{
     create(data:Partial<IAppoinment>):Promise<IAppoinment | null>;
     findById(id:string):Promise<IAppoinment | null>;
@@ -15,5 +17,7 @@ export interface IAppoinmentRepository{
     countPatientAppoinment(patientId:string):Promise<number>;
     countDoctorAppoinment(doctorId:string):Promise<number>;
     findByOneSlot(doctorId:string,slotDate:string,startTime:string):Promise<IAppoinment | null>;
-
+    findPatientActiveAppoinments(patientId:string,doctorId:string):Promise<IAppoinment[]>;
+    adminDashboardData(filter:FilterQuery<IAppoinment>):Promise<DashboardData>;
+    doctorDashboardData(doctorId:string,filter?:FilterQuery<IAppoinment>):Promise<DoctorDashboardData>;
 }

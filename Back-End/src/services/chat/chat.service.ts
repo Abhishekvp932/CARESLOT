@@ -18,7 +18,7 @@ export class ChatService implements IChatService {
     private _patientRepository: IpatientRepository,
     private _doctorRepository: IDoctorAuthRepository,
     private _messageRepository: IMessageRepository,
-    private _notificationRepository:INotificationRepository,
+    private _notificationRepository: INotificationRepository
   ) {}
 
   async getUserChat(patientId: string): Promise<ChatDTO[]> {
@@ -42,9 +42,9 @@ export class ChatService implements IChatService {
         profile_img: chat.doctorId.profile_img,
         specialization: chat.doctorId.qualifications?.specialization,
       },
-      appoinmentId:chat.appoinmentId.toString(),
+      appoinmentId: chat.appoinmentId.toString(),
       isActive: chat.isActive,
-      lastMessage:chat.lastMessage,
+      lastMessage: chat.lastMessage,
       createdAt: chat.createdAt,
       updatedAt: chat.updatedAt,
     }));
@@ -57,28 +57,26 @@ export class ChatService implements IChatService {
     content: string,
     sender: string,
     type: string,
-    image:string,
+    image: string
   ): Promise<IMessageDto | null> {
     const chat = await this._chatRepository.findById(chatId);
-   logger.debug('image is comming',image);
+    logger.debug('image is comming', image);
     if (!chat) {
       throw new Error('Chat not found');
     }
 
-    chat.participants.forEach(async(participant)=>{
-      if(participant?._id.toString() !== sender){
-
-
-            const notif = await this._notificationRepository.create({
-              userId:participant?._id.toString(),
-              title:'New Message' ,
-              message:`${content}`,
-              isRead:false,
-            });
+    chat.participants.forEach(async (participant) => {
+      if (participant?._id.toString() !== sender) {
+        const notif = await this._notificationRepository.create({
+          userId: participant?._id.toString(),
+          title: 'New Message',
+          message: `${content}`,
+          isRead: false,
+        });
 
         const reciverSocketId = participant?._id.toString();
-       
-         io.to(reciverSocketId).emit('notification',notif);
+
+        io.to(reciverSocketId).emit('notification', notif);
       }
     });
 
@@ -88,7 +86,7 @@ export class ChatService implements IChatService {
       type: type,
       read: false,
       content: content,
-      image:image,
+      image: image,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -102,13 +100,10 @@ export class ChatService implements IChatService {
       throw new Error('doctor id not found');
     }
     const doctorChat = await this._chatRepository.findDoctorChat(doctorId);
-      
-
- 
 
     const chats: ChatDTO[] = doctorChat.map((chat) => ({
       _id: chat._id as string,
-      appoinmentId:chat?.appoinmentId.toString(),
+      appoinmentId: chat?.appoinmentId.toString(),
       patiendId: {
         _id: chat.patiendId._id.toString(),
         name: chat.patiendId.name,
@@ -116,7 +111,7 @@ export class ChatService implements IChatService {
       },
       isActive: chat.isActive,
       participants: chat.participants?.map((p) => p.toString()),
-      lastMessage:chat.lastMessage,
+      lastMessage: chat.lastMessage,
       createdAt: new Date(chat.createdAt),
       updatedAt: new Date(chat.updatedAt),
     }));
@@ -130,19 +125,18 @@ export class ChatService implements IChatService {
   }
   async getPatientMessage(chatId: string): Promise<IMessageDto[]> {
     const message = await this._messageRepository.findByChatId(chatId);
-   logger.debug(message);
+    logger.debug(message);
     return message;
   }
-  async deleteMessage(messageId: string): Promise<{ msg: string; }> {
-
-    if(!messageId){
+  async deleteMessage(messageId: string): Promise<{ msg: string }> {
+    if (!messageId) {
       throw new Error('message id is not provided');
     }
     const message = await this._messageRepository.findById(messageId);
-    if(!message){
+    if (!message) {
       throw new Error('Message Not Found');
     }
     await this._messageRepository.findByIdAndDelete(messageId);
-    return {msg:'message deleted'};
+    return { msg: 'message deleted' };
   }
 }

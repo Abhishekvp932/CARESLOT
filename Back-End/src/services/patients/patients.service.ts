@@ -20,7 +20,12 @@ import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRep
 
 import { AppointmentDoctorDTO } from '../../types/AppoinmentsAndDoctorDto';
 import { IPatient } from '../../models/interface/IPatient';
-import { IBookedSlot, IDoctorSlotDoc, IDoctorSlotTime, IGeneratedSlot } from '../../types/SlotTypesDTO';
+import {
+  IBookedSlot,
+  IDoctorSlotDoc,
+  IDoctorSlotTime,
+  IGeneratedSlot,
+} from '../../types/SlotTypesDTO';
 import { IAppoinmentDto } from '../../types/IAppoinmentDTO';
 export class PatientService implements IPatientService {
   constructor(
@@ -30,14 +35,14 @@ export class PatientService implements IPatientService {
     private _appoinmentRepository: IAppoinmentRepository
   ) {}
 
-  async getResendAppoinments(
-    patientId: string
-  ): Promise<{
+  async getResendAppoinments(patientId: string): Promise<{
     msg: string;
     doctors: DoctorDTO[];
     appoinments: IAppoinmentDto[];
   }> {
-    const appoinments = await this._appoinmentRepository.findByPatientId(patientId);
+    const appoinments = await this._appoinmentRepository.findByPatientId(
+      patientId
+    );
 
     if (!appoinments) {
       throw new Error('Appoinment not found');
@@ -134,12 +139,12 @@ export class PatientService implements IPatientService {
     limit: number,
     search: string,
     specialty: string,
-    sortBy:string
+    sortBy: string
   ): Promise<DoctorListResult> {
     const skip = (page - 1) * limit;
     const searchFilter = {
       isApproved: true,
-      isBlocked:false,
+      isBlocked: false,
       ...(search
         ? {
             $or: [
@@ -157,23 +162,28 @@ export class PatientService implements IPatientService {
         ? { 'qualifications.specialization': specialty }
         : {}),
     };
-        let sortCondition: Record<string, 1 | -1> = {};
-        switch (sortBy){
-          case 'rating':
-            sortCondition = {avgRating:-1};
-            break;
-            case 'experience':
-             sortCondition = { 'qualifications.experince': -1 };
-             break;
-             case 'fee':
-              sortCondition = { 'qualifications.fees': 1 };
-              break;
-              default:
-                sortCondition = {createdAt:-1};
-                break;
-        }
+    let sortCondition: Record<string, 1 | -1> = {};
+    switch (sortBy) {
+      case 'rating':
+        sortCondition = { avgRating: -1 };
+        break;
+      case 'experience':
+        sortCondition = { 'qualifications.experince': -1 };
+        break;
+      case 'fee':
+        sortCondition = { 'qualifications.fees': 1 };
+        break;
+      default:
+        sortCondition = { createdAt: -1 };
+        break;
+    }
     const [doctorList, total] = await Promise.all([
-      this._doctorRepository.findAllWithPagination(skip, limit, searchFilter,sortCondition),
+      this._doctorRepository.findAllWithPagination(
+        skip,
+        limit,
+        searchFilter,
+        sortCondition
+      ),
       this._doctorRepository.countAll(searchFilter),
     ]);
 
@@ -200,8 +210,8 @@ export class PatientService implements IPatientService {
             ? Number(doctor.qualifications.fees)
             : undefined,
       },
-      totalRating:doctor?.totalRating,
-      avgRating:doctor?.avgRating
+      totalRating: doctor?.totalRating,
+      avgRating: doctor?.avgRating,
     }));
 
     return { doctors, total };
@@ -228,8 +238,8 @@ export class PatientService implements IPatientService {
             ? Number(doctors.qualifications.fees)
             : undefined,
       },
-      totalRating:doctors.totalRating,
-      avgRating:doctors.avgRating,
+      totalRating: doctors.totalRating,
+      avgRating: doctors.avgRating,
     };
 
     return doctor;
@@ -243,7 +253,6 @@ export class PatientService implements IPatientService {
     if (!doctor) {
       throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
     }
-   
 
     logger.info('suttu');
 
@@ -254,14 +263,14 @@ export class PatientService implements IPatientService {
       doctorId
     );
 
-    const bookedSlot:IBookedSlot[] = doctorAppoinments.map((appt) => ({
+    const bookedSlot: IBookedSlot[] = doctorAppoinments.map((appt) => ({
       date: appt?.slot?.date,
       startTime: appt?.slot?.startTime,
       endTime: appt?.slot?.endTime,
-      status:appt?.status
+      status: appt?.status,
     }));
 
-     logger.debug(bookedSlot);
+    logger.debug(bookedSlot);
     const today = targetDate ? new Date(targetDate) : new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -270,8 +279,8 @@ export class PatientService implements IPatientService {
     // endOfWeek.setDate(today.getDate() + (7 - today.getDay()));
     endOfWeek.setHours(23, 59, 59, 999);
 
-    doctorSlots?.forEach((slotDoc:IDoctorSlotDoc) => {
-      slotDoc?.slotTimes.forEach((slot:IDoctorSlotTime) => {
+    doctorSlots?.forEach((slotDoc: IDoctorSlotDoc) => {
+      slotDoc?.slotTimes.forEach((slot: IDoctorSlotTime) => {
         const dayDate = getNextDateOfWeek(slot?.daysOfWeek);
 
         // if(targetDay < new Date()) return;
@@ -308,9 +317,9 @@ export class PatientService implements IPatientService {
 
           return { startTime: brStart, endTime: brEnd };
         });
-      
+
         const now = new Date();
-        
+
         const slotsArray = genarateSlots(
           startTime,
           endTime,
@@ -331,11 +340,13 @@ export class PatientService implements IPatientService {
                   s.endTime.toLocaleTimeString('en-GB', {
                     hour: '2-digit',
                     minute: '2-digit',
-                  }) && b.status === 'pending'
+                  }) &&
+                b.status === 'pending'
             );
-          }).filter((s)=>{
+          })
+          .filter((s) => {
             const slotDate = s.startTime;
-            if(slotDate.toDateString() === now.toDateString()){
+            if (slotDate.toDateString() === now.toDateString()) {
               return slotDate >= now;
             }
             return true;
@@ -479,7 +490,11 @@ export class PatientService implements IPatientService {
     return { msg: 'Password Changed' };
   }
 
-  async getAllAppoinments(patientId: string,page:number,limit:number): Promise<{appoinments:AppointmentDoctorDTO[],total:number}>{
+  async getAllAppoinments(
+    patientId: string,
+    page: number,
+    limit: number
+  ): Promise<{ appoinments: AppointmentDoctorDTO[]; total: number }> {
     const skip = (page - 1) * limit;
     if (!patientId) {
       throw new Error('patient id not found');
@@ -488,13 +503,13 @@ export class PatientService implements IPatientService {
     if (!patient) {
       throw new Error('Patient not found');
     }
-    const [appoinmentList,total] = await Promise.all([
+    const [appoinmentList, total] = await Promise.all([
       this._appoinmentRepository.findAppoinmentsByPatient(
-      patient?._id as string,
-      skip,
-      limit,
-    ),
-    this._appoinmentRepository.countPatientAppoinment(patientId)
+        patient?._id as string,
+        skip,
+        limit
+      ),
+      this._appoinmentRepository.countPatientAppoinment(patientId),
     ]);
 
     if (!appoinmentList) {
@@ -533,7 +548,7 @@ export class PatientService implements IPatientService {
 
     return {
       appoinments,
-      total
+      total,
     };
   }
 }

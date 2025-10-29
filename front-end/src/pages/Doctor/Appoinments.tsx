@@ -6,10 +6,10 @@ import {
   User,
   Phone,
   Calendar,
-  MoreVertical,
   Filter,
   ChevronLeft,
   ChevronRight,
+  MoreHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -27,6 +27,9 @@ import type { RootState } from "@/app/store";
 import { useNavigate } from "react-router-dom";
 import { useCancelAppoinmentMutation } from "@/features/users/userApi";
 import { toast, ToastContainer } from "react-toastify";
+import PrescriptionModal from "@/components/common/Doctor/PrescriptionModal";
+import { useCreatePrescriptionMutation } from "@/features/docotr/doctorApi";
+import { useChangeAppoinmentStatusMutation } from "@/features/docotr/doctorApi";
 const getStatusColor = (status: string) => {
   switch (status) {
     case "confirmed":
@@ -42,6 +45,13 @@ const getStatusColor = (status: string) => {
 
 export default function AppointmentsListDoctor() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [open, setOpen] = useState(false);
+
+  const [selectedAppoinment, setSelectedAppoinment] = useState<string | null>(
+    null
+  );
+  const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
+
   const [page, setPage] = useState<number>(1);
   const limit = 10;
   const navigate = useNavigate();
@@ -89,7 +99,7 @@ export default function AppointmentsListDoctor() {
 
   const handleCanccelAppoinment = async (appoinmentId: string) => {
     try {
-      console.log('appoinmntid',appoinmentId);
+      console.log("appoinmntid", appoinmentId);
       const res = await cancelAppoinment(appoinmentId).unwrap();
       toast.success(res.msg);
       refetch();
@@ -98,12 +108,45 @@ export default function AppointmentsListDoctor() {
     }
   };
 
+  interface PrescriptionData {
+    diagnosis: string;
+    medicines: string;
+    advice: string;
+  }
+
+  const [createPrescription] = useCreatePrescriptionMutation();
+  const handlePrescriptionSave = async (data: PrescriptionData) => {
+    try {
+      const prescriptionData = {
+        diagnosis: data?.diagnosis,
+        medicines: data?.medicines,
+        advice: data?.advice,
+        appoinmentId: selectedAppoinment,
+        patientId: selectedPatient,
+        doctorId: doctorId,
+      };
+      console.log("prescription data", prescriptionData);
+      const res = await createPrescription(prescriptionData).unwrap();
+      console.log("response from back end", res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [changeAppoinmentStatus] = useChangeAppoinmentStatusMutation();
+
+  const handleChangeStatus = async (appoinmentId: string) => {
+    try {
+      const res = await changeAppoinmentStatus(appoinmentId).unwrap();
+      console.log(res);
+    } catch (error: any) {
+      toast.error(error?.data?.msg);
+    }
+  };
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
       <DoctorSidebar />
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-auto p-4 lg:p-6">
           <div className="max-w-7xl mx-auto space-y-6">
@@ -118,8 +161,6 @@ export default function AppointmentsListDoctor() {
                 </p>
               </div>
             </div>
-
-            {/* Filters */}
             <div className="flex flex-wrap gap-4 items-center justify-between">
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2">
@@ -180,22 +221,46 @@ export default function AppointmentsListDoctor() {
 
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
+                            <button className="btn btn-outline btn-sm">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </button>
                           </DropdownMenuTrigger>
+
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={()=>handleCanccelAppoinment(
-                                appointment?._id
-                              )}
-                            >
-                              Cancel Appointment
-                            </DropdownMenuItem>
+                            {/* Pending Appointments */}
+                            {appointment?.status === "pending" && (
+                              <>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleCanccelAppoinment(appointment?._id)
+                                  }
+                                >
+                                  Cancel Appointment
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleChangeStatus(appointment?._id)
+                                  }
+                                >
+                                  Mark as Completed
+                                </DropdownMenuItem>
+                              </>
+                            )}
+
+                            {/* Cancelled Appointments */}
+                            {appointment?.status === "cancelled" && (
+                              <DropdownMenuItem disabled>
+                                Cancelled
+                              </DropdownMenuItem>
+                            )}
+
+                            {/* Completed Appointments */}
+                            {appointment?.status === "completed" && (
+                              <DropdownMenuItem disabled>
+                                Completed
+                              </DropdownMenuItem>
+                            )}
+
                             <DropdownMenuItem>Close</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -226,16 +291,40 @@ export default function AppointmentsListDoctor() {
                       </div>
 
                       <div className="flex space-x-2 pt-2">
-                        <Button
-                          size="sm"
-                          className="flex-1"
-                          onClick={() => handleVideoCall(appointment?._id)}
-                        >
-                          Start Visit
-                        </Button>
-                        <Button size="sm" variant="outline" className="flex-1">
-                          Reschedule
-                        </Button>
+                        {appointment?.status !== "cancelled" ? (
+                          <Button
+                            size="sm"
+                            className="flex-1"
+                            onClick={() => handleVideoCall(appointment?._id)}
+                          >
+                            Start Visit
+                          </Button>
+                        ) : (
+                          <h1 style={{ color: "red" }}>cancelled</h1>
+                        )}
+                        {appointment?.status !== "cancelled" ? (
+                          <div>
+                            <Button
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => {
+                                setSelectedAppoinment(appointment?._id);
+                                setSelectedPatient(appointment?.patientId?._id);
+                                setOpen(true);
+                              }}
+                            >
+                              Add Prescription
+                            </Button>
+                            <PrescriptionModal
+                              open={open}
+                              onClose={() => setOpen(false)}
+                              onSubmit={handlePrescriptionSave}
+                              patientName={appointment?.patientId?.name}
+                            />
+                          </div>
+                        ) : (
+                          <h1 style={{ color: "red" }}></h1>
+                        )}
                       </div>
                     </CardContent>
                   </Card>

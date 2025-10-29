@@ -3,16 +3,21 @@ import { BaseRepository } from '../base.repository';
 import Wallet from '../../models/implementation/wallet.model';
 import { IWallet } from '../../models/interface/IWallet';
 import { UpdateQuery } from 'mongoose';
-export class WalletRepository extends BaseRepository <IWallet> implements IWalletRepository {
+export class WalletRepository
+  extends BaseRepository<IWallet>
+  implements IWalletRepository
+{
+  constructor() {
+    super(Wallet);
+  }
+  async findByUserId(userId: string): Promise<IWallet | null> {
+    return await Wallet.findOne({ userId });
+  }
 
-    constructor(){
-        super(Wallet);
-    }
-    async findByUserId(userId: string): Promise<IWallet | null> {
-        return await Wallet.findOne({userId});
-    }
-
-    async findByIdAndUpdate(walletId: string, update: UpdateQuery<IWallet>): Promise<IWallet | null> {
-        return await Wallet.findByIdAndUpdate(walletId,update,{new:true});
-    }
+  async findByIdAndUpdate(
+    walletId: string,
+    update: UpdateQuery<IWallet>
+  ): Promise<IWallet | null> {
+    return await Wallet.findByIdAndUpdate(walletId, update, { new: true });
+  }
 }

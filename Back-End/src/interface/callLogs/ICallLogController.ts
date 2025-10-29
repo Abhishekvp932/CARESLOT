@@ -1,5 +1,5 @@
 
-import {Request,Response} from 'express';
+import {Request,Response,NextFunction} from 'express';
 export interface ICallLogController {
-    getCallData(req:Request,res:Response):Promise<void>;
+    getCallData(req:Request,res:Response,next:NextFunction):Promise<void>;
 }

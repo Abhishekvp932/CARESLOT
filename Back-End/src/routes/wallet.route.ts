@@ -11,16 +11,29 @@ const walletRepository = new WalletRepository();
 const walletHistoryRepository = new WalletHistoryRepository();
 const patientRepository = new PatientRepository();
 const doctorRepository = new DoctorAuthRepository();
-const walletService = new WalletService(walletRepository,walletHistoryRepository);
+const walletService = new WalletService(
+  walletRepository,
+  walletHistoryRepository
+);
 const walletController = new WalletController(walletService);
 
-const authMiddleWare = new AuthMiddleware(patientRepository,doctorRepository);
+const authMiddleWare = new AuthMiddleware(patientRepository, doctorRepository);
 const router = express.Router();
 
-router.route(Routers.walletRouters.userWalletData)
-.get(authMiddleWare.protect,authMiddleWare.isBlockedOrNot,walletController.getUserWalletData.bind(walletController));
+router
+  .route(Routers.walletRouters.userWalletData)
+  .get(
+    authMiddleWare.protect,
+    authMiddleWare.isBlockedOrNot,
+    walletController.getUserWalletData.bind(walletController)
+  );
 
-router.route(Routers.walletRouters.doctorWalletData)
-.get(authMiddleWare.protect,authMiddleWare.isBlockedOrNot,walletController.getDoctorWalletData.bind(walletController));
+router
+  .route(Routers.walletRouters.doctorWalletData)
+  .get(
+    authMiddleWare.protect,
+    authMiddleWare.isBlockedOrNot,
+    walletController.getDoctorWalletData.bind(walletController)
+  );
 
 export default router;

@@ -14,14 +14,15 @@ router
   .route(Routers.notificationRouters.notificationWithPatientId)
   .get(notificationController.getUserNotification.bind(notificationController));
 
-  router.route(Routers.notificationRouters.deleteAllNotification)
+router
+  .route(Routers.notificationRouters.deleteAllNotification)
   .delete(
     notificationController.deleteAllNotification.bind(notificationController)
   );
-  
-router.route(Routers.notificationRouters.readAllNotification)
-  .put(notificationController.readAllNotification.bind(notificationController));
 
+router
+  .route(Routers.notificationRouters.readAllNotification)
+  .put(notificationController.readAllNotification.bind(notificationController));
 
 router
   .route(Routers.notificationRouters.notificationWithNotificationId)

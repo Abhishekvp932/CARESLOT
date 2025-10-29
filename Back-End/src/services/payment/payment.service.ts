@@ -38,7 +38,7 @@ export class PaymentService implements IPaymentService {
     private _walletRepository: IWalletRepository,
     private _walletHistoryRepository: IWalletHistoryRepository,
     private _chatRepository: IChatRepository,
-    private _callLogRepository:ICallLogRepository,
+    private _callLogRepository: ICallLogRepository
   ) {}
 
   async createOrder(amount: number): Promise<RazorpayOrder> {
@@ -74,15 +74,19 @@ export class PaymentService implements IPaymentService {
     }
 
     const patient = await this._patientRepository.findById(patientId);
-   
+
     if (!patient) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
-     const appoinmentExists = await this._appoinmentRepository.findByOneSlot(doctorId,date,startTime);
+    const appoinmentExists = await this._appoinmentRepository.findByOneSlot(
+      doctorId,
+      date,
+      startTime
+    );
 
-     if(appoinmentExists){
+    if (appoinmentExists) {
       throw new Error('Appointment already booked');
-     }
+    }
 
     const body = orderId + '|' + paymentId;
 
@@ -93,6 +97,7 @@ export class PaymentService implements IPaymentService {
 
     const isValid = expectedSignature === signature;
     let response = null;
+
     if (isValid) {
       const newAppoinment = {
         doctorId: new Types.ObjectId(doctorId as string),
@@ -109,7 +114,7 @@ export class PaymentService implements IPaymentService {
       if (!appoinment) {
         throw new Error('appoinment not found');
       }
-      
+
       const newPayment = {
         appoinmentId: new Types.ObjectId(appoinment?._id as string),
         patientId: new Types.ObjectId(patientId as string),
@@ -127,41 +132,52 @@ export class PaymentService implements IPaymentService {
         { transactionId: new Types.ObjectId(payment?._id as string) }
       );
       logger.info('22');
-     const scheduledStart = new Date(`${appoinment.slot.date}T${appoinment.slot.startTime}`);
-const scheduledEnd = new Date(`${appoinment.slot.date}T${appoinment.slot.endTime}`);
+      const scheduledStart = new Date(
+        `${appoinment.slot.date}T${appoinment.slot.startTime}`
+      );
+      const scheduledEnd = new Date(
+        `${appoinment.slot.date}T${appoinment.slot.endTime}`
+      );
 
-      const newCallLogs:Partial<ICallLog> = {
-         doctorId:new Types.ObjectId(appoinment?.doctorId),
-         patientId:new Types.ObjectId(appoinment?.patientId),
-         appoinmentId:new Types.ObjectId(appoinment?._id as string),
-         startTime:scheduledStart,
-         endTime:scheduledEnd,
-         duration:Math.floor((scheduledEnd.getTime() - scheduledStart.getTime()) / 1000),
-         status: 'scheduled',
+      const newCallLogs: Partial<ICallLog> = {
+        doctorId: new Types.ObjectId(appoinment?.doctorId),
+        patientId: new Types.ObjectId(appoinment?.patientId),
+        appoinmentId: new Types.ObjectId(appoinment?._id as string),
+        startTime: scheduledStart,
+        endTime: scheduledEnd,
+        duration: Math.floor(
+          (scheduledEnd.getTime() - scheduledStart.getTime()) / 1000
+        ),
+        status: 'scheduled',
       };
-       await this._callLogRepository.create(newCallLogs);
-    const userChat = await this._chatRepository.findPatientChat(patient?._id as string);
-     logger.info('user chat');
-     logger.debug(userChat);
+      await this._callLogRepository.create(newCallLogs);
+      const userChat = await this._chatRepository.findPatientChat(
+        patient?._id as string
+      );
+      logger.info('user chat');
+      logger.debug(userChat);
 
       const exists = userChat.some(
-      (c: IChatPopulated) =>
-        c.doctorId._id.toString() === doctorId && c.patiendId.toString() === patientId
-    );
+        (c: IChatPopulated) =>
+          c.doctorId._id.toString() === doctorId &&
+          c.patiendId.toString() === patientId
+      );
       logger.debug(exists);
 
-    if(!exists){
-         const newChat: Partial<IChat> = {
-        appoinmentId: appoinment?.id,
-        doctorId: appoinment?.doctorId,
-        patiendId: appoinment?.patientId,
-        participants: [appoinment?.doctorId, appoinment?.patientId],
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      await this._chatRepository.create(newChat);
-    }
+      if (!exists) {
+        const newChat: Partial<IChat> = {
+          appoinmentId: appoinment?.id,
+          doctorId: appoinment?.doctorId,
+          patiendId: appoinment?.patientId,
+          participants: [appoinment?.doctorId, appoinment?.patientId],
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        await this._chatRepository.create(newChat);
+      }else{
+        await this._chatRepository.findByPatientIdAndUpdate(patientId,doctorId,{isActive:true});
+      }
 
       const doctorWallet = await this._walletRepository.findByUserId(
         doctorId as string
@@ -222,12 +238,7 @@ const scheduledEnd = new Date(`${appoinment.slot.date}T${appoinment.slot.endTime
       });
       io.to(doctorId).emit('notification', doctorNotif);
 
-      // response = {
-      // status: isValid ? 'success' : 'failed',
-      // patientNotification: patientNotif,
-      // doctorNotification: doctorNotif
-      // };
-
+ 
       (async () => {
         const mailService = new MailService();
         try {
@@ -339,7 +350,7 @@ const scheduledEnd = new Date(`${appoinment.slot.date}T${appoinment.slot.endTime
     const appoinment = await this._appoinmentRepository.create(newAppoinment);
 
     await this._walletRepository.findByIdAndUpdate(wallet?._id as string, {
-      $inc: { balance: -fees},
+      $inc: { balance: -fees },
     });
 
     const newWalletHistory: Partial<IWalletHistory> = {
@@ -378,7 +389,8 @@ const scheduledEnd = new Date(`${appoinment.slot.date}T${appoinment.slot.endTime
     );
     const exists = userChat.some(
       (c: IChatPopulated) =>
-        c.doctorId._id.toString() === doctorId && c.patiendId.toString() === patientId
+        c.doctorId._id.toString() === doctorId &&
+        c.patiendId.toString() === patientId
     );
 
     if (!exists) {
@@ -393,6 +405,8 @@ const scheduledEnd = new Date(`${appoinment.slot.date}T${appoinment.slot.endTime
       };
 
       await this._chatRepository.create(newChat);
+    }else {
+      await this._chatRepository.findByPatientIdAndUpdate(patientId,doctorId,{isActive:true});
     }
 
     const doctorWallet = await this._walletRepository.findByUserId(

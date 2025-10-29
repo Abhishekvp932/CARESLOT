@@ -31,7 +31,7 @@ const paymentService = new PaymentService(
   walletRepository,
   walletHistoryRepository,
   chatRepository,
-  callLogRepository,
+  callLogRepository
 );
 const paymentController = new PaymentController(paymentService);
 
@@ -42,8 +42,8 @@ router
   .route(Routers.paymentRouters.verifyOrder)
   .post(paymentController.verifyOrder.bind(paymentController));
 
-
-  router.route(Routers.paymentRouters.walletPayment)
+router
+  .route(Routers.paymentRouters.walletPayment)
   .post(paymentController.walletPayment.bind(paymentController));
-  
+
 export default router;

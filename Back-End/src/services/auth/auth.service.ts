@@ -11,7 +11,7 @@ import {
   verifyRefreshToken,
 } from '../../utils/jwt';
 import { Profile } from 'passport-google-oauth20';
-import { IService } from '../../interface/auth/IAuthService';
+import { IAuthService } from '../../interface/auth/IAuthService';
 import { MailService } from '../mail.service';
 import { IPatient } from '../../models/interface/IPatient';
 import { IBaseUser } from '../../utils/IBaseUser';
@@ -28,7 +28,7 @@ import { Request, Response } from 'express';
 import logger from '../../utils/logger';
 import dotenv from 'dotenv';
 dotenv.config();
-export class AuthService implements IService {
+export class AuthService implements IAuthService{
   constructor(
     private _patientRepository: IpatientRepository,
     private _doctorRepository: IDoctorAuthRepository,
@@ -166,7 +166,10 @@ export class AuthService implements IService {
 
     return { msg: 'otp send to your email id' };
   }
-  async verifyOtp(email: string, otp: string): Promise<{msg:string,role:string,user:string}> {
+  async verifyOtp(
+    email: string,
+    otp: string
+  ): Promise<{ msg: string; role: string; user: string }> {
     let user = null;
     user = await this._patientRepository.findByEmail(email);
     let role = 'patients';
@@ -185,9 +188,12 @@ export class AuthService implements IService {
       await this._doctorRepository.verifyOtp(email, otp);
     }
 
-    return { msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS, role, user: user._id as string};
+    return {
+      msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS,
+      role,
+      user: user._id as string,
+    };
   }
-
 
   async findOrCreateGoogleUser(profile: Profile): Promise<IPatient> {
     const existingUser: IPatient | null =
@@ -200,8 +206,8 @@ export class AuthService implements IService {
     return newUser;
   }
 
-  async findUserById(id: string): Promise<{ users: UserDTO }> {
-    const usersData = await this._patientRepository.findById(id);
+  async findUserById(patientId: string): Promise<{ users: UserDTO }> {
+    const usersData = await this._patientRepository.findById(patientId);
 
     if (!usersData) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
@@ -361,7 +367,10 @@ export class AuthService implements IService {
     return { msg: SERVICE_MESSAGE.PASSWORD_UPDATE_SUCCESS };
   }
 
-  async refreshAccessToken(req: Request, res: Response): Promise<{msg:string}> {
+  async refreshAccessToken(
+    req: Request,
+    res: Response
+  ): Promise<{ msg: string }> {
     const sessionId = req.cookies?.sessionId;
 
     if (!sessionId) {
@@ -378,7 +387,7 @@ export class AuthService implements IService {
 
     if (!decoded) {
       res.clearCookie('sessionId');
-      return {msg:'Invalid or expired refresh token'};
+      return { msg: 'Invalid or expired refresh token' };
     }
 
     let user: IPatient | IDoctor | IAdmin | null = null;
@@ -393,7 +402,6 @@ export class AuthService implements IService {
     logger.info('refresh access token user data');
     logger.debug(user);
 
-
     if (!user) {
       throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
     }
@@ -407,16 +415,14 @@ export class AuthService implements IService {
     const newAccessToken = generateAccessToken(payload);
     const newRefreshToken = generateRefreshToken(payload);
     await redisClient.set(`access:${sessionId}`, newAccessToken, {
-      EX:Number(process.env.ACCESS_TOKEN_EXPIRE_TIME),
+      EX: Number(process.env.ACCESS_TOKEN_EXPIRE_TIME),
     });
     await redisClient.set(`refresh:${sessionId}`, newRefreshToken, {
-      EX:Number(process.env.REFRESH_TOKEN_EXPIRE_TIME),
+      EX: Number(process.env.REFRESH_TOKEN_EXPIRE_TIME),
     });
 
     return { msg: 'token refreshed' };
   }
-
-
 
   async getMe({ sessionId }: LogoutRequest): Promise<Partial<IPatient>> {
     const token = await redisClient.get(`access:${sessionId}`);

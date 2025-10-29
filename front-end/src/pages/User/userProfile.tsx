@@ -11,12 +11,12 @@ import type { RootState } from "@/app/store";
 import EditUserModal from "@/components/common/EditUserModal";
 import { useUpdateUserDataMutation } from "@/features/users/userApi";
 import { toast, ToastContainer } from "react-toastify";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user?._id as string;
-
+  
   const {
     data = {},
     error,
@@ -25,6 +25,18 @@ const UserProfile = () => {
   } = useGetResendAppoinmentsQuery({patientId:userId});
    const doctors = data?.doctors;
    const appoinments = data?.appoinments
+   
+     const [cancelledAppoinment, setCancelledAppoinment] = useState(0);
+     const [pendingAppoinment,setPendingAppoinment] = useState(0);
+useEffect(() => {
+  if (Array.isArray(appoinments)) {
+    const count = appoinments.filter(data => data.status === 'cancelled').length;
+    setCancelledAppoinment(count);
+    const pendingCount = appoinments.filter(data => data.status === 'pending').length;
+    setPendingAppoinment(pendingCount)
+  }
+}, [appoinments]); 
+
 
   const { data: users, refetch: refetchUserData } = useGetUserDataQuery(
     userId
@@ -47,7 +59,6 @@ const UserProfile = () => {
     );
   }
 
-  const pendingAppoinment = appoinments.filter(data => data.status === 'pending').length
 
   const handleSave = async (upadateUser) => {
     const formData = new FormData();
@@ -84,6 +95,9 @@ const UserProfile = () => {
   const handleDetailsPage = (doctorId:string)=>{
     navigate(`/doctor-details/${doctorId}`);
   }
+
+
+
 
   return (
     <div className="space-y-6">
@@ -144,7 +158,7 @@ const UserProfile = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {doctors?.filter((d) => d.status === "Cancelled").length}
+              {cancelledAppoinment}
             </div>
             <p className="text-xs text-gray-500">Past cancellations</p>
           </CardContent>
