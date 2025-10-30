@@ -2,7 +2,7 @@ import { MoreVertical} from "lucide-react";
 import { useState } from "react";
 // import { useNavigate } from "react-router-dom";
 
-const ActionMenu = ({ user, onBlockToggle }: { user: any; onBlockToggle: () => void }) => {
+const ActionMenu = ({ user, onBlockToggle }: { user:any; onBlockToggle: () => void }) => {
   const [open, setOpen] = useState(false);
   // const navigate = useNavigate();
 // const handleDoctorDetailsPage = (doctorId:string)=>{

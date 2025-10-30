@@ -12,6 +12,20 @@ dotenv.config();
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
+
+
+      /**
+   * @remarks
+   * Handles a POST request to login a user.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing user information.
+   */
+
+
+
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, password } = req.body;
@@ -40,6 +54,18 @@ export class AuthController implements IAuthController {
       next(error as Error);
     }
   }
+
+        /**
+   * @remarks
+   * Handles a POST request to create a new user.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
+
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { name, email, password, dob, gender, phone, role } = req.body;
@@ -74,6 +100,15 @@ export class AuthController implements IAuthController {
     }
   }
 
+/**
+ * @remarks
+ * Handles a GET request to retrieve the current user's information.
+ *
+ * @param req - Express request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns JSON response containing user information.
+ */
   async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const sessionId = req.cookies.sessionId;
@@ -89,6 +124,18 @@ export class AuthController implements IAuthController {
       next(error as Error);
     }
   }
+
+
+  /**
+   * @remarks
+   * Handles a POST request to log out a user.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
   async logOut(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const sessionId = req.cookies?.sessionId;
@@ -107,6 +154,18 @@ export class AuthController implements IAuthController {
     }
   }
 
+
+    /**
+   * @remarks
+   * Handles a POST request to get new otp.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
+
   async resendOTP(
     req: Request,
     res: Response,
@@ -121,6 +180,18 @@ export class AuthController implements IAuthController {
       next(error as Error);
     }
   }
+
+      /**
+   * @remarks
+   * Handles a POST request to verify email address.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
+
   async verfiyEmail(
     req: Request,
     res: Response,
@@ -135,6 +206,17 @@ export class AuthController implements IAuthController {
       next(error as Error);
     }
   }
+
+/**
+ * @remarks
+ * Handles a POST request to verify email address.
+ *
+ * @param req - Express request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns A success message.
+ */
+
   async verifyEmailOTP(
     req: Request,
     res: Response,
@@ -149,6 +231,18 @@ export class AuthController implements IAuthController {
       next(error as Error);
     }
   }
+
+
+  /**
+   * @remarks
+   * Handles a POST request to initiate the password reset process.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
   async forgotPassword(
     req: Request,
     res: Response,
@@ -163,6 +257,18 @@ export class AuthController implements IAuthController {
       next(error as Error);
     }
   }
+
+      /**
+   * @remarks
+   * Handles a POST request to genarate new access token and refresh token.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
+
   async refreshToken(
     req: Request,
     res: Response,

@@ -57,7 +57,7 @@ type DoctorFormData = {
 
   const handleInputChange = (
     field: string,
-    value: any,
+    value,
     isQualification = false
   ) => {
     setFormData((prev) => {

@@ -6,6 +6,17 @@ import { HttpStatus } from '../../utils/httpStatus';
 export class ChatController implements IChatController {
   constructor(private _chatService: IChatService) {}
 
+
+    /**
+   * @remarks
+   * Handles a GET request to get user chat.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing user chat.
+   */
+
   async getUserChat(
     req: Request,
     res: Response,
@@ -20,6 +31,17 @@ export class ChatController implements IChatController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a POST request to send a message.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing the result of the send message operation.
+   */
+
   async sendMessage(
     req: Request,
     res: Response,
@@ -50,6 +72,16 @@ export class ChatController implements IChatController {
     }
   }
 
+  /**
+   * @remarks
+   * Handles a GET request to get doctor chat.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function. 
+   * @returns JSON response containing doctor chat.
+   */
+
   async getDoctorChat(
     req: Request,
     res: Response,
@@ -63,6 +95,17 @@ export class ChatController implements IChatController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to get doctor messages.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing doctor messages.
+   */
+
   async getDoctorMessage(
     req: Request,
     res: Response,
@@ -78,6 +121,17 @@ export class ChatController implements IChatController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to get patient messages.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing patient messages.
+   */
+
   async getPatientMessage(
     req: Request,
     res: Response,
@@ -92,6 +146,17 @@ export class ChatController implements IChatController {
       next(error as Error);
     }
   }
+
+       /**
+   * @remarks
+   * Handles a DELETE request to delete call logs.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   *  @param next - Express next function.
+   * @returns JSON response indicating the result of the delete operation.
+   */
+
   async deleteMessage(
     req: Request,
     res: Response,

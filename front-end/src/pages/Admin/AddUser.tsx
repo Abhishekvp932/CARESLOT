@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -40,7 +39,6 @@ const AddUserModal = ({
       name: "",
       email: "",
       phone: "",
-      gender: "",
       DOB: "",
       profileImg: null,
       password: "",

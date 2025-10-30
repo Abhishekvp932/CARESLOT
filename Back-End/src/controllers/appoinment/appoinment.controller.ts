@@ -7,6 +7,18 @@ import logger from '../../utils/logger';
 export class AppoinmentController implements IAppoinmentController {
   constructor(private _appoinmentService: IAppoinmentService) {}
 
+
+    /**
+   * @remarks
+   * Handles a POST request to create new appoinment.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
+
   async createAppoinment(req: Request, res: Response, next: NextFunction)
 : Promise<void> {
     logger.info('appoinment data is comming .....');
@@ -19,6 +31,18 @@ export class AppoinmentController implements IAppoinmentController {
 
     }
   }
+
+      /**
+   * @remarks
+   * Handles a PATCH request to cancel an existing appointment.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
+
   async cancelAppoinment(req: Request, res: Response, next: NextFunction)
 : Promise<void> {
     try {
@@ -33,6 +57,18 @@ export class AppoinmentController implements IAppoinmentController {
 
     }
   }
+
+      /**
+   * @remarks
+   * Handles a PATCH request to update an existing appointment.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
+  
   async changeAppoinmentStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       logger.info('appoinment status chagne request is comming');

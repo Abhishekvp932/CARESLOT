@@ -7,6 +7,16 @@ import logger from '../../utils/logger';
 export class CallLogController implements ICallLogController {
   constructor(private _callLogService: ICallLogService) {}
 
+    /**
+   * @remarks
+   * Handles a GET request to get call logs .
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing call logs.
+   */
+
   async getCallData(
     req: Request,
     res: Response,

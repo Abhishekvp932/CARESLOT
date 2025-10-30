@@ -1,22 +1,18 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import {useState } from "react"
 import { AppointmentCard } from "@/components/common/admin/appoinment_card"
-import { Badge } from "@/components/ui/badge"
+
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search, Filter } from "lucide-react"
+
 
 import { useGetAllAdminAppoinmentsQuery } from "@/features/admin/adminApi"
+import { Filter } from "lucide-react"
 
 
 export function AppointmentHistory() {
 
-  
 
-  const [searchTerm, setSearchTerm] = useState("")
-  // const [page, setPage] = useState(1);
-  // const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all")
   // const limit = 10;
  
@@ -70,7 +66,7 @@ const {data = {}} = useGetAllAdminAppoinmentsQuery({status:statusFilter});
             size="sm"
             onClick={() => setStatusFilter("all")}
           >
-            <Filter className="h-4 w-4 mr-2" />
+            {/* <Filter className="h-4 w-4 mr-2" /> */}
             All
           </Button>
           <Button

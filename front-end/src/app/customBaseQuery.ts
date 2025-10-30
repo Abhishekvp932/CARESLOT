@@ -10,6 +10,7 @@ import type {
 import { logOut as userLogOut } from "@/features/auth/authSlice";
 import { logOut as doctorLogOut } from "@/features/docotr/doctorSlice";
 import { AdminlogOut as adminLogOut } from "@/features/admin/adminSlice";
+import type { RootState } from "./store";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:3000/api",
@@ -39,13 +40,13 @@ export const customBaseQuery: BaseQueryFn<
     if (refreshResult?.data) {
       result = await baseQuery(args, api, extraOptions);
     } else {
-      const state: any = api.getState();
+      const state = api.getState() as RootState;
 
 if (state?.auth?.user) {
   api.dispatch(userLogOut());
-} else if (state?.doctor?.user) {
+} else if (state?.doctor?.doctor) {
   api.dispatch(doctorLogOut());
-} else if (state?.admin?.user) {
+} else if (state?.admin?.admin) {
   api.dispatch(adminLogOut());
 }
 

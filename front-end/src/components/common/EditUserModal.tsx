@@ -21,7 +21,7 @@ const EditUserModal = ({
   onSave,
 }: {
   user: any;
-  onSave: (updatedUser: any) => void;
+  onSave: (updatedUser) => void;
 }) => {
   const [formData, setFormData] = useState({ ...user });
   const [errors, setErrors] = useState<Record<string, string>>({});

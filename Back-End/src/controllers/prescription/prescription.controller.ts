@@ -6,6 +6,17 @@ import { HttpStatus } from '../../utils/httpStatus';
 export class PrescriptionController implements IPrescriptionController {
     constructor(private _prescriptionService:IPrescriptionService){}
 
+
+    /**
+     * @remarks
+     * Handles a POST request to add a new prescription.
+     *
+     * @param req - Express request object.
+     * @param res - Express response object.
+     * @param next - Express next function.
+     * @returns A success message.
+     */
+
     async addPrescription(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             logger.info('prescription request is comming');
@@ -16,6 +27,17 @@ export class PrescriptionController implements IPrescriptionController {
             next(error);
         }
     }
+
+    /**
+     * @remarks
+     * Handles a GET request to download a prescription.
+     *
+     * @param req - Express request object.
+     * @param res - Express response object.
+     * @param next - Express next function.
+     * @returns A PDF file of the prescription.
+     */
+
     async downloadPrescription(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const {appoinmentId} = req.params;

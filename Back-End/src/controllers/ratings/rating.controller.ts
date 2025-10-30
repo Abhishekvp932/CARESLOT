@@ -6,6 +6,17 @@ import logger from '../../utils/logger';
 
 export class RatingController implements IRatingController {
   constructor(private _ratingService: IRatingService) {}
+
+/**
+ * @remarks
+ * Handles a POST request to add a new rating.
+ *
+ * @param req - Express request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns A success message.
+ */
+  
   async addRating(
     req: Request,
     res: Response,
@@ -27,6 +38,17 @@ export class RatingController implements IRatingController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to find a doctor's rating.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing the doctor's rating details.
+   */
+
   async findDoctorRating(
     req: Request,
     res: Response,

@@ -8,6 +8,17 @@ import { HttpStatus } from '../../utils/httpStatus';
 export class PaymentController implements IPaymentController {
   constructor(private _paymentService: IPaymentService) {}
 
+
+  /**
+   * @remarks
+   * Handles a POST request to create a new order.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing the created order details.
+   */
+
   async createOrder(
     req: Request,
     res: Response,
@@ -24,6 +35,17 @@ export class PaymentController implements IPaymentController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a POST request to verify an order.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing the verification result.
+   */
+
   async verifyOrder(
     req: Request,
     res: Response,
@@ -63,6 +85,18 @@ export class PaymentController implements IPaymentController {
       next(error as Error);
     }
   }
+
+
+  /**
+   * @remarks
+   * Handles a POST request to process wallet payments.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
   async walletPayment(
     req: Request,
     res: Response,

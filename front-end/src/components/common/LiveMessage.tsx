@@ -4,7 +4,7 @@ import { socket } from "@/socket/socket";
 
 type Props = {
   chatId: string;
-  onMessageReceived?: (msg: any) => void;
+  onMessageReceived?: (msg) => void;
 };
 
 export default function LiveMessage({ chatId, onMessageReceived }: Props) {
@@ -13,7 +13,7 @@ export default function LiveMessage({ chatId, onMessageReceived }: Props) {
 
     socket.emit("joinRoom", chatId);
 
-    const handleMessage = (msg: any) => {
+    const handleMessage = (msg) => {
       console.log("user message received:", msg);
       toast.info(`New message: ${msg.content}`);
       onMessageReceived?.(msg);

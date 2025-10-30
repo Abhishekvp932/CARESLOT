@@ -6,6 +6,17 @@ import logger from '../../utils/logger';
 export class ChatbotController implements IChatbotController {
   constructor(private _chatbotService: ChatbotService) {}
 
+
+  /**
+   * @remarks
+   * Handles a POST request to send a message to chat bot.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing the result of the send message operation.
+   */
+
   async handleChatMessage(
     req: Request,
     res: Response,

@@ -7,6 +7,16 @@ import { HttpStatus } from '../../utils/httpStatus';
 export class WalletController implements IWalletController {
   constructor(private _walletService: IWalletService) {}
 
+  /**
+   * @remarks
+   * Handles a GET request to retrieve user wallet data.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing the user wallet data.
+   */
+
   async getUserWalletData(
     req: Request,
     res: Response,
@@ -33,6 +43,17 @@ export class WalletController implements IWalletController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to retrieve doctor wallet data.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing the doctor wallet data.
+   */
+
   async getDoctorWalletData(
     req: Request,
     res: Response,

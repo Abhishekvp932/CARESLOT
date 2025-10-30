@@ -9,6 +9,18 @@ import logger from '../../utils/logger';
 export class DoctorController implements IDoctorController {
   constructor(private _doctorService: IDoctorService) {}
 
+
+
+  /**
+   * @remarks
+   * Handles a POST request to upload documents.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message upon successful upload of documents.
+   */
+
   async uploadDocuments(
     req: Request,
     res: Response,
@@ -59,6 +71,17 @@ export class DoctorController implements IDoctorController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to get doctor profile.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing doctor profile.
+   */
+
   async getDoctorProfile(
     req: Request,
     res: Response,
@@ -73,6 +96,16 @@ export class DoctorController implements IDoctorController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a PUT request to edit doctor profile.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message upon successful edit of doctor profile.
+   */
 
   async editDoctorProfile(
     req: Request,
@@ -99,6 +132,18 @@ export class DoctorController implements IDoctorController {
       next(error as Error);
     }
   }
+
+  
+  /**
+   * @remarks
+   * Handles a POST request to re-apply for doctor.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message upon successful re-application of doctor.
+   */
+
   async reApplyDoctor(
     req: Request,
     res: Response,
@@ -122,6 +167,16 @@ export class DoctorController implements IDoctorController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to get all appointments for a doctor.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing all appointments for the doctor.
+   */
 
   async getAllAppoinments(
     req: Request,
@@ -151,6 +206,17 @@ export class DoctorController implements IDoctorController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to get doctor dashboard data.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing doctor dashboard data.
+   */
+
   async getDoctorDashboardData(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       logger.info('doctor dashboard request is comming ...');

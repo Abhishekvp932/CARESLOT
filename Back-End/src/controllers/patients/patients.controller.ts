@@ -5,6 +5,18 @@ import { HttpStatus } from '../../utils/httpStatus';
 import logger from '../../utils/logger';
 export class PatientController implements IPatientController {
   constructor(private _patientService: IPatientService) {}
+
+
+  /**
+   * @remarks
+   * Handles a GET request to get resend appointment requests.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing resend appointment requests.
+   */
+
   async getResendAppoinment(
     req: Request,
     res: Response,
@@ -19,6 +31,17 @@ export class PatientController implements IPatientController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a PUT request to update user profile.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message upon successful update of user profile.
+   */
+
   async updateUserProfile(
     req: Request,
     res: Response,
@@ -44,6 +67,18 @@ export class PatientController implements IPatientController {
       next(error as Error);
     }
   }
+
+
+/**
+ * @remarks
+ * Handles a GET request to retrieve user data.
+ *
+ * @param req - Express request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns JSON response containing user data.
+ */
+
   async getUserData(
     req: Request,
     res: Response,
@@ -58,6 +93,18 @@ export class PatientController implements IPatientController {
       next(error as Error);
     }
   }
+
+
+  /**
+   * @remarks
+   * Handles a GET request to retrieve all doctors.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing all doctors.
+   */
+
   async getAllDoctors(
     req: Request,
     res: Response,
@@ -88,6 +135,17 @@ export class PatientController implements IPatientController {
     }
   }
 
+
+  /**
+   * @remarks
+   * Handles a GET request to retrieve doctor details.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing doctor details.
+   */
+
   async getDoctorDetails(
     req: Request,
     res: Response,
@@ -101,6 +159,17 @@ export class PatientController implements IPatientController {
       next(error as Error);
     }
   }
+
+/**
+ * @remarks
+ * Handles a GET request to retrieve available slots for a doctor.
+ *
+ * @param req - Express request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns JSON response containing available slots for the doctor.
+ */
+
   async getDoctorSlots(
     req: Request,
     res: Response,
@@ -117,6 +186,17 @@ export class PatientController implements IPatientController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to retrieve all specializations.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing all specializations.
+   */
+
   async getAllspecializations(
     req: Request,
     res: Response,
@@ -132,6 +212,17 @@ export class PatientController implements IPatientController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to retrieve doctor and slot information.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing doctor and slot information.
+   */
+
   async getDoctorAndSlot(
     req: Request,
     res: Response,
@@ -147,6 +238,17 @@ export class PatientController implements IPatientController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a GET request to retrieve related doctors.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing related doctors.
+   */
+
   async getRelatedDoctor(
     req: Request,
     res: Response,
@@ -164,6 +266,17 @@ export class PatientController implements IPatientController {
       next(error as Error);
     }
   }
+
+  /**
+   * @remarks
+   * Handles a POST request to change the patient's password.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns A success message.
+   */
+
   async changePassword(
     req: Request,
     res: Response,
@@ -183,6 +296,18 @@ export class PatientController implements IPatientController {
       next(error as Error);
     }
   }
+ 
+
+
+  /**
+   * @remarks
+   * Handles a GET request to retrieve all appointments for a patient.
+   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
+   * @returns JSON response containing all appointments for the patient.
+   */
 
   async getAllAppoinments(
     req: Request,

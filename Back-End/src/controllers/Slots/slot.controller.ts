@@ -10,9 +10,9 @@ export class SlotController implements ISlotController {
    * @remakrs
    * This method handles POST Request to add a doctor's available time slot.
    *
-   * @param req
-   * @param res
-   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   *@param next - Express next function.
    * @returns A json response with created time slot
    */
 
@@ -36,9 +36,9 @@ export class SlotController implements ISlotController {
    * @remakrs
    * This method handles GET doctor's can see the available slot
    *
-   * @param req
-   * @param res
-   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   *@param next - Express next function.
    * @returns A json response with array of slots time slot
    */
 
@@ -61,9 +61,9 @@ export class SlotController implements ISlotController {
    * @remakrs
    * This method handles DELETE doctor's can delete their slots
    *
-   * @param req
-   * @param res
-   *
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Express next function.
    * @returns return a success message
    */
 
