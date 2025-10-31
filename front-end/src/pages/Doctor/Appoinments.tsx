@@ -128,6 +128,7 @@ export default function AppointmentsListDoctor() {
       console.log("prescription data", prescriptionData);
       const res = await createPrescription(prescriptionData).unwrap();
       console.log("response from back end", res);
+      toast.success(res.msg);
     } catch (error) {
       console.log(error);
     }
@@ -139,6 +140,7 @@ export default function AppointmentsListDoctor() {
     try {
       const res = await changeAppoinmentStatus(appoinmentId).unwrap();
       console.log(res);
+      refetch();
     } catch (error: any) {
       toast.error(error?.data?.msg);
     }
@@ -302,7 +304,7 @@ export default function AppointmentsListDoctor() {
                         ) : (
                           <h1 style={{ color: "red" }}>cancelled</h1>
                         )}
-                        {appointment?.status !== "cancelled" ? (
+                        {appointment?.status !== "cancelled" && appointment?.status !== 'pending' ? (
                           <div>
                             <Button
                               size="sm"

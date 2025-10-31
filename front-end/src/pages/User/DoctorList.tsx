@@ -251,16 +251,6 @@ export default function DoctorList() {
                               experience
                             </span>
                           </div>
-
-                          <div className="flex items-center gap-3 text-sm">
-                            <Users className="w-5 h-5 text-blue-600 shrink-0" />
-                            <span className="text-gray-700">
-                              <span className="font-semibold text-gray-900">
-                                {doctor?.reviews || 0}+
-                              </span>{" "}
-                              patients treated
-                            </span>
-                          </div>
                         </div>
 
                         <Separator />

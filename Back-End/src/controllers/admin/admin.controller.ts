@@ -1,4 +1,4 @@
-import IAdminController from '../../interface/admin/IAdminController';
+ import IAdminController from '../../interface/admin/IAdminController';
 import { NextFunction, Request, Response } from 'express';
 import { HttpStatus } from '../../utils/httpStatus';
 import { IAdminService } from '../../interface/admin/IAdminService';

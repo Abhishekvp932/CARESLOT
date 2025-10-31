@@ -125,6 +125,6 @@ export class DoctorAuthRepository
     return await Doctor.find(filter);
   }
   async findTopDoctors(): Promise<IDoctor[]> {
-    return await Doctor.find().sort({avgRating:-1}).limit(5);
+    return await Doctor.find({isApproved:true}).sort({avgRating:-1}).limit(5);
   }
 }

@@ -10,18 +10,21 @@ import { multiFileUpload } from '../middleware/multer.middleware';
 import { AppoinmentRepository } from '../repositories/appoinment/appoinment.repository';
 import { SlotRepository } from '../repositories/Slots/slot.repository';
 import { Routers } from '../utils/Routers';
+import { RatingRepository } from '../repositories/ratings/rating.repository';
 const patientRepository = new PatientRepository();
 
 const adminRepository = new AdminRepository();
 const doctorAuthRepository = new DoctorAuthRepository();
 const appoinmentRepository = new AppoinmentRepository();
 const slotRepository = new SlotRepository();
+const ratingRepository = new RatingRepository();
 const adminService = new AdminService(
   patientRepository,
   adminRepository,
   doctorAuthRepository,
   appoinmentRepository,
-  slotRepository
+  slotRepository,
+  ratingRepository,
 );
 const adminController = new AdminController(adminService);
 const authMiddleware = new AuthMiddleware(

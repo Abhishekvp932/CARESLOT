@@ -60,30 +60,35 @@ const UsersList = () => {
 
   const [addUser] = useAddUserMutation();
 
-  const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
-    try {
-      const res = await blockUser({ userId, isBlocked: !isBlocked }).unwrap();
-      
-      toast.success(res.msg);
-      setUsers((prevUsers) => {
-  if (Array.isArray(prevUsers)) {
-    // return the updated array properly
-    return prevUsers.map((user) =>
-      user._id === userId ? { ...user, isBlocked: !isBlocked } : user
-    );
-  }
-  // if somehow not array, return same state
-  return prevUsers;
-});
+const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
+ 
+  setUsers((prevUsers) =>
+    Array.isArray(prevUsers)
+      ? prevUsers.map((user) =>
+          user._id === userId ? { ...user, isBlocked: !isBlocked } : user
+        )
+      : prevUsers
+  );
 
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
-      } else {
-        toast.error("OTP verification error");
-      }
+  try {
+    const res = await blockUser({ userId, isBlocked: !isBlocked }).unwrap();
+    toast.success(res.msg);
+  } catch (error: any) {
+    setUsers((prevUsers) =>
+      Array.isArray(prevUsers)
+        ? prevUsers.map((user) =>
+            user._id === userId ? { ...user, isBlocked } : user
+          )
+        : prevUsers
+    );
+
+    if (error?.data?.msg) {
+      toast.error(error.data.msg);
+    } else {
+      toast.error("Something went wrong");
     }
-  };
+  }
+};
 
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

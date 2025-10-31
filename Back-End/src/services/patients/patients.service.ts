@@ -214,6 +214,8 @@ export class PatientService implements IPatientService {
       avgRating: doctor?.avgRating,
     }));
 
+
+
     return { doctors, total };
   }
 

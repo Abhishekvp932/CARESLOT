@@ -23,13 +23,16 @@ import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
 import { ISlotRepository } from '../../interface/Slots/ISlotRepository';
 import { ISlotDto } from '../../types/ISlotDTO';
 import { AppointmentStatusData, BookingTrendData, DashboardData } from '../../types/IAdminDashboardDataLookup';
+import { IRatingRepository } from '../../interface/ratings/IRatingRepository';
+import { IRatingDTO } from '../../types/ratingPatientDTO';
 export class AdminService implements IAdminService {
   constructor(
     private _patientRepository: IpatientRepository,
     private _adminRepository: IAdminRepository,
     private _doctorAuthRepository: IDoctorAuthRepository,
     private _appoinmentRepository: IAppoinmentRepository,
-    private _slotRepository: ISlotRepository
+    private _slotRepository: ISlotRepository,
+    private  _ratingRepository:IRatingRepository,
   ) {}
 
   async findAllUsers(
@@ -148,9 +151,6 @@ export class AdminService implements IAdminService {
         if (!accessToken || !refreshToken) continue;
 
         const decode = verifyAccessToken(accessToken);
-
-        // const updateUserID= updatedUser._id as string;
-
         if (decode?.id === userId) {
           await redisClient.set(`bl_access:${accessToken}`, 'true', {
             EX: 15 * 60,
@@ -545,6 +545,8 @@ The CARESLOT Team`
             : undefined,
         lisence: doctor.qualifications?.lisence ?? undefined,
       },
+      totalRating:doctor?.totalRating,
+      avgRating:doctor?.avgRating,
     };
 
     return doctors;
@@ -658,7 +660,7 @@ The CARESLOT Team`
 
   async getDoctorSlotAndAppoinment(
     doctorId: string
-  ): Promise<{ slots: ISlotDto[]; appoinments: AppointmentPatientDTO[] }> {
+  ): Promise<{ slots: ISlotDto[]; appoinments: AppointmentPatientDTO[],ratings:IRatingDTO[]}> {
     if (!doctorId) {
       throw new Error('Doctor id not found');
     }
@@ -706,8 +708,22 @@ The CARESLOT Team`
     }));
 
     logger.debug(slots);
-    return { slots: slots, appoinments: appoinments };
+ 
+  
+    const ratingsList  = await this._ratingRepository.findByDoctorId(doctorId);
+    logger.debug(ratingsList);
+    const ratings:IRatingDTO[] = ratingsList.map((rating)=>({
+      comment:rating?.comment,
+      rating:rating?.rating,
+      createdAt:rating.createdAt,
+      patientId:{
+        name:rating?.patientId?.name,
+      },
+    }));
+    return { slots: slots, appoinments: appoinments,ratings };
   }
+
+
   async getAdminDashboardData(filter:string): Promise<DashboardData> {
 
     const date = new Date();
@@ -743,7 +759,7 @@ The CARESLOT Team`
     const activeDoctorsCount = await this._doctorAuthRepository.countAll({isApproved:true});
     
     const doctors = await this._doctorAuthRepository.findTopDoctors();
-
+    logger.debug('top doctors',doctors);
      const topDoctors:DoctorDTO[] = doctors.map((doctor)=> ({
        _id:String(doctor?._id),
       name:doctor?.name || '',

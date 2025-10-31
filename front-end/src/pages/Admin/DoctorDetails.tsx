@@ -21,9 +21,7 @@ import {
   ArrowLeft,
   Calendar,
   Clock,
-
   Mail,
-
   Phone,
   Star,
   Users,
@@ -32,7 +30,6 @@ import {
   Stethoscope,
   UserCheck,
   UserX,
-
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -41,16 +38,18 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-
 } from "@/components/ui/dropdown-menu";
 
 export default function DoctorDetailsPage() {
   const { doctorId } = useParams<{ doctorId: string }>();
   const { data: doctor } = useGetEditDoctorDataQuery(doctorId);
-  const { data = [] } = useGetAllDoctorSlotsAndAppoinmentsQuery(doctorId);
+  const { data = [] } = useGetAllDoctorSlotsAndAppoinmentsQuery(
+    doctorId as string
+  );
   console.log(data);
   const appoinments = data?.appoinments || [];
   const slots = data?.slots || [];
+  const ratings = data?.ratings || [];
   return (
     <div className="min-h-screen bg-gray-50/50">
       {/* Header */}
@@ -110,8 +109,9 @@ export default function DoctorDetailsPage() {
                   </p>
                   <div className="flex items-center justify-center gap-1 mb-4">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    {/* <span className="font-medium">4.8</span> */}
-                    <span className="text-gray-500">No reviews</span>
+                    <span className="font-medium">{doctor?.avgRating}</span>
+                    <br />
+                    <span className="text-gray-500">({doctor?.totalRating} reviews)</span>
                   </div>
                   {doctor?.isBlocked ? (
                     <Badge
@@ -335,65 +335,64 @@ export default function DoctorDetailsPage() {
                       <TableBody>
                         {Array.isArray(slots) &&
                           slots.map((slotDoc, index) =>
-                            slotDoc?.slotTimes.map((slot, idx) => slot?.breakTime?.map((slots,index)=>(
-                               <TableRow key={`${index}-${idx}`}>
-                                <TableCell className="font-medium">
-                                  {slot?.daysOfWeek}
-                                </TableCell>
-                                <TableCell>
-                                  {slot?.startTime &&
-                                    new Date(slot.startTime).toLocaleTimeString(
-                                      [],
-                                      {
+                            slotDoc?.slotTimes.map((slot, idx) =>
+                              slot?.breakTime?.map((slots, index) => (
+                                <TableRow key={`${index}-${idx}`}>
+                                  <TableCell className="font-medium">
+                                    {slot?.daysOfWeek}
+                                  </TableCell>
+                                  <TableCell>
+                                    {slot?.startTime &&
+                                      new Date(
+                                        slot.startTime
+                                      ).toLocaleTimeString([], {
                                         hour: "numeric",
                                         minute: "2-digit",
                                         hour12: true,
-                                      }
-                                    )}{" "} 
-                                  to{" "}
-                                  {slot?.endTime &&
-                                    new Date(slot.endTime).toLocaleTimeString(
-                                      [],
-                                      {
+                                      })}{" "}
+                                    to{" "}
+                                    {slot?.endTime &&
+                                      new Date(slot.endTime).toLocaleTimeString(
+                                        [],
+                                        {
+                                          hour: "numeric",
+                                          minute: "2-digit",
+                                          hour12: true,
+                                        }
+                                      )}
+                                  </TableCell>
+                                  <TableCell>
+                                    {slots?.startTime &&
+                                      new Date(
+                                        slots.startTime
+                                      ).toLocaleTimeString([], {
                                         hour: "numeric",
                                         minute: "2-digit",
                                         hour12: true,
-                                      }
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                  {slots?.startTime &&
-                                    new Date(slots.startTime).toLocaleTimeString(
-                                      [],
-                                      {
+                                      })}{" "}
+                                    to{" "}
+                                    {slots?.endTime &&
+                                      new Date(
+                                        slots?.endTime
+                                      ).toLocaleTimeString([], {
                                         hour: "numeric",
                                         minute: "2-digit",
                                         hour12: true,
-                                      }
-                                    )}{" "} 
-                                  to{" "}
-                                  {slots?.endTime &&
-                                    new Date(slots?.endTime).toLocaleTimeString(
-                                      [],
-                                      {
-                                        hour: "numeric",
-                                        minute: "2-digit",
-                                        hour12: true,
-                                      }
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                  <Badge
-                                    variant="secondary"
-                                    className="bg-green-100 text-green-800"
-                                  >
-                                    {slot?.status
-                                      ? "Available"
-                                      : "Not Available"}
-                                  </Badge>
-                                </TableCell>
-                              </TableRow>
-                            )))
+                                      })}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      variant="secondary"
+                                      className="bg-green-100 text-green-800"
+                                    >
+                                      {slot?.status
+                                        ? "Available"
+                                        : "Not Available"}
+                                    </Badge>
+                                  </TableCell>
+                                </TableRow>
+                              ))
+                            )
                           )}
                       </TableBody>
                     </Table>
@@ -416,50 +415,53 @@ export default function DoctorDetailsPage() {
                           <TableHead>Date & Time</TableHead>
                           <TableHead>Type</TableHead>
                           <TableHead>Status</TableHead>
-                          <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {Array.isArray(appoinments) && appoinments?.map((app)=>(
-                          <TableRow>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{app?.patientId?.name}</p>
-                              <p className="text-sm text-gray-500">
-                                {app?.patientId?.email}
-                              </p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{app?.slot?.date &&
-                          new Date(app?.slot?.date).toLocaleDateString([], {
-                            month: "long",
-                            day: "numeric",
-                          })}</p>
-                              <p className="text-sm text-gray-500">{app?.slot?.startTime &&
-                        new Date(
-                          `1970-01-01T${app?.slot?.startTime}:00`
-                        ).toLocaleTimeString([], {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}</p>
-                            </div>
-                          </TableCell>
-                          <TableCell>Consultation</TableCell>
-                          <TableCell>
-                            <Badge className="bg-green-100 text-green-800">
-                             {app?.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="sm">
-                              View
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                        ))}
+                        {Array.isArray(appoinments) &&
+                          appoinments?.map((app) => (
+                            <TableRow>
+                              <TableCell>
+                                <div>
+                                  <p className="font-medium">
+                                    {app?.patientId?.name}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    {app?.patientId?.email}
+                                  </p>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div>
+                                  <p className="font-medium">
+                                    {app?.slot?.date &&
+                                      new Date(
+                                        app?.slot?.date
+                                      ).toLocaleDateString([], {
+                                        month: "long",
+                                        day: "numeric",
+                                      })}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    {app?.slot?.startTime &&
+                                      new Date(
+                                        `1970-01-01T${app?.slot?.startTime}:00`
+                                      ).toLocaleTimeString([], {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      })}
+                                  </p>
+                                </div>
+                              </TableCell>
+                              <TableCell>Consultation</TableCell>
+                              <TableCell>
+                                <Badge className="bg-green-100 text-green-800">
+                                  {app?.status}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </CardContent>
@@ -467,70 +469,54 @@ export default function DoctorDetailsPage() {
               </TabsContent>
 
               {/* Reviews Tab */}
-              {/* <TabsContent value="reviews" className="space-y-6">
+              <TabsContent value="reviews" className="space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Patient Reviews</CardTitle>
-                    <CardDescription>Recent feedback from patients</CardDescription>
+                    {/* <CardDescription>Recent feedback from patients</CardDescription> */}
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-4">
-                      <div className="border rounded-lg p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <p className="font-medium">Sarah Wilson</p>
-                            <div className="flex items-center gap-1">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star key={star} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              ))}
+                      {Array.isArray(ratings) &&
+                        ratings?.map((rating) => (
+                          <div className="border rounded-lg p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <p className="font-medium">
+                                  {rating?.patientId?.name}
+                                </p>
+                                <div className="flex items-center gap-1">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star
+                                      key={star}
+                                      className={`h-4 w-4 ${
+                                        star <= rating?.rating
+                                          ? "fill-yellow-400 text-yellow-400"
+                                          : "text-gray-300"
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                              <p className="text-sm text-gray-500">
+                                  {new Date(
+                                    rating?.createdAt
+                                  ).toLocaleDateString("en-GB", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  })}
+                              </p>
                             </div>
+                            <p className="text-gray-700">
+                             {rating?.comment}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-500">2 days ago</p>
-                        </div>
-                        <p className="text-gray-700">
-                          "Dr. Johnson is an excellent cardiologist. She took the time to explain my condition
-                          thoroughly and made me feel comfortable throughout the entire process. Highly recommended!"
-                        </p>
-                      </div>
-                      <div className="border rounded-lg p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <p className="font-medium">Robert Chen</p>
-                            <div className="flex items-center gap-1">
-                              {[1, 2, 3, 4].map((star) => (
-                                <Star key={star} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              ))}
-                              <Star className="h-4 w-4 text-gray-300" />
-                            </div>
-                          </div>
-                          <p className="text-sm text-gray-500">1 week ago</p>
-                        </div>
-                        <p className="text-gray-700">
-                          "Very professional and knowledgeable. The appointment was on time and Dr. Johnson answered all
-                          my questions patiently."
-                        </p>
-                      </div>
-                      <div className="border rounded-lg p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <p className="font-medium">Lisa Martinez</p>
-                            <div className="flex items-center gap-1">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star key={star} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-sm text-gray-500">2 weeks ago</p>
-                        </div>
-                        <p className="text-gray-700">
-                          "Outstanding care! Dr. Johnson's expertise and compassionate approach made a difficult
-                          diagnosis much easier to handle. Thank you!"
-                        </p>
-                      </div>
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
-              </TabsContent> */}
+              </TabsContent>
             </Tabs>
           </div>
         </div>

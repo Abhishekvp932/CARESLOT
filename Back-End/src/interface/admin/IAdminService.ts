@@ -7,6 +7,7 @@ import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
 import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
 import { ISlotDto } from '../../types/ISlotDTO';
 import { DashboardData } from '../../types/IAdminDashboardDataLookup';
+import { IRatingDTO } from '../../types/ratingPatientDTO';
 export interface IAdminService {
   findAllUsers(page:number,limit:number,search:string): Promise<UserListResult>;
   findAllDoctors(page:number,limit:number,search:string): Promise<DoctorListResult>;
@@ -42,7 +43,7 @@ addDoctor(data:unknown):Promise<{msg:string}>
 
 getAllAppoinments(status:string):Promise<AppoinmentPopulatedDTO[]>
 
-getDoctorSlotAndAppoinment(doctorId:string):Promise<{slots:ISlotDto[],appoinments:AppointmentPatientDTO[]}>
+getDoctorSlotAndAppoinment(doctorId:string):Promise<{slots:ISlotDto[],appoinments:AppointmentPatientDTO[],ratings:IRatingDTO[]}>
 getAdminDashboardData(filter:string):Promise<DashboardData>;
 
 }

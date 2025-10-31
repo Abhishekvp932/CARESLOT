@@ -10,6 +10,7 @@ import { DashboardData } from '../../types/IAdminDashboardDataLookup';
 import { DoctorDashboardData } from '../../types/IDoctorDashboardDto';
 
 export class AppoinmentRepository implements IAppoinmentRepository {
+
   async create(data: Partial<IAppoinment>): Promise<IAppoinment | null> {
     const newAppoinment = new Appoinment(data);
     return await newAppoinment.save();

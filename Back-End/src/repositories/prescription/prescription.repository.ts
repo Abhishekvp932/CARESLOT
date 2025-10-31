@@ -64,5 +64,11 @@ export class PrescriptionRepository extends BaseRepository<IPrescription> implem
   ]);
 
   return result[0]; 
-    }
+    };
+   async findByAppoinmentIdAndUpdate(appoinmentId: string, update: mongoose.UpdateQuery<IPrescription>): Promise<IPrescription | null> {
+     return await Prescription.findOneAndUpdate({appoinmentId},update,{new:true});
+   }
+   async findOneAppoinmentId(appoinmentId: string): Promise<IPrescription | null> {
+     return await Prescription.findOne({appoinmentId:appoinmentId});
+   }
 }

@@ -26,7 +26,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
 
-  // Initialize socket listeners
+
   useEffect(() => {
     console.log("Joining room with userId:", userId, "appointmentId:", appointmentId);
     socket.emit("join-room", { appointmentId, userId });
@@ -126,7 +126,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     };
   }, [appointmentId, userId, onCallEnd]);
 
-  // Ensure remote stream is attached when video ref or stream changes
+
   useEffect(() => {
     if (remoteStreamRef.current && remoteVideoRef.current && callStatus === 'active') {
       console.log("🔄 Syncing remote stream to video element");
@@ -134,7 +134,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     }
   }, [callStatus]);
 
-  // Ensure local stream is always attached when status changes
+
   useEffect(() => {
     if (localStreamRef.current && localVideoRef.current && (callStatus === 'calling' || callStatus === 'active')) {
       console.log("🔄 Syncing local stream to video element");
@@ -162,7 +162,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
     pcRef.current = pc;
 
-    // Get local media
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { width: 1280, height: 720 }, 
@@ -170,11 +169,11 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       });
       localStreamRef.current = stream;
       
-      // Attach to local video immediately
+      
       if (localVideoRef.current) {
         console.log("📹 Attaching local stream to video element");
         localVideoRef.current.srcObject = stream;
-        // Force play
+     
         localVideoRef.current.play().catch(err => console.log("Local video play error:", err));
       }
       
@@ -188,7 +187,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       return null;
     }
 
-    // Handle remote stream
+  
     pc.ontrack = (event) => {
       console.log("🎥 Received remote track:", event.track.kind);
       const stream = event.streams[0];
@@ -206,7 +205,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       }
     };
 
-    // Handle ICE candidates
+  
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         const targetId = targetSocketId || remoteSocketId;
@@ -223,7 +222,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       }
     };
 
-    // Connection state logging
+ 
     pc.onconnectionstatechange = () => {
       console.log("Connection state:", pc.connectionState);
     };
@@ -349,7 +348,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     }
   };
 
-  // Render different UI based on call status
+  
   if (callStatus === 'idle') {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -371,7 +370,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-12 rounded-2xl shadow-lg text-center max-w-md">
-          {/* Local video preview while calling */}
+         
           {localStreamRef.current && (
             <div className="mb-6 relative">
               <video
