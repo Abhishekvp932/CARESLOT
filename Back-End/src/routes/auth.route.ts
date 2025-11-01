@@ -13,6 +13,7 @@ import { AuthMiddleware } from '../middleware/auth.middleware';
 import { Routers } from '../utils/Routers';
 import { IBaseUser } from '../utils/IBaseUser';
 import dotenv from 'dotenv';
+import logger from '../utils/logger';
 dotenv.config();
 const patientRepository = new PatientRepository();
 const doctorRepository = new DoctorAuthRepository();
@@ -58,7 +59,8 @@ router.get(
   passport.authenticate('google', { session: false }),
   async (req, res) => {
     const user = req.user as IBaseUser;
-
+    logger.info('google auth user info');
+    logger.debug(user);
     if (!user) {
       return res.redirect('http://localhost:2025/login');
     }
@@ -68,7 +70,8 @@ router.get(
       email: user.email,
       role: user.role,
     };
-
+    logger.info('payload of google auth user');
+    logger.debug(payload);
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
     const sessionId = uuidv4();
@@ -84,7 +87,7 @@ router.get(
       sameSite: 'lax',
       maxAge: Number(process.env.REDIS_SESSION_MAX_AGE),
     });
-
+    logger.info('last step is completed');
     return res.redirect('http://localhost:2025/');
   }
 );

@@ -27,7 +27,7 @@ import { ICallLogRepository } from '../../interface/callLogs/ICallLogRepository'
 import { ICallLog } from '../../models/interface/ICallLog';
 import { INotificationDto } from '../../types/INotificationDTO';
 dotenv.config();
-
+const mailService = new MailService();
 export class PaymentService implements IPaymentService {
   constructor(
     private _paymentRepository: IPaymentRepository,
@@ -175,8 +175,12 @@ export class PaymentService implements IPaymentService {
           updatedAt: new Date(),
         };
         await this._chatRepository.create(newChat);
-      }else{
-        await this._chatRepository.findByPatientIdAndUpdate(patientId,doctorId,{isActive:true});
+      } else {
+        await this._chatRepository.findByPatientIdAndUpdate(
+          patientId,
+          doctorId,
+          { isActive: true }
+        );
       }
 
       const doctorWallet = await this._walletRepository.findByUserId(
@@ -238,46 +242,23 @@ export class PaymentService implements IPaymentService {
       });
       io.to(doctorId).emit('notification', doctorNotif);
 
- 
       (async () => {
-        const mailService = new MailService();
         try {
-          mailService.sendMail(
+          await mailService.sendPatientAppoinmentEmail(
             patient?.email,
-            'Appointment Confirmation - CareSlot',
-            `Hello ${patient?.name},
-                             Your appointment has been successfully booked.
-         
-                             Doctor : Dr.${doctor?.name},
-                             Date:${date},
-                             Time:${startTime} - ${endTime},
-                             status : Pending Confirmation,
-         
-                             Thank you for choosing CareSlot.  
-                              We look forward to seeing you.  
-         
-                              Best regards,  
-                              CareSlot Team
-                             
-                             `
+            patient?.name,
+            date,
+            startTime,
+            endTime,
+            doctor?.name
           );
-
-          mailService.sendMail(
+          await mailService.sendDoctorAppoinmentEmail(
             doctor?.email,
-            'New Appointment Booked - CareSlot',
-            `Hello ${doctor?.name},
-                             A new appointment has been booked.
-         
-                             Patient : ${patient?.name},
-                             Date:${date},
-                             Time:${startTime} - ${endTime},
-                             status : Pending Confirmation,
-                            Please review and confirm the appointment in your dashboard.
-         
-                              Best regards,  
-                              CareSlot Team
-                             
-                             `
+            doctor?.name,
+            patient?.name,
+            date,
+            startTime,
+            endTime
           );
         } catch (error: unknown) {
           if (error instanceof Error) {
@@ -405,8 +386,10 @@ export class PaymentService implements IPaymentService {
       };
 
       await this._chatRepository.create(newChat);
-    }else {
-      await this._chatRepository.findByPatientIdAndUpdate(patientId,doctorId,{isActive:true});
+    } else {
+      await this._chatRepository.findByPatientIdAndUpdate(patientId, doctorId, {
+        isActive: true,
+      });
     }
 
     const doctorWallet = await this._walletRepository.findByUserId(
@@ -450,44 +433,22 @@ export class PaymentService implements IPaymentService {
     }
 
     (async () => {
-      const mailService = new MailService();
       try {
-        mailService.sendMail(
+        await mailService.sendPatientAppoinmentEmail(
           patient?.email,
-          'Appointment Confirmation - CareSlot',
-          `Hello ${patient?.name},
-                             Your appointment has been successfully booked.
-         
-                             Doctor : Dr.${doctor?.name},
-                             Date:${date},
-                             Time:${startTime} - ${endTime},
-                             status : Pending Confirmation,
-         
-                             Thank you for choosing CareSlot.  
-                              We look forward to seeing you.  
-         
-                              Best regards,  
-                              CareSlot Team
-                             
-                             `
+          patient?.name,
+          date,
+          startTime,
+          endTime,
+          doctor?.name
         );
-
-        mailService.sendMail(
+        await mailService.sendDoctorAppoinmentEmail(
           doctor?.email,
-          'New Appointment Booked - CareSlot',
-          `Hello ${doctor?.name},
-                             A new appointment has been booked.
-         
-                             Patient : Dr.${patient?.name},
-                             Date:${date},
-                             Time:${startTime} - ${endTime},
-                             status : Pending Confirmation,
-                            Please review and confirm the appointment in your dashboard.
-         
-                              Best regards,  
-                              CareSlot Team
-                             
-                             `
+          doctor?.name,
+          patient?.name,
+          date,
+          startTime,
+          endTime
         );
       } catch (error: unknown) {
         if (error instanceof Error) {

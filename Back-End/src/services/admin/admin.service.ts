@@ -13,7 +13,6 @@ import { UserDTO } from '../../types/user.dto';
 import { DoctorDTO } from '../../types/doctor.dto';
 import { FilterQuery } from 'mongoose';
 import { doctorDetails } from '../../types/doctorDetails';
-import logger from '../../utils/logger';
 import { MailService } from '../mail.service';
 import redisClient from '../../config/redisClient';
 import { verifyAccessToken } from '../../utils/jwt';
@@ -22,9 +21,15 @@ import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
 import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
 import { ISlotRepository } from '../../interface/Slots/ISlotRepository';
 import { ISlotDto } from '../../types/ISlotDTO';
-import { AppointmentStatusData, BookingTrendData, DashboardData } from '../../types/IAdminDashboardDataLookup';
+import {
+  AppointmentStatusData,
+  BookingTrendData,
+  DashboardData,
+} from '../../types/IAdminDashboardDataLookup';
 import { IRatingRepository } from '../../interface/ratings/IRatingRepository';
 import { IRatingDTO } from '../../types/ratingPatientDTO';
+import { FilteredDate } from '../../utils/FilteringWithDate';
+const mailService = new MailService();
 export class AdminService implements IAdminService {
   constructor(
     private _patientRepository: IpatientRepository,
@@ -32,7 +37,7 @@ export class AdminService implements IAdminService {
     private _doctorAuthRepository: IDoctorAuthRepository,
     private _appoinmentRepository: IAppoinmentRepository,
     private _slotRepository: ISlotRepository,
-    private  _ratingRepository:IRatingRepository,
+    private _ratingRepository: IRatingRepository
   ) {}
 
   async findAllUsers(
@@ -55,7 +60,6 @@ export class AdminService implements IAdminService {
       this._patientRepository.findAllWithPagination(skip, limit, searchFilter),
       this._patientRepository.countAll(searchFilter),
     ]);
-    logger.info('search filter result', searchFilter);
     if (!userList) {
       throw new Error('No user found');
     }
@@ -192,26 +196,13 @@ export class AdminService implements IAdminService {
 
     async () => {
       try {
-        const mailService = new MailService();
         const iter = await redisClient.keys('refresh:*');
         if (isBlocked) {
-          await mailService.sendMail(
+          await mailService.sendBlockDoctorMail(
             doctor?.email,
-            'Account Suspension Notification',
-            `Dear Dr.${doctor?.name},
-
-     We regret to inform you that your account on Our Platform has been temporarily blocked by the administrator.
-
-    Reason for suspension: ${reason}
-
-    If you believe this was a mistake or would like to appeal this decision, please contact our support team at careslot@gmail.com.
-
-    We appreciate your understanding and cooperation.
-
-   Best regards,
-    The CARESLOT Team`
+            doctor?.name,
+            reason
           );
-
           for await (const refreshKey of iter) {
             const key = refreshKey.toString();
 
@@ -242,27 +233,12 @@ export class AdminService implements IAdminService {
             $unset: { blockReason: '' },
             $set: { isBlocked: false },
           });
-          await mailService.sendMail(
-            doctor?.email,
-            'Account Reinstatement Notification',
-            `Dear Dr.${doctor?.name},
-
-    We are pleased to inform you that your account on Our Platform has been reinstated and you can now access all services as usual.
-
-    We appreciate your patience and cooperation during the review process.
-
-    If you have any questions or require further assistance, please reach out to our support team at careslot@gmail.com.
-
-   Best regards,
-   The CARESLOT Team`
-          );
+          await mailService.sendDoctorUnBlockEmail(doctor?.email, doctor.name);
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
-          logger.error(error.message);
           throw new Error(error.message);
         } else {
-          logger.error('Unknown error', error);
           throw new Error('Something went wrong');
         }
       }
@@ -357,29 +333,11 @@ export class AdminService implements IAdminService {
 
     async () => {
       try {
-        const mailService = new MailService();
-        await mailService.sendMail(
-          doctors?.email,
-          'Applicarion Approved - CARESLOT',
-          `Dear Dr.${doctors?.name},
-
-We are delighted to inform you that your application to join CARESLOT has been approved!
-
-You can now start managing your appointments and connecting with patients through our platform.
-
-If you have any questions or need assistance getting started, feel free to reach out to our support team at careslot@gmail.com.
-
-Welcome aboard, and we look forward to supporting you on this journey!
-
-Best regards,  
-The CARESLOT Team`
-        );
+        await mailService.sendDoctorApproveEmail(doctors?.email, doctors?.name);
       } catch (error: unknown) {
         if (error instanceof Error) {
-          logger.error(error.message);
           throw new Error(error.message);
         } else {
-          logger.error('Unknown error', error);
           throw new Error('Something went wrong');
         }
       }
@@ -405,30 +363,15 @@ The CARESLOT Team`
 
     async () => {
       try {
-        const mailService = new MailService();
-        await mailService.sendMail(
-          doctor.email,
-          'Application Rejected – CARESLOT',
-          `
-    Dear Dr. ${doctor.name},
-
-    We regret to inform you that your application on CARESLOT has been reviewed and unfortunately did not meet our approval criteria at this time.
-
-    Reason for Rejection: ${reason}
-
-    If you believe this decision was made in error or would like to reapply in the future, please feel free to contact our support team at careslot@gmail.com
-
-    Thank you for your interest in joining our platform.
-    Best regards,
-    The CARESLOT Team
-  `
+        await mailService.sendDoctorRejectionEmail(
+          doctor?.email,
+          doctor?.name,
+          reason
         );
       } catch (error: unknown) {
         if (error instanceof Error) {
-          logger.error(error.message);
           throw new Error(error.message);
         } else {
-          logger.error('Unknown error', error);
           throw new Error('Something went wrong');
         }
       }
@@ -545,8 +488,8 @@ The CARESLOT Team`
             : undefined,
         lisence: doctor.qualifications?.lisence ?? undefined,
       },
-      totalRating:doctor?.totalRating,
-      avgRating:doctor?.avgRating,
+      totalRating: doctor?.totalRating,
+      avgRating: doctor?.avgRating,
     };
 
     return doctors;
@@ -654,13 +597,14 @@ The CARESLOT Team`
       };
     });
 
-    logger.debug(appoinments);
     return appoinments;
   }
 
-  async getDoctorSlotAndAppoinment(
-    doctorId: string
-  ): Promise<{ slots: ISlotDto[]; appoinments: AppointmentPatientDTO[],ratings:IRatingDTO[]}> {
+  async getDoctorSlotAndAppoinment(doctorId: string): Promise<{
+    slots: ISlotDto[];
+    appoinments: AppointmentPatientDTO[];
+    ratings: IRatingDTO[];
+  }> {
     if (!doctorId) {
       throw new Error('Doctor id not found');
     }
@@ -683,8 +627,7 @@ The CARESLOT Team`
         skip,
         limit
       );
-    logger.info('suttu');
-    logger.debug(appoinmentList);
+
     const appoinments: AppointmentPatientDTO[] = appoinmentList.map((app) => ({
       _id: app._id as string,
       doctorId: app.doctorId.toString(),
@@ -707,70 +650,40 @@ The CARESLOT Team`
       updatedAt: app.updatedAt,
     }));
 
-    logger.debug(slots);
- 
-  
-    const ratingsList  = await this._ratingRepository.findByDoctorId(doctorId);
-    logger.debug(ratingsList);
-    const ratings:IRatingDTO[] = ratingsList.map((rating)=>({
-      comment:rating?.comment,
-      rating:rating?.rating,
-      createdAt:rating.createdAt,
-      patientId:{
-        name:rating?.patientId?.name,
+    const ratingsList = await this._ratingRepository.findByDoctorId(doctorId);
+
+    const ratings: IRatingDTO[] = ratingsList.map((rating) => ({
+      comment: rating?.comment,
+      rating: rating?.rating,
+      createdAt: rating.createdAt,
+      patientId: {
+        name: rating?.patientId?.name,
       },
     }));
-    return { slots: slots, appoinments: appoinments,ratings };
+    return { slots: slots, appoinments: appoinments, ratings };
   }
 
+  async getAdminDashboardData(filter: string): Promise<DashboardData> {
+    const filtred = FilteredDate(filter);
+    const dashboardData = await this._appoinmentRepository.adminDashboardData(
+      filtred
+    );
 
-  async getAdminDashboardData(filter:string): Promise<DashboardData> {
-
-    const date = new Date();
-    const firstDayOfMonth = new Date(date.getFullYear(),date.getMonth(),1);
-    const lastDayOfMonth = new Date(date.getFullYear(),date.getMonth() + 1,0);
-
-    const firstDayOfWeek = new Date(date);
-    firstDayOfWeek.setDate(date.getDate()-date.getDay());
-    firstDayOfWeek.setHours(0,0,0,0);
-
-    const lastDayOfWeek = new Date(firstDayOfWeek);
-    lastDayOfWeek.setDate(firstDayOfWeek.getDate()+ 6);
-    lastDayOfWeek.setHours(23, 59, 59, 999);
-
-    const startDay = new Date(date);
-    startDay.setHours(0,0,0,0);
-
-    const endDay = new Date(date);
-    endDay.setHours(23, 59, 59, 999);
-
-  let filterType = {};
-
-  if(filter === 'month'){
-    filterType = {createdAt:{$gte:firstDayOfMonth,$lte:lastDayOfMonth}};
-  }else if(filter === 'day'){
-    filterType = {createdAt:{$gte:startDay,$lte:endDay}};
-  }else if(filter === 'week'){
-    filterType = {createdAt:{$gte:firstDayOfWeek,$lte:lastDayOfWeek}};
-  }
-    
-    const dashboardData = await this._appoinmentRepository.adminDashboardData(filterType);
-    logger.debug(dashboardData);
-    const activeDoctorsCount = await this._doctorAuthRepository.countAll({isApproved:true});
-    
+    const activeDoctorsCount = await this._doctorAuthRepository.countAll({
+      isApproved: true,
+    });
     const doctors = await this._doctorAuthRepository.findTopDoctors();
-    logger.debug('top doctors',doctors);
-     const topDoctors:DoctorDTO[] = doctors.map((doctor)=> ({
-       _id:String(doctor?._id),
-      name:doctor?.name || '',
-      avgRating:doctor?.avgRating || 0,
-     }));
-      
+
+    const topDoctors: DoctorDTO[] = doctors.map((doctor) => ({
+      _id: String(doctor?._id),
+      name: doctor?.name || '',
+      avgRating: doctor?.avgRating || 0,
+    }));
     return {
-    statusSummary: dashboardData.statusSummary as AppointmentStatusData[],
-    monthlyTrend: dashboardData.monthlyTrend as BookingTrendData[],
-    activeDoctorsCount,
-    topDoctors,
-  };
+      statusSummary: dashboardData.statusSummary as AppointmentStatusData[],
+      monthlyTrend: dashboardData.monthlyTrend as BookingTrendData[],
+      activeDoctorsCount,
+      topDoctors,
+    };
   }
 }

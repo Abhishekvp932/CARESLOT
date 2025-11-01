@@ -2,11 +2,60 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Shield, Clock, Users, Heart, Stethoscope, Activity, Award } from "lucide-react";
+
+
 import Header from "@/layout/Header";
 import Footer from "@/layout/Footer";
 import Chatbot from "@/components/common/user/Chatboat";
 
+
+import { useEffect } from 'react'
+import { useDispatch} from 'react-redux'
+import { setCredentials } from '@/features/auth/authSlice'
+import type { AppDispatch } from '@/app/store'
+
+
+import axios from 'axios'
+
 const Index = () => {
+
+
+  const dispatch = useDispatch<AppDispatch>();
+ 
+    
+  
+interface userInfo{
+  token : string,
+  user:{
+    id:string;
+    email:string;
+    role:string;
+  }
+}
+
+  useEffect(()=>{
+    const getUserData = async()=>{
+
+      try {
+        const res = await axios.get<userInfo>('http://localhost:3000/api/auth/me',{
+          withCredentials:true
+        });
+       
+        const  {user} = res.data;
+        console.log('userssss',user)
+        dispatch(setCredentials({
+          user:user,
+          role:user?.role,
+        }))
+      } catch (error) {
+        console.error('error fetching ',error)
+        
+      }
+    }
+    getUserData()
+     },[]);
+    
+
   return (
     <main className="flex flex-col min-h-screen">
       <Header />
@@ -169,3 +218,4 @@ const Index = () => {
 };
 
 export default Index;
+

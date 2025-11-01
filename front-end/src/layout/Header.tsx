@@ -6,6 +6,7 @@ import { logOut } from "@/features/auth/authSlice";
 import { useLogOutMutation } from "@/features/auth/authApi";
 import NotificationComponent from "@/components/common/notifications";
 import LiveNotifications from "@/components/common/LiveNotification";
+
 import {
   Bell,
   Menu,
@@ -17,13 +18,16 @@ import {
 
 const Header = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.auth.user);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notiCount, setCount] = useState<number>(0);
+
+
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const handleNotificationCount = (count: number) => {
     setCount(count);
