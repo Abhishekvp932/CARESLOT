@@ -278,14 +278,14 @@ export class PatientService implements IPatientService {
 
     const endOfWeek = new Date(today);
 
-    // endOfWeek.setDate(today.getDate() + (7 - today.getDay()));
+   
     endOfWeek.setHours(23, 59, 59, 999);
 
     doctorSlots?.forEach((slotDoc: IDoctorSlotDoc) => {
       slotDoc?.slotTimes.forEach((slot: IDoctorSlotTime) => {
         const dayDate = getNextDateOfWeek(slot?.daysOfWeek);
 
-        // if(targetDay < new Date()) return;
+        
 
         if (!dayDate || dayDate < today || dayDate > endOfWeek) return;
 
