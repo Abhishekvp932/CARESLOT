@@ -11,27 +11,53 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import RejectionReasonModal from "@/components/common/admin/rejectionReasonModal";
 
-interface Doctors {
-  _id?: string;
+interface Doctor {
+  _id: string;
   name: string;
   email: string;
   role: string;
-  createdAt: Date;
+  createdAt: string;
   isBlocked: boolean;
   isApproved: boolean;
+}
+
+interface ApiResponse {
+  data: Doctor[];
+  totalPages: number;
+}
+
+interface BlockDoctorPayload {
+  doctorId: string;
+  isBlocked: boolean;
+  reason?: string;
+}
+
+interface BlockDoctorResponse {
+  msg: string;
+}
+
+interface ApiError {
+  data?: {
+    msg?: string;
+  };
+}
+
+interface ColumnRenderItem {
+  _id: string;
+  isBlocked: boolean;
 }
 
 const DoctorsList = () => {
   const [blockDoctor] = useBlockDoctorMutation();
   const navigate = useNavigate();
 
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(true);
-  const [doctors, setDoctors] = useState<Doctors[]>([]);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const limit = 10;
 
   useEffect(() => {
@@ -44,20 +70,15 @@ const DoctorsList = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  const {
-    data = {},
-
-    isFetching,
-  } = useGetAllDoctorsQuery({
+  const { data, isFetching } = useGetAllDoctorsQuery({
     page,
     limit,
     search: debouncedSearch,
-  });
+  }) as { data: ApiResponse | undefined; isFetching: boolean };
 
-  console.log(data);
   useEffect(() => {
     if (data?.data) {
-      setDoctors(data?.data);
+      setDoctors(data.data);
     }
   }, [data]);
 
@@ -68,39 +89,47 @@ const DoctorsList = () => {
   useEffect(() => {
     setIsOpen(false);
   }, []);
+
   const handleDoctorBlockAndUnBlock = async (
     doctorId: string,
     isBlocked: boolean,
-    reason: string
+    reason?: string
   ) => {
-    setDoctors((prevDoctors) =>
-    prevDoctors.map((doctor) =>
-      doctor._id === doctorId ? { ...doctor, isBlocked: !isBlocked } : doctor
-    )
-  );
+    setDoctors((prevDoctors: Doctor[]) =>
+      prevDoctors.map((doctor: Doctor) =>
+        doctor._id === doctorId ? { ...doctor, isBlocked: !isBlocked } : doctor
+      )
+    );
     try {
-      const res = await blockDoctor({
+      const payload: BlockDoctorPayload = {
         doctorId,
         isBlocked: !isBlocked,
-        reason,
-      }).unwrap();
+      };
+      
+      if (reason) {
+        payload.reason = reason;
+      }
+
+      const res = (await blockDoctor(payload).unwrap()) as BlockDoctorResponse;
       toast.success(res.msg);
       setIsOpen(false);
-      setDoctors((prevDoctors) => {
+      setDoctors((prevDoctors: Doctor[]) => {
         if (Array.isArray(prevDoctors)) {
-        
-          return prevDoctors.map((doctor) =>
-            doctor._id === doctorId ? { ...doctor, isBlocked: !isBlocked } : doctor
+          return prevDoctors.map((doctor: Doctor) =>
+            doctor._id === doctorId
+              ? { ...doctor, isBlocked: !isBlocked }
+              : doctor
           );
         }
-        
+
         return prevDoctors;
       });
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
+    } catch (error) {
+      const apiError = error as ApiError;
+      if (apiError?.data?.msg) {
+        toast.error(apiError.data.msg);
       } else {
-        toast.error("OTP verification error");
+        toast.error("An error occurred while updating doctor status");
       }
     }
   };
@@ -110,23 +139,15 @@ const DoctorsList = () => {
   };
 
   const columns = [
-    { label: "Name", accessor: "name" },
-    { label: "Email", accessor: "email" },
-    { label: "role", accessor: "role" },
-    { label: "Join Date", accessor: "createdAt" },
+    { label: "Name", accessor: "name" as const },
+    { label: "Email", accessor: "email" as const },
+    { label: "Role", accessor: "role" as const },
+    { label: "Join Date", accessor: "createdAt" as const },
     {
       label: "Actions",
-      accessor: "actions",
-      render: (item) => (
+      accessor: "actions" as const,
+      render: (item: ColumnRenderItem) => (
         <div className="flex gap-2">
-          {/* <button
-            className="bg-black text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
-            onClick={() => handleEdit(item?._id)}
-          >
-            <Edit size={16} />
-            Edit
-          </button> */}
-
           <button
             onClick={() => {
               if (!item.isBlocked) {
@@ -146,7 +167,7 @@ const DoctorsList = () => {
             open={isOpen}
             title="Blocking Reason"
             onOpenChange={setIsOpen}
-            onSave={(reason) => {
+            onSave={(reason: string) => {
               if (selectedDoctorId) {
                 handleDoctorBlockAndUnBlock(selectedDoctorId, false, reason);
               }
@@ -154,7 +175,7 @@ const DoctorsList = () => {
           />
           <button
             className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
-            onClick={() => handleDoctorDetailsPage(item?._id)}
+            onClick={() => handleDoctorDetailsPage(item._id)}
           >
             <Eye size={16} />
             view
@@ -209,9 +230,7 @@ const DoctorsList = () => {
 
       {isLoading ? (
         <div className="flex justify-center items-center mt-4">
-          {isLoading && (
-            <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
-          )}
+          <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
         </div>
       ) : (
         <div>
@@ -222,7 +241,7 @@ const DoctorsList = () => {
             withPagination={true}
             currentPage={page}
             totalPages={totalPages}
-            onPageChange={(newPage) => setPage(newPage)}
+            onPageChange={(newPage: number) => setPage(newPage)}
           />
 
           {!isLoading && doctors?.length === 0 && (
@@ -232,7 +251,7 @@ const DoctorsList = () => {
           <CommonCardView
             data={doctors}
             title="Doctors"
-            renderItem={(user: any) => (
+            renderItem={(user: Doctor) => (
               <div className="flex justify-between items-start">
                 <div>
                   <p>
@@ -261,7 +280,7 @@ const DoctorsList = () => {
                 </div>
                 <button
                   className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
-                  onClick={() => handleDoctorDetailsPage(user?._id)}
+                  onClick={() => handleDoctorDetailsPage(user._id)}
                 >
                   <Eye size={16} />
                   view

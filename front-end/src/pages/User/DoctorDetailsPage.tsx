@@ -26,19 +26,66 @@ import type { RootState } from "@/app/store";
 import { toast, ToastContainer } from "react-toastify";
 import { useFindDoctorRatingsQuery } from "@/features/users/userApi";
 
+// Type definitions
+interface Patient {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+interface PatientInfo {
+  name: string;
+  _id: string;
+}
+
 interface Ratings {
+  _id?: string;
   doctorId: string;
-  patinetId: { name: string; _id: string };
+  patientId: PatientInfo;
   rating: number;
   comment: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
+interface Slot {
+  _id: string;
+  doctorId: string;
+  date: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+}
+
+interface StarRatingProps {
+  value: string | number;
+}
+
+const StarRating: React.FC<StarRatingProps> = ({ value }) => {
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`w-5 h-5 transition-colors ${
+            star <= Number(value)
+              ? "fill-amber-400 text-amber-400"
+              : "text-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  );
+};
+
 const UserDoctorDetailsPage = () => {
   const { doctorId } = useParams<{ doctorId: string }>();
   const navigate = useNavigate();
-  const patient = useSelector((state: RootState) => state.auth.user);
+  const patient: Patient | null = useSelector(
+    (state: RootState) => state.auth.user
+  );
   const patientId = patient?._id as string;
   const { data: doctor } = useGetDoctorDetailPageQuery(doctorId);
 
@@ -50,7 +97,7 @@ const UserDoctorDetailsPage = () => {
       setRatings(ratings);
     }
   }, [ratings]);
-  console.log("ratings data", rating);
+
   const { data = {} } = useGetRelatedDoctorQuery({
     doctorId,
     specialization: doctor?.qualifications?.specialization,
@@ -64,16 +111,6 @@ const UserDoctorDetailsPage = () => {
     doctorId,
     date: selectedDate || new Date().toISOString().split("T")[0],
   });
-
-  type Slot = {
-    _id: string;
-    doctorId: string;
-    date: string;
-    dayOfWeek: string;
-    startTime: string;
-    endTime: string;
-    status: string;
-  };
 
   const groupSlotsByDate = (slots: Slot[]) => {
     const grouped: { [key: string]: Slot[] } = {};
@@ -102,44 +139,39 @@ const UserDoctorDetailsPage = () => {
   const [addRating] = useAddRatingMutation();
   const handleRatingSubmit = async (rating: number, review: string) => {
     if (review === "") return;
-    console.log("doctor id and patient id", doctorId, patientId);
-    const res = await addRating({
-      doctorId,
-      patientId,
-      rating,
-      review,
-    }).unwrap();
-    toast.success(res.msg);
 
-    setRatings((prev) => [
-      {
-        doctorId: doctorId!,
-        patinetId: { name: patient?.name, _id: patientId },
-        rating: rating,
-        comment: review,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      ...prev, 
-    ]);
+    try {
+      const res = await addRating({
+        doctorId,
+        patientId,
+        rating,
+        review,
+      }).unwrap();
+      toast.success(res.msg);
+
+      setRatings((prev) => [
+        {
+          doctorId: doctorId!,
+          patientId: { name: patient?.name || "", _id: patientId },
+          rating: rating,
+          comment: review,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        ...prev,
+      ]);
+    } catch (error) {
+      toast.error("Failed to submit rating");
+    }
   };
 
-  interface StarRatingProps {
-    value : string | number;
-  }
-  const StarRating:React.FC<StarRatingProps> =  ({ value }) => {
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-5 h-5 transition-colors ${
-              star <= Number(value)? "fill-amber-400 text-amber-400" : "text-gray-300"
-            }`}
-          />
-        ))}
-      </div>
-    );
+  // Helper function to format time
+  const formatTime = (timeString: string) => {
+    return new Date(`1970-01-01T${timeString}:00`).toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
 
   return (
@@ -155,7 +187,7 @@ const UserDoctorDetailsPage = () => {
                 <div className="w-32 h-32 rounded-2xl overflow-hidden bg-gray-100">
                   <img
                     src={doctor?.profile_img || "/placeholder.svg"}
-                    alt={doctor?.name}
+                    alt={doctor?.name || "Doctor"}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -252,10 +284,6 @@ const UserDoctorDetailsPage = () => {
               </div>
 
               <div className="flex items-center gap-3">
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  
-                </Button>
-
                 <div className="flex gap-3 overflow-x-auto pb-2 flex-1">
                   {Object.keys(groupedSlots).map((day) => {
                     const dateObj = new Date(day);
@@ -285,10 +313,6 @@ const UserDoctorDetailsPage = () => {
                     );
                   })}
                 </div>
-
-                <Button variant="ghost" size="icon" className="rounded-full">
-                 
-                </Button>
               </div>
 
               {selectedDate && (
@@ -299,7 +323,7 @@ const UserDoctorDetailsPage = () => {
                       Available Times
                     </span>
                     <span className="text-sm text-gray-500">
-                      ({groupedSlots[selectedDate]?.length})
+                      ({groupedSlots[selectedDate]?.length || 0})
                     </span>
                   </div>
 
@@ -329,22 +353,10 @@ const UserDoctorDetailsPage = () => {
                           {slot.startTime && slot.endTime && (
                             <>
                               <div className="font-medium">
-                                {new Date(
-                                  `1970-01-01T${slot.startTime}:00`
-                                ).toLocaleTimeString([], {
-                                  hour: "numeric",
-                                  minute: "2-digit",
-                                  hour12: true,
-                                })}
+                                {formatTime(slot.startTime)}
                               </div>
                               <div className="text-xs opacity-70">
-                                {new Date(
-                                  `1970-01-01T${slot.endTime}:00`
-                                ).toLocaleTimeString([], {
-                                  hour: "numeric",
-                                  minute: "2-digit",
-                                  hour12: true,
-                                })}
+                                {formatTime(slot.endTime)}
                               </div>
                             </>
                           )}
@@ -363,23 +375,9 @@ const UserDoctorDetailsPage = () => {
                     size="lg"
                   >
                     Book Appointment -{" "}
-                    {selectedSlot?.startTime &&
-                      new Date(
-                        `1970-01-01T${selectedSlot.startTime}:00`
-                      ).toLocaleTimeString([], {
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}{" "}
+                    {selectedSlot?.startTime && formatTime(selectedSlot.startTime)}{" "}
                     to{" "}
-                    {selectedSlot?.endTime &&
-                      new Date(
-                        `1970-01-01T${selectedSlot.endTime}:00`
-                      ).toLocaleTimeString([], {
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
+                    {selectedSlot?.endTime && formatTime(selectedSlot.endTime)}
                   </Button>
                 </div>
               )}
@@ -387,7 +385,7 @@ const UserDoctorDetailsPage = () => {
           </CardContent>
         </Card>
 
-        {/* Ratings & Reviews Card - Only History */}
+        {/* Ratings & Reviews Card */}
         <Card className="border border-gray-200 shadow-sm mb-8 rounded-2xl bg-white">
           <CardContent className="p-8">
             <div className="space-y-6">
@@ -398,9 +396,9 @@ const UserDoctorDetailsPage = () => {
                   </h2>
                 </div>
 
-                {/* Add Rating Modal Component */}
+            
                 <AddRatingModal
-                  doctorId={doctorId}
+                  doctorId={doctorId as string ?? 'unknown'}
                   doctorName={doctor?.name}
                   onSubmit={handleRatingSubmit}
                 />
@@ -411,13 +409,13 @@ const UserDoctorDetailsPage = () => {
                 <div className="flex items-center gap-6">
                   <div className="text-center">
                     <div className="text-5xl font-bold text-gray-900">
-                      {doctor?.avgRating}
+                      {doctor?.avgRating || "0"}
                     </div>
                     <StarRating
-                      value={Math.round(parseFloat(doctor?.avgRating))}
+                      value={Math.round(parseFloat(doctor?.avgRating || "0"))}
                     />
                     <div className="text-sm text-gray-600 mt-1">
-                      Based on {doctor?.totalRating} reviews
+                      Based on {doctor?.totalRating || 0} reviews
                     </div>
                   </div>
                   <div className="flex-1 space-y-2">
@@ -425,10 +423,9 @@ const UserDoctorDetailsPage = () => {
                       const count = rating.filter(
                         (r) => r.rating === star
                       ).length;
+                      const totalRating = doctor?.totalRating || 0;
                       const percentage =
-                        doctor?.totalRating > 0
-                          ? (count / doctor?.totalRating) * 100
-                          : 0;
+                        totalRating > 0 ? (count / totalRating) * 100 : 0;
 
                       return (
                         <div key={star} className="flex items-center gap-3">
@@ -453,8 +450,11 @@ const UserDoctorDetailsPage = () => {
 
               {/* Reviews List */}
               <div className="space-y-4">
-                {rating.map((rating) => (
-                  <Card key={rating.id} className="border border-gray-200">
+                {rating.map((review) => (
+                  <Card
+                    key={review._id || `${review.doctorId}-${review.createdAt}`}
+                    className="border border-gray-200"
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
                         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
@@ -464,13 +464,13 @@ const UserDoctorDetailsPage = () => {
                           <div className="flex items-center justify-between">
                             <div>
                               <h4 className="font-semibold text-gray-900">
-                                {rating?.patientId?.name}
+                                {review?.patientId?.name}
                               </h4>
                               <div className="flex items-center gap-2">
-                                <StarRating value={rating.rating} />
+                                <StarRating value={review.rating} />
                                 <span className="text-sm text-gray-500">
                                   {new Date(
-                                    rating.createdAt
+                                    review.createdAt
                                   ).toLocaleDateString("en-US", {
                                     month: "short",
                                     day: "numeric",
@@ -481,7 +481,7 @@ const UserDoctorDetailsPage = () => {
                             </div>
                           </div>
                           <p className="text-gray-600 leading-relaxed">
-                            {rating.comment}
+                            {review.comment}
                           </p>
                         </div>
                       </div>
@@ -507,7 +507,7 @@ const UserDoctorDetailsPage = () => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {relatedDoctor?.map((doctor) => (
+                {relatedDoctor?.map((doctor: any) => (
                   <Card
                     key={doctor._id}
                     className="border border-gray-200 hover:shadow-md transition-shadow rounded-xl"
@@ -519,7 +519,7 @@ const UserDoctorDetailsPage = () => {
                             doctor?.profile_img ||
                             "/placeholder.svg?height=80&width=80"
                           }
-                          alt={doctor?.name}
+                          alt={doctor?.name || "Doctor"}
                           className="w-full h-full object-cover"
                         />
                       </div>

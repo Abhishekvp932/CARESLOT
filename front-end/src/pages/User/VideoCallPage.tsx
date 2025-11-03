@@ -1,8 +1,7 @@
-import React from "react";
 import { useParams } from "react-router-dom";
 import VideoCall from "@/components/common/VideoCall";
 import { useGetCallDataQuery } from "@/features/callLogs/videoCallApi";
-import { LucideToggleRight } from "lucide-react";
+
 
 export default function UserVideoCall() {
   const { appoinmentId } = useParams();
@@ -13,8 +12,8 @@ export default function UserVideoCall() {
     <div>
       {callData && (
         <VideoCall
-          userId={callData.patientId}           // logged-in user
-           otherUserId={callData.doctorId}       // the person to call
+          userId={callData.patientId}         
+           otherUserId={callData.doctorId}      
           appointmentId={callData.appoinmentId}
         />
       )}

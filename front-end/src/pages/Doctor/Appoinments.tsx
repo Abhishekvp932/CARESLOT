@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Clock,
   User,
@@ -21,16 +21,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DoctorSidebar } from "@/layout/doctor/sideBar";
-import { useGetAllAppoinmentsQuery } from "@/features/docotr/doctorApi";
+import {
+  useGetAllAppoinmentsQuery,
+  useCreatePrescriptionMutation,
+  useChangeAppoinmentStatusMutation,
+} from "@/features/docotr/doctorApi";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 import { useNavigate } from "react-router-dom";
 import { useCancelAppoinmentMutation } from "@/features/users/userApi";
 import { toast, ToastContainer } from "react-toastify";
 import PrescriptionModal from "@/components/common/Doctor/PrescriptionModal";
-import { useCreatePrescriptionMutation } from "@/features/docotr/doctorApi";
-import { useChangeAppoinmentStatusMutation } from "@/features/docotr/doctorApi";
-const getStatusColor = (status: string) => {
+
+// 🩺 Helper to get color by status
+const getStatusColor = (status: string): string => {
   switch (status) {
     case "confirmed":
       return "bg-emerald-100 text-emerald-800 border-emerald-200";
@@ -38,26 +42,59 @@ const getStatusColor = (status: string) => {
       return "bg-yellow-100 text-yellow-800 border-yellow-200";
     case "cancelled":
       return "bg-red-100 text-red-800 border-red-200";
+    case "completed":
+      return "bg-blue-100 text-blue-800 border-blue-200";
     default:
       return "bg-muted text-muted-foreground";
   }
 };
 
-export default function AppointmentsListDoctor() {
+// 🧠 Interfaces
+interface IPatientPopulated {
+  _id: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  profile_img?: string;
+  gender?: string;
+  DOB?: Date;
+}
+
+interface AppointmentPatientDTO {
+  _id: string;
+  doctorId: string;
+  transactionId?: string;
+  amount?: string;
+  status: "pending" | "cancelled" | "completed" | "confirmed";
+  patientId: IPatientPopulated;
+  slot: {
+    date: string;
+    startTime: string;
+    endTime: string;
+  };
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface PrescriptionData {
+  diagnosis: string;
+  medicines: string;
+  advice: string;
+}
+
+const AppointmentsListDoctor: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [open, setOpen] = useState(false);
-
-  const [selectedAppoinment, setSelectedAppoinment] = useState<string | null>(
-    null
-  );
+  const [open, setOpen] = useState<boolean>(false);
+  const [selectedAppoinment, setSelectedAppoinment] = useState<string | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
-
   const [page, setPage] = useState<number>(1);
   const limit = 10;
+
   const navigate = useNavigate();
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
   const doctorId = doctor?._id as string;
 
+  // ✅ Fetch appointments
   const { data, refetch } = useGetAllAppoinmentsQuery({
     doctorId,
     page,
@@ -65,86 +102,89 @@ export default function AppointmentsListDoctor() {
     status: statusFilter,
   });
 
-  // Extract backend data
-  const appointments = data?.data || [];
+  const [cancelAppoinment] = useCancelAppoinmentMutation();
+  const [createPrescription] = useCreatePrescriptionMutation();
+  const [changeAppoinmentStatus] = useChangeAppoinmentStatusMutation();
+
+  // ✅ Extract backend data
+  const appointments: AppointmentPatientDTO[] = data?.data || [];
   const currentPage = Number(data?.currentPage) || 1;
   const totalPages = Number(data?.totalPages) || 1;
   const totalItem = Number(data?.totalItem) || 0;
 
-  const handleStatusFilter = (status: string) => {
+  // ✅ Handle filters
+  const handleStatusFilter = (status: string): void => {
     setStatusFilter(status);
     setPage(1);
   };
 
-  // Pagination controls
-  const goToPage = (p: number) => setPage(p);
-  const goToPreviousPage = () => {
+  // ✅ Pagination controls
+  const goToPage = (p: number): void => setPage(p);
+  const goToPreviousPage = (): void => {
     if (page > 1) setPage(page - 1);
   };
-  const goToNextPage = () => {
+  const goToNextPage = (): void => {
     if (page < totalPages) setPage(page + 1);
   };
 
-  // Refetch data when page or filter changes
+  // ✅ Refetch on page/filter change
   useEffect(() => {
     refetch();
   }, [page, statusFilter, refetch]);
 
-  const handleVideoCall = (appoinmentId: string) => {
-    console.log("appoinment id is comming", appoinmentId);
-    navigate(`/doctor/video-call/${appoinmentId}`);
-  };
+  // ✅ Handlers
+  const handleVideoCall = useCallback(
+    (appoinmentId: string) => {
+      navigate(`/doctor/video-call/${appoinmentId}`);
+    },
+    [navigate]
+  );
 
-  const [cancelAppoinment] = useCancelAppoinmentMutation();
+  const handleCanccelAppoinment = useCallback(
+    async (appoinmentId: string) => {
+      try {
+        const res = await cancelAppoinment(appoinmentId).unwrap();
+        toast.success(res.msg);
+        refetch();
+      } catch (error: any) {
+        toast.error(error?.data?.msg);
+      }
+    },
+    [cancelAppoinment, refetch]
+  );
 
-  const handleCanccelAppoinment = async (appoinmentId: string) => {
-    try {
-      console.log("appoinmntid", appoinmentId);
-      const res = await cancelAppoinment(appoinmentId).unwrap();
-      toast.success(res.msg);
-      refetch();
-    } catch (error: any) {
-      toast.error(error?.data?.msg);
-    }
-  };
+  const handlePrescriptionSave = useCallback(
+    async (data: PrescriptionData) => {
+      try {
+        const prescriptionData = {
+          ...data,
+          appoinmentId: selectedAppoinment,
+          patientId: selectedPatient,
+          doctorId,
+        };
+        const res = await createPrescription(prescriptionData).unwrap();
+        toast.success(res.msg);
+      } catch (error) {
+        console.error(error);
+        toast.error("Error saving prescription");
+      }
+    },
+    [createPrescription, doctorId, selectedAppoinment, selectedPatient]
+  );
 
-  interface PrescriptionData {
-    diagnosis: string;
-    medicines: string;
-    advice: string;
-  }
+  const handleChangeStatus = useCallback(
+    async (appoinmentId: string) => {
+      try {
+        const res = await changeAppoinmentStatus(appoinmentId).unwrap();
+        toast.success(res.msg);
+        refetch();
+      } catch (error: any) {
+        toast.error(error?.data?.msg);
+      }
+    },
+    [changeAppoinmentStatus, refetch]
+  );
 
-  const [createPrescription] = useCreatePrescriptionMutation();
-  const handlePrescriptionSave = async (data: PrescriptionData) => {
-    try {
-      const prescriptionData = {
-        diagnosis: data?.diagnosis,
-        medicines: data?.medicines,
-        advice: data?.advice,
-        appoinmentId: selectedAppoinment,
-        patientId: selectedPatient,
-        doctorId: doctorId,
-      };
-      console.log("prescription data", prescriptionData);
-      const res = await createPrescription(prescriptionData).unwrap();
-      console.log("response from back end", res);
-      toast.success(res.msg);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const [changeAppoinmentStatus] = useChangeAppoinmentStatusMutation();
-
-  const handleChangeStatus = async (appoinmentId: string) => {
-    try {
-      const res = await changeAppoinmentStatus(appoinmentId).unwrap();
-      console.log(res);
-      refetch();
-    } catch (error: any) {
-      toast.error(error?.data?.msg);
-    }
-  };
   return (
     <div className="flex h-screen bg-gray-50">
       <DoctorSidebar />
@@ -155,14 +195,14 @@ export default function AppointmentsListDoctor() {
             {/* Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Appointments
-                </h1>
+                <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
                 <p className="text-sm text-muted-foreground mt-1">
                   {totalItem} appointment{totalItem !== 1 ? "s" : ""} found
                 </p>
               </div>
             </div>
+
+            {/* Filters */}
             <div className="flex flex-wrap gap-4 items-center justify-between">
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2">
@@ -170,20 +210,16 @@ export default function AppointmentsListDoctor() {
                   <span className="text-sm font-medium">Filters:</span>
                 </div>
                 <div className="flex gap-2">
-                  {["all", "completed", "pending", "cancelled"].map(
-                    (status) => (
-                      <Button
-                        key={status}
-                        variant={
-                          statusFilter === status ? "default" : "outline"
-                        }
-                        size="sm"
-                        onClick={() => handleStatusFilter(status)}
-                      >
-                        {status.charAt(0).toUpperCase() + status.slice(1)}
-                      </Button>
-                    )
-                  )}
+                  {["all", "completed", "pending", "cancelled"].map((status) => (
+                    <Button
+                      key={status}
+                      variant={statusFilter === status ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleStatusFilter(status)}
+                    >
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </Button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -203,7 +239,7 @@ export default function AppointmentsListDoctor() {
                             {appointment.patientId?.profile_img ? (
                               <img
                                 src={appointment.patientId.profile_img}
-                                alt={appointment.patientId.name}
+                                alt={appointment.patientId.name || "patient"}
                                 className="w-10 h-10 object-cover rounded-full"
                               />
                             ) : (
@@ -229,40 +265,34 @@ export default function AppointmentsListDoctor() {
                           </DropdownMenuTrigger>
 
                           <DropdownMenuContent align="end">
-                            {/* Pending Appointments */}
-                            {appointment?.status === "pending" && (
+                            {appointment.status === "pending" && (
                               <>
                                 <DropdownMenuItem
                                   onClick={() =>
-                                    handleCanccelAppoinment(appointment?._id)
+                                    handleCanccelAppoinment(appointment._id)
                                   }
                                 >
                                   Cancel Appointment
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() =>
-                                    handleChangeStatus(appointment?._id)
+                                    handleChangeStatus(appointment._id)
                                   }
                                 >
                                   Mark as Completed
                                 </DropdownMenuItem>
                               </>
                             )}
-
-                            {/* Cancelled Appointments */}
-                            {appointment?.status === "cancelled" && (
+                            {appointment.status === "cancelled" && (
                               <DropdownMenuItem disabled>
                                 Cancelled
                               </DropdownMenuItem>
                             )}
-
-                            {/* Completed Appointments */}
-                            {appointment?.status === "completed" && (
+                            {appointment.status === "completed" && (
                               <DropdownMenuItem disabled>
                                 Completed
                               </DropdownMenuItem>
                             )}
-
                             <DropdownMenuItem>Close</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -273,11 +303,9 @@ export default function AppointmentsListDoctor() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 text-sm">
                           <Clock className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">
-                            {appointment.slot?.date}
-                          </span>
+                          <span className="font-medium">{appointment.slot.date}</span>
                           <span className="text-muted-foreground">
-                            ({appointment.slot?.startTime})
+                            ({appointment.slot.startTime})
                           </span>
                         </div>
                         <Badge className={getStatusColor(appointment.status)}>
@@ -287,31 +315,31 @@ export default function AppointmentsListDoctor() {
 
                       <div className="flex items-center space-x-2 text-sm">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">
-                          Consultation
-                        </span>
+                        <span className="text-muted-foreground">Consultation</span>
                       </div>
 
                       <div className="flex space-x-2 pt-2">
-                        {appointment?.status !== "cancelled" ? (
+                        {appointment.status !== "cancelled" ? (
                           <Button
                             size="sm"
                             className="flex-1"
-                            onClick={() => handleVideoCall(appointment?._id)}
+                            onClick={() => handleVideoCall(appointment._id)}
                           >
                             Start Visit
                           </Button>
                         ) : (
-                          <h1 style={{ color: "red" }}>cancelled</h1>
+                          <h1 className="text-red-500">Cancelled</h1>
                         )}
-                        {appointment?.status !== "cancelled" && appointment?.status !== 'pending' ? (
+
+                        {appointment.status !== "cancelled" &&
+                        appointment.status !== "pending" ? (
                           <div>
                             <Button
                               size="sm"
                               className="flex-1"
                               onClick={() => {
-                                setSelectedAppoinment(appointment?._id);
-                                setSelectedPatient(appointment?.patientId?._id);
+                                setSelectedAppoinment(appointment._id);
+                                setSelectedPatient(appointment.patientId._id);
                                 setOpen(true);
                               }}
                             >
@@ -321,12 +349,10 @@ export default function AppointmentsListDoctor() {
                               open={open}
                               onClose={() => setOpen(false)}
                               onSubmit={handlePrescriptionSave}
-                              patientName={appointment?.patientId?.name}
+                              patientName={appointment?.patientId.name ?? "Unknown"}
                             />
                           </div>
-                        ) : (
-                          <h1 style={{ color: "red" }}></h1>
-                        )}
+                        ) : null}
                       </div>
                     </CardContent>
                   </Card>
@@ -337,9 +363,7 @@ export default function AppointmentsListDoctor() {
                 <CardContent>
                   <div className="text-muted-foreground">
                     <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-medium mb-2">
-                      No appointments found
-                    </p>
+                    <p className="text-lg font-medium mb-2">No appointments found</p>
                     <p className="text-sm">
                       {statusFilter === "all"
                         ? "You don't have any appointments yet."
@@ -350,6 +374,7 @@ export default function AppointmentsListDoctor() {
               </Card>
             )}
 
+            {/* Pagination */}
             {totalPages > 1 && (
               <Card className="mt-6">
                 <CardContent className="p-4 flex justify-between items-center">
@@ -368,19 +393,17 @@ export default function AppointmentsListDoctor() {
                       Previous
                     </Button>
 
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (p) => (
-                        <Button
-                          key={p}
-                          variant={page === p ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => goToPage(p)}
-                          className="w-8 h-8"
-                        >
-                          {p}
-                        </Button>
-                      )
-                    )}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                      <Button
+                        key={p}
+                        variant={page === p ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => goToPage(p)}
+                        className="w-8 h-8"
+                      >
+                        {p}
+                      </Button>
+                    ))}
 
                     <Button
                       variant="outline"
@@ -401,4 +424,6 @@ export default function AppointmentsListDoctor() {
       <ToastContainer autoClose={200} />
     </div>
   );
-}
+};
+
+export default AppointmentsListDoctor;

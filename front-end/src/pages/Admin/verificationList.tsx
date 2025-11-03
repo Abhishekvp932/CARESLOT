@@ -1,9 +1,8 @@
 import { CommonCardView } from "@/components/common/commonCardView";
 import { CommonTableView } from "@/components/common/commonTableView";
 import { toast, ToastContainer } from "react-toastify";
-
-import { useDoctorRejectMutation } from "@/features/admin/adminApi";
 import {
+  useDoctorRejectMutation,
   useFindUnApprovedDoctorsQuery,
   useDoctorApproveMutation,
 } from "@/features/admin/adminApi";
@@ -11,14 +10,46 @@ import { Check, X, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RejectionReasonModal from "@/components/common/admin/rejectionReasonModal";
-const VerificationList = () => {
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
+// Doctor interface
+interface Doctor {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: Date | string;
+  isRejected?: boolean;
+}
+
+// API Response interface
+interface DoctorsApiResponse {
+  data?: Doctor[];
+  totalPages?: number;
+}
+
+// Error interface
+interface ApiError {
+  data?: {
+    msg?: string;
+  };
+}
+
+// Column interface for table
+interface TableColumn<T> {
+  label: string;
+  accessor: string;
+  render?: (item: T) => React.ReactNode;
+}
+
+const VerificationList = () => {
+  const [page, setPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // Debounce search term
   useEffect(() => {
     setLoading(true);
     const handler = setTimeout(() => {
@@ -31,70 +62,78 @@ const VerificationList = () => {
 
   const limit = 10;
   const {
-    data = {},
+    data = {} as DoctorsApiResponse,
     refetch,
     isFetching,
   } = useFindUnApprovedDoctorsQuery({ page, limit, search: debouncedSearch });
-  const doctors = data?.data;
+  
+  const doctors = data?.data || [];
   const totalpages = data?.totalPages || 1;
-
   const isLoading = loading || isFetching;
 
   const [doctorApprove] = useDoctorApproveMutation();
   const [doctorReject] = useDoctorRejectMutation();
   const navigate = useNavigate();
 
+  // Initial fetch
   useEffect(() => {
     refetch();
-  }, []);
-  const handleApproveDoctor = async (doctorId: string) => {
+  }, [refetch]);
+
+  // Handle approve doctor
+  const handleApproveDoctor = async (doctorId: string): Promise<void> => {
     try {
       const res = await doctorApprove(doctorId).unwrap();
       toast.success(res.msg);
       refetch();
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
+    } catch (error) {
+      const apiError = error as ApiError;
+      if (apiError?.data?.msg) {
+        toast.error(apiError.data.msg);
       } else {
         toast.error("Doctor approve error");
       }
     }
   };
 
-  const handleReject = async (doctorId: string, reason: string) => {
+  // Handle reject doctor
+  const handleReject = async (doctorId: string, reason: string): Promise<void> => {
     try {
-      console.log("reson", reason);
       const res = await doctorReject({ doctorId, reason }).unwrap();
       toast.success(res?.msg);
       refetch();
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
+    } catch (error) {
+      const apiError = error as ApiError;
+      if (apiError?.data?.msg) {
+        toast.error(apiError.data.msg);
       } else {
         toast.error("Doctor rejection error");
       }
     }
   };
 
-  const handleDetailsPage = (doctorId: string) => {
+  // Navigate to details page
+  const handleDetailsPage = (doctorId: string): void => {
     navigate(`/admin/verification-details/${doctorId}`);
   };
 
-  const columns = [
+  // Table columns configuration
+  const columns: TableColumn<Doctor>[] = [
     { label: "Name", accessor: "name" },
     { label: "Email", accessor: "email" },
-    { label: "role", accessor: "role" },
+    { label: "Role", accessor: "role" },
     { label: "Join Date", accessor: "createdAt" },
     {
       label: "Actions",
       accessor: "actions",
-      render: (item) => (
+      render: (item: Doctor) => (
         <div>
           {!item?.isRejected ? (
             <div className="flex gap-2">
               <button
                 onClick={() => handleApproveDoctor(item._id)}
                 className="bg-green-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+                type="button"
               >
                 <Check size={16} />
                 Approve
@@ -106,15 +145,16 @@ const VerificationList = () => {
                   setSelectedDoctorId(item._id);
                 }}
                 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+                type="button"
               >
                 <X size={16} />
                 Reject
               </button>
             </div>
           ) : (
-            <h1 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1">
+            <span className="bg-red-500 text-white px-3 py-1 rounded flex items-center gap-1 inline-flex">
               Rejected
-            </h1>
+            </span>
           )}
         </div>
       ),
@@ -122,11 +162,12 @@ const VerificationList = () => {
     {
       label: "View",
       accessor: "view",
-      render: (item) => (
+      render: (item: Doctor) => (
         <div className="flex gap-2">
           <button
             className="bg-blue-500 text-white px-1 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
             onClick={() => handleDetailsPage(item._id)}
+            type="button"
           >
             <Eye size={20} />
             View Details
@@ -166,11 +207,10 @@ const VerificationList = () => {
           </svg>
         </div>
       </div>
+
       {isLoading ? (
         <div className="flex justify-center items-center mt-4">
-          {isLoading && (
-            <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
-          )}
+          <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
         </div>
       ) : (
         <div>
@@ -181,7 +221,7 @@ const VerificationList = () => {
             withPagination={true}
             currentPage={page}
             totalPages={totalpages}
-            onPageChange={(newPage) => setPage(newPage)}
+            onPageChange={(newPage: number) => setPage(newPage)}
           />
 
           {!isLoading && doctors?.length === 0 && (
@@ -191,30 +231,31 @@ const VerificationList = () => {
           <CommonCardView
             data={doctors}
             title="Verification-List"
-            renderItem={(user: any) => (
+            renderItem={(doctor: Doctor) => (
               <div className="flex justify-between items-start flex-wrap gap-4">
                 <div>
                   <p>
-                    <strong>Name:</strong> {user?.name}
+                    <strong>Name:</strong> {doctor?.name}
                   </p>
                   <p>
-                    <strong>Email:</strong> {user?.email}
+                    <strong>Email:</strong> {doctor?.email}
                   </p>
                   <p>
-                    <strong>Role:</strong> {user?.role}
+                    <strong>Role:</strong> {doctor?.role}
                   </p>
                   <p>
                     <strong>Join Date:</strong>{" "}
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    {new Date(doctor.createdAt).toLocaleDateString()}
                   </p>
                 </div>
 
-                {!user.isRejected ? (
+                {!doctor.isRejected ? (
                   <div className="flex flex-col gap-2 items-end">
-                    <div>
+                    <div className="flex gap-2">
                       <button
-                        onClick={() => handleApproveDoctor(doctors._id)}
+                        onClick={() => handleApproveDoctor(doctor._id)}
                         className="bg-green-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+                        type="button"
                       >
                         <Check size={16} />
                         Approve
@@ -223,34 +264,26 @@ const VerificationList = () => {
                       <button
                         onClick={() => {
                           setIsOpen(true);
-                          setSelectedDoctorId(doctors._id);
+                          setSelectedDoctorId(doctor._id);
                         }}
                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
+                        type="button"
                       >
                         <X size={16} />
                         Reject
                       </button>
                     </div>
-
-                    <RejectionReasonModal
-                      open={isOpen}
-                      onOpenChange={setIsOpen}
-                      title="Rejection Reason"
-                      onSave={(reason) => {
-                        if (selectedDoctorId) {
-                          handleReject(selectedDoctorId, reason);
-                        }
-                      }}
-                    />
                   </div>
                 ) : (
-                  <h1 className="bg-red-100 text-red-700 font-semibold px-6 py-2 rounded-full shadow-sm border border-red-200 text-sm uppercase tracking-wide text-center inline-block">
+                  <span className="bg-red-100 text-red-700 font-semibold px-6 py-2 rounded-full shadow-sm border border-red-200 text-sm uppercase tracking-wide text-center inline-block">
                     Rejected
-                  </h1>
-               )}
+                  </span>
+                )}
+
                 <button
                   className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
-                  onClick={() => handleDetailsPage(user._id)}
+                  onClick={() => handleDetailsPage(doctor._id)}
+                  type="button"
                 >
                   <Eye size={20} />
                   View
@@ -260,6 +293,18 @@ const VerificationList = () => {
           />
         </div>
       )}
+
+      <RejectionReasonModal
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Rejection Reason"
+        onSave={(reason: string) => {
+          if (selectedDoctorId) {
+            handleReject(selectedDoctorId, reason);
+          }
+        }}
+      />
+
       <ToastContainer autoClose={2000} />
     </div>
   );

@@ -43,7 +43,7 @@ const AddUserModal = ({
       profileImg: null,
       password: "",
       confirmPassword: "",
-      role: "patients", // or set it dynamically
+      role: "patients",
     },
   });
 

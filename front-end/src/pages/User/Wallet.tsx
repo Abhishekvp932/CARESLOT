@@ -70,6 +70,16 @@ export default function UserWallet() {
     }
   };
 
+
+  type Transaction = {
+    _id:string;
+    amount:number;
+    type:string;
+    source:string;
+    paymentMethod:string;
+    createdAt:string;
+  }
+
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto p-6 space-y-8">
@@ -132,7 +142,7 @@ export default function UserWallet() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {walletHistory.map((transaction) => (
+                  {walletHistory.map((transaction: Transaction) => (
                     <div
                       key={transaction?._id}
                       className="flex items-center justify-between p-4 border rounded-lg"

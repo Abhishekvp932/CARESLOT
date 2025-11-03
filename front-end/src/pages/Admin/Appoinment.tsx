@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 
 
 import { useGetAllAdminAppoinmentsQuery } from "@/features/admin/adminApi"
-import { Filter } from "lucide-react"
+
 
 
 export function AppointmentHistory() {
@@ -20,27 +20,6 @@ const {data = {}} = useGetAllAdminAppoinmentsQuery({status:statusFilter});
   console.log(data);
 
   const appointments = data || []
-  // useEffect(()=>{
-  //   const handler = setTimeout(()=>{
-  //     setDebouncedSearch(searchTerm);
-  //   },5000)
-
-  //   return ()=> clearTimeout(handler);
-  // },[searchTerm]);
-
-
-  const handleReschedule = (id: string) => {
-    console.log("Reschedule appointment:", id)
-    // Add reschedule logic here
-  }
-
-  const handleCancel = (id: string) => {
-    console.log("Cancel appointment:", id)
-    // Add cancel logic here
-  }
-
-
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -50,15 +29,7 @@ const {data = {}} = useGetAllAdminAppoinmentsQuery({status:statusFilter});
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
-        {/* <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search appointments, doctors, or specialties..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div> */}
+       
 
         <div className="flex gap-2">
           <Button
@@ -99,8 +70,6 @@ const {data = {}} = useGetAllAdminAppoinmentsQuery({status:statusFilter});
           <AppointmentCard
             key={appointment?.id}
             appointment={appointment}
-            onReschedule={handleReschedule}
-            onCancel={handleCancel}
           />
         ))}
       </div>

@@ -18,7 +18,7 @@ interface PrescriptionModalProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (data:PrescriptionData) => void;
-  patientName: string;
+  patientName: string | null;
 }
 
 const PrescriptionModal: React.FC<PrescriptionModalProps> = ({

@@ -20,6 +20,14 @@ interface AddRatingModalProps {
   onSubmit?: (rating: number, review: string) => void;
 }
 
+interface StarRatingProps {
+  value: number;
+  onRate?: (rating: number) => void;
+  onHover?: (rating: number) => void;
+  interactive?: boolean;
+}
+
+
 const AddRatingModal = ({ doctorId, doctorName, onSubmit }: AddRatingModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [rating, setRating] = useState(0);
@@ -42,7 +50,7 @@ const AddRatingModal = ({ doctorId, doctorName, onSubmit }: AddRatingModalProps)
     setIsOpen(false);
   };
 
-  const StarRating = ({ value, onRate, onHover, interactive = false }) => {
+  const StarRating = ({ value, onRate, onHover, interactive = false }: StarRatingProps) => {
     return (
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (

@@ -22,7 +22,6 @@ import {
   Stethoscope,
 
   TrendingUp,
-  Users,
   CheckCircle2,
 } from "lucide-react";
 import Header from "@/layout/Header";
@@ -77,6 +76,36 @@ export default function DoctorList() {
     }
   };
 
+  
+  interface DoctorDTO {
+    _id?: string;
+    email?: string;
+    isBlocked?: boolean;
+    isApproved?: boolean;
+    name?: string;
+    DOB?: Date;
+    gender?: 'male' | 'female' | 'others';
+    role?: 'doctors';
+    updatedAt?: Date;
+    createdAt?: Date;
+    profile_img?: string;
+    qualifications?: {
+      degree?: string;
+      institution?: string;
+      experince?:number;
+      educationCertificate?: string;
+      experienceCertificate?: string;
+      graduationYear?: number;
+      specialization?: string;
+      medicalSchool?: string;
+      about?: string;
+      fees?: number;
+      lisence?: string;
+    };
+    totalRating?:number;
+    avgRating?:number;
+  }
+  
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50/50 to-white">
       <Header />
@@ -122,7 +151,7 @@ export default function DoctorList() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="All Specialties">All Specializations</SelectItem>
-                    {specializations?.map((sp) => (
+                    {specializations?.map((sp:string) => (
                       <SelectItem key={sp} value={sp}>
                         {sp}
                       </SelectItem>
@@ -174,9 +203,9 @@ export default function DoctorList() {
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {doctors.map((doctor) => (
+                  {doctors.map((doctor:DoctorDTO) => (
                     <Card
-                      key={doctor?.id}
+                      key={doctor?._id}
                       className="group hover:shadow-2xl transition-all duration-300 bg-white border-2 hover:border-blue-200 overflow-hidden"
                     >
                       <CardHeader className="pb-4 bg-gradient-to-br from-blue-50 to-white">
@@ -201,7 +230,7 @@ export default function DoctorList() {
                               Dr. {doctor?.name}
                             </h3>
                             <Badge className="bg-blue-600 hover:bg-blue-700 text-white mt-1">
-                              {doctor?.specialty}
+                              {doctor?.qualifications?.specialization || "General Physician"}
                             </Badge>
                             
                             <div className="flex items-center mt-2 gap-1">
@@ -246,7 +275,7 @@ export default function DoctorList() {
                             <Award className="w-5 h-5 text-blue-600 shrink-0" />
                             <span className="text-gray-700">
                               <span className="font-semibold text-gray-900">
-                                {doctor?.qualifications?.experince || doctor?.qualifications?.experience || 0}+ years
+                                {doctor?.qualifications?.experince || 0}+ years
                               </span>{" "}
                               experience
                             </span>
@@ -261,7 +290,7 @@ export default function DoctorList() {
                               Consultation Fee
                             </p>
                             <p className="text-2xl font-bold text-blue-600">
-                              ₹{doctor?.qualifications?.fees || doctor?.consultationFee || "N/A"}
+                              ₹{doctor?.qualifications?.fees || "N/A"}
                             </p>
                           </div>
                         </div>
@@ -270,7 +299,7 @@ export default function DoctorList() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDoctorDetailsPage(doctor?._id)}
+                            onClick={() => handleDoctorDetailsPage(doctor?._id as string)}
                             className="border-blue-600 text-blue-600 hover:bg-blue-50"
                           >
                             <Calendar className="w-4 h-4 mr-1" />

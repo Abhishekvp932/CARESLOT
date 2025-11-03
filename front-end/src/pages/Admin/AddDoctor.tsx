@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAddDoctorMutation } from "@/features/admin/adminApi";
 import { toast, ToastContainer } from "react-toastify";
@@ -57,7 +57,7 @@ type DoctorFormData = {
 
   const handleInputChange = (
     field: string,
-    value,
+    value:string | number | File | null,
     isQualification = false
   ) => {
     setFormData((prev) => {

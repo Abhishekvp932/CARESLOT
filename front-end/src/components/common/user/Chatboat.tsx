@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useChatBoatMutation } from "@/features/users/userApi";
 import { Send, Bot, User, MessageCircle, X, AlertCircle } from "lucide-react";
 
@@ -13,8 +13,8 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
   const [chatBot, { isLoading }] = useChatBoatMutation();
-  const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const quickMessages = [
     "I have a fever and headache",
@@ -70,7 +70,7 @@ export default function Chatbot() {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();

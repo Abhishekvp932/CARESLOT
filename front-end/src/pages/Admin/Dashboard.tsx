@@ -18,6 +18,46 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Users, Calendar, Loader2, Banknote } from "lucide-react"
 import { useGetAdminDashboardDataQuery } from "@/features/admin/adminApi"
 
+interface MonthlyTrendItem {
+  month: string
+  bookings: number
+  completed: number
+  cancelled: number
+  totalEarnings: number
+}
+
+interface StatusSummaryItem {
+  name: string
+  value: number
+}
+
+interface TopDoctor {
+  name: string
+  avgRating: number
+}
+
+interface DashboardData {
+  monthlyTrend: MonthlyTrendItem[]
+  statusSummary: StatusSummaryItem[]
+  topDoctors: TopDoctor[]
+  activeDoctorsCount: number
+}
+
+interface ApiError {
+  message?: string
+}
+
+interface PieChartDataItem extends StatusSummaryItem {
+  fill: string
+}
+
+interface MetricCardProps {
+  title: string
+  value: string | number
+  icon: React.ReactNode
+  color: string
+}
+
 const COLORS = {
   primary: "#6366f1",
   success: "#10b981",
@@ -25,9 +65,9 @@ const COLORS = {
   danger: "#ef4444",
   info: "#3b82f6",
   purple: "#a855f7",
-}
+} as const
 
-const STATUS_COLORS = {
+const STATUS_COLORS: Record<string, string> = {
   Completed: COLORS.success,
   Scheduled: COLORS.info,
   Cancelled: COLORS.danger,
@@ -35,17 +75,18 @@ const STATUS_COLORS = {
 }
 
 export function AdminDashboard() {
-  const [timeFilter, setTimeFilter] = useState("month")
-  const { data, isLoading, isError, error } = useGetAdminDashboardDataQuery(timeFilter)
-  
-  
-  console.log('dashboard data', data)
+  const [timeFilter, setTimeFilter] = useState<"day" | "week" | "month">("month")
+  const { data, isLoading, isError, error } = useGetAdminDashboardDataQuery(timeFilter) as {
+    data: DashboardData | undefined
+    isLoading: boolean
+    isError: boolean
+    error: ApiError | undefined
+  }
 
   const calculateMetrics = () => {
     if (!data?.monthlyTrend || !Array.isArray(data.monthlyTrend)) {
       return {
         totalBookings: 0,
-        completionRate: 0,
         totalCompleted: 0,
         totalCancelled: 0,
         totalEarnings: 0,
@@ -53,7 +94,7 @@ export function AdminDashboard() {
     }
 
     const totals = data.monthlyTrend.reduce(
-      (acc, month) => ({
+      (acc: { bookings: number; completed: number; cancelled: number; totalEarnings: number }, month: MonthlyTrendItem) => ({
         bookings: acc.bookings + (month.bookings || 0),
         completed: acc.completed + (month.completed || 0),
         cancelled: acc.cancelled + (month.cancelled || 0),
@@ -61,18 +102,19 @@ export function AdminDashboard() {
       }),
       { bookings: 0, completed: 0, cancelled: 0, totalEarnings: 0 }
     )
+    
     return {
       totalBookings: totals.bookings,
       totalCompleted: totals.completed,
       totalCancelled: totals.cancelled,
-      totalEarnings: totals.totalEarnings
+      totalEarnings: totals.totalEarnings,
     }
   }
 
   const metrics = calculateMetrics()
 
-  const pieChartData = Array.isArray(data?.statusSummary)
-    ? data.statusSummary.map(item => ({
+  const pieChartData: PieChartDataItem[] = Array.isArray(data?.statusSummary)
+    ? data.statusSummary.map((item: StatusSummaryItem) => ({
         ...item,
         fill: STATUS_COLORS[item.name] || COLORS.info,
       }))
@@ -115,15 +157,13 @@ export function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-            <p className="text-gray-600">Welcome back! Here's your booking analytics overview.</p>
+            <p className="text-gray-600">Welcome back! Here&apos;s your booking analytics overview.</p>
           </div>
           
-          {/* Filter Buttons */}
           <div className="flex gap-2 bg-white p-1 rounded-lg shadow-sm border border-gray-200">
             <button
               onClick={() => setTimeFilter("day")}
@@ -159,34 +199,28 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <MetricCard
           title="Total Appointments"
           value={metrics.totalBookings.toLocaleString()}
           icon={<Calendar className="w-5 h-5" />}
-          trendPositive
           color={COLORS.primary}
         />
         <MetricCard 
           title="Active Doctors" 
-          value={data?.activeDoctorsCount} 
-          icon={<Users className="w-5 h-5" />} 
-          trendPositive 
+          value={data?.activeDoctorsCount ?? 0} 
+          icon={<Users className="w-5 h-5" />}
           color={COLORS.success}
         />
         <MetricCard 
           title="Earnings" 
-          value={`₹${metrics.totalEarnings?.toLocaleString()}`} 
-          icon={<Banknote className="w-5 h-5" />} 
-          trendPositive 
+          value={`₹${metrics.totalEarnings?.toLocaleString() ?? 0}`} 
+          icon={<Banknote className="w-5 h-5" />}
           color={COLORS.purple}
         />
       </div>
 
-      {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Booking Trends */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Booking Trends</CardTitle>
@@ -224,7 +258,6 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Appointment Status */}
         <Card>
           <CardHeader>
             <CardTitle>Appointment Status</CardTitle>
@@ -239,11 +272,11 @@ export function AdminDashboard() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value }) => `${name}: ${value}`}
+                    label={({ name, value }: { name: string; value: number }) => `${name}: ${value}`}
                     outerRadius={100}
                     dataKey="value"
                   >
-                    {pieChartData.map((entry, index) => (
+                    {pieChartData.map((entry: PieChartDataItem, index: number) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
                   </Pie>
@@ -265,9 +298,7 @@ export function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Doctor Performance */}
         <Card>
           <CardHeader>
             <CardTitle>Top Doctors</CardTitle>
@@ -276,7 +307,7 @@ export function AdminDashboard() {
           <CardContent>
             <div className="space-y-4">
               {data?.topDoctors && data.topDoctors.length > 0 ? (
-                data.topDoctors.map((doctor, index) => (
+                data.topDoctors.map((doctor: TopDoctor, index: number) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                     <div className="flex-1">
                       <p className="font-semibold text-sm text-gray-900">Dr. {doctor.name}</p>
@@ -299,7 +330,7 @@ export function AdminDashboard() {
   )
 }
 
-function MetricCard({ title, value, icon, trend, trendPositive, color }) {
+function MetricCard({ title, value, icon, color }: MetricCardProps) {
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardContent className="pt-6">
@@ -307,11 +338,6 @@ function MetricCard({ title, value, icon, trend, trendPositive, color }) {
           <div className="p-2 rounded-lg" style={{ backgroundColor: `${color}20`, color: color }}>
             {icon}
           </div>
-          {trend && (
-            <span className={`text-xs font-semibold ${trendPositive ? "text-green-600" : "text-red-600"}`}>
-              {trend}
-            </span>
-          )}
         </div>
         <h3 className="text-sm font-medium text-gray-600 mb-1">{title}</h3>
         <p className="text-2xl font-bold text-gray-900">{value}</p>

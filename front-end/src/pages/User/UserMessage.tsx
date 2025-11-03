@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
 import EmojiPicker from "emoji-picker-react";
-
+import type { EmojiClickData } from "emoji-picker-react";
 import {
   useGetUserChatQuery,
   useSendMessageMutation,
@@ -17,15 +15,12 @@ import {
 import { socket } from "@/socket/socket";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
-import { useRef } from "react";
-
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
 import {
   Send,
   Phone,
@@ -35,6 +30,14 @@ import {
   Stethoscope,
   ImageIcon,
 } from "lucide-react";
+
+// Type definitions
+interface DoctorInfo {
+  _id: string;
+  profile_img: string;
+  name: string;
+  specialization: string;
+}
 
 interface Message {
   id: string;
@@ -53,36 +56,57 @@ interface IConversation {
   lastMessage?: {
     content: string;
     timestamp: Date;
+    sender?: string;
   };
   isActive: boolean;
-  doctorId?: {
-    _id: string;
-    profile_img: string;
-    name: string;
-    specialization: string;
-  };
+  doctorId?: DoctorInfo;
   unreadCount: number;
+}
+
+interface OnlineUsers {
+  [key: string]: {
+    socketId: string;
+    role: string;
+  };
+}
+
+interface TypingData {
+  chatId: string;
+  sender: string;
+}
+
+interface MessageDeleteData {
+  messageId: string;
+  chatId: string;
+}
+
+interface UpdateConversationData {
+  chatId: string;
+  lastMessage: {
+    content: string;
+    timestamp: Date;
+    sender: string;
+  };
+  unreadIncrement: number;
 }
 
 export function UserMessagingPage() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversationss, setConversation] = useState<IConversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<
-    string | null
-  >(null);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [showEmoji, setShowEmoji] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
-  const [selectedDoctor, setSelectedDoctor] = useState();
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUsers>({});
+  const [selectedDoctor, setSelectedDoctor] = useState<DoctorInfo | undefined>(undefined);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const patient = useSelector((state: RootState) => state.auth.user);
   const patientId = patient?._id as string;
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { data: conversations = [], refetch: chatRefetch } =
-    useGetUserChatQuery({
-      patientId,
-    });
+  const { data: conversations = [], refetch: chatRefetch } = useGetUserChatQuery({
+    patientId,
+  });
 
   useEffect(() => {
     if (!Array.isArray(conversations)) return;
@@ -93,7 +117,7 @@ export function UserMessagingPage() {
         lastMessage: c.lastMessage,
         isActive: c.isActive,
         doctorId: c.doctorId,
-        unreadCount:c.unreadCount
+        unreadCount: c.unreadCount,
       }))
     );
   }, [conversations]);
@@ -105,12 +129,10 @@ export function UserMessagingPage() {
     }
   );
 
-  // const conversations = Array.isArray(data) ? data : [];
-
   const [sendMessage] = useSendMessageMutation();
 
   useEffect(() => {
-    conversations.forEach((chat) => socket.emit("joinRoom", chat._id));
+    conversations.forEach((chat: IConversation) => socket.emit("joinRoom", chat._id));
   }, [conversations]);
 
   useEffect(() => {
@@ -137,6 +159,8 @@ export function UserMessagingPage() {
           : "",
         type: m.type ?? "text",
         image: m.image,
+        createdAt: m.createdAt,
+        read: m.read,
       }));
 
       const isSame =
@@ -206,7 +230,6 @@ export function UserMessagingPage() {
     try {
       chatRefetch();
       const res = await sendMessage(formData).unwrap();
-      console.log("Message sent:", res);
       socket.emit("sendMessage", res);
 
       setConversation((prev) =>
@@ -232,8 +255,6 @@ export function UserMessagingPage() {
     if (file && file.type.startsWith("image/")) setSelectedImage(file);
   };
 
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   const handleTyping = () => {
     socket.emit("typing", { chatId: selectedConversation, sender: patientId });
 
@@ -248,16 +269,13 @@ export function UserMessagingPage() {
   };
 
   useEffect(() => {
-    const handleTypingEvent = (data: { chatId: string; sender: string }) => {
+    const handleTypingEvent = (data: TypingData) => {
       if (data.chatId === selectedConversation && data.sender !== patientId) {
         setIsTyping(true);
       }
     };
 
-    const handleStopTypingEvent = (data: {
-      chatId: string;
-      sender: string;
-    }) => {
+    const handleStopTypingEvent = (data: TypingData) => {
       if (data.chatId === selectedConversation && data.sender !== patientId) {
         setIsTyping(false);
       }
@@ -277,9 +295,7 @@ export function UserMessagingPage() {
 
     socket.emit("addUser", { userId: patientId, role: "patient" });
 
-    const handleOnlineUsers = (
-      users: Record<string, { socketId: string; role: string }>
-    ) => {
+    const handleOnlineUsers = (users: OnlineUsers) => {
       setOnlineUsers(users);
     };
 
@@ -291,7 +307,8 @@ export function UserMessagingPage() {
   }, [patientId]);
 
   const handleMessageDelete = async (messageId: string, chatId: string) => {
-    socket.emit("deleteMessage", { messageId, chatId });
+    const deleteData: MessageDeleteData = { messageId, chatId };
+    socket.emit("deleteMessage", deleteData);
     chatRefetch();
     refetch();
   };
@@ -306,13 +323,6 @@ export function UserMessagingPage() {
     };
   }, []);
 
-  // const addEmoji = (emoji:any)=>{
-  //   setMessage((prev)=> prev+emoji.native)
-  //   setShowEmoji(false);
-  // }
-
-
-
   const handleConversationClick = (conversation: IConversation) => {
     setSelectedConversation(conversation?._id);
 
@@ -322,55 +332,51 @@ export function UserMessagingPage() {
     });
   };
 
-useEffect(() => {
-  if (!socket) return;
+  useEffect(() => {
+    if (!socket) return;
 
-  socket.on("messagesRead", ({ chatId }) => {
-    setConversation(prev =>
-      prev.map(c => (c._id === chatId ? { ...c, unreadCount: 0 } : c))
-    );
-  });
+    socket.on("messagesRead", ({ chatId }: { chatId: string }) => {
+      setConversation((prev) =>
+        prev.map((c) => (c._id === chatId ? { ...c, unreadCount: 0 } : c))
+      );
+    });
 
-  return () =>{
-    socket.off("messagesRead");
-  }
-}, [socket]);
-
+    return () => {
+      socket.off("messagesRead");
+    };
+  }, []);
 
   useEffect(() => {
     if (!socket) return;
 
-    socket.on(
-      "updateConversation",
-      ({ chatId, lastMessage, unreadIncrement }) => {
-        setConversation((prev) =>
-          prev.map((c) =>
-            c._id === chatId
-              ? {
-                  ...c,
-                  lastMessage,
-                  unreadCount:
-                    lastMessage.sender === patientId
-                      ? c.unreadCount 
-                      : (c.unreadCount || 0 ) + unreadIncrement ,
-                }
-              : c
-          )
-        );    
-      }
-    );
+    socket.on("updateConversation", (data: UpdateConversationData) => {
+      const { chatId, lastMessage, unreadIncrement } = data;
+      setConversation((prev) =>
+        prev.map((c) =>
+          c._id === chatId
+            ? {
+                ...c,
+                lastMessage,
+                unreadCount:
+                  lastMessage.sender === patientId
+                    ? c.unreadCount
+                    : (c.unreadCount || 0) + unreadIncrement,
+              }
+            : c
+        )
+      );
+    });
 
     return () => {
       socket.off("updateConversation");
     };
-  }, [socket, patientId]);
+  }, [patientId]);
 
   const removeSelectedImage = () => setSelectedImage(null);
 
-
   const currentConversation = conversationss.find(
-  (c) => c._id === selectedConversation
-);
+    (c) => c._id === selectedConversation
+  );
 
   return (
     <div className="flex h-screen bg-background">
@@ -397,7 +403,7 @@ useEffect(() => {
               })
               .map((conversation) => {
                 const isOnline =
-                  onlineUsers[conversation.doctorId?._id]?.role === "doctor";
+                  onlineUsers[conversation.doctorId?._id || ""]?.role === "doctor";
 
                 return (
                   <Card
@@ -419,6 +425,7 @@ useEffect(() => {
                             conversation?.doctorId?.profile_img ||
                             "/placeholder.svg"
                           }
+                          alt={conversation?.doctorId?.name || "Doctor"}
                         />
                         <AvatarFallback>
                           <Stethoscope className="h-5 w-5" />
@@ -440,17 +447,13 @@ useEffect(() => {
                               {conversation.unreadCount}
                             </span>
                           )}
-
-                          {/* {conversation?.unread > 0 && (
-                                <div className="ml-2 h-5 w-5 flex items-center justify-center text-xs rounded-full bg-red-600 text-white">
-                                  {conversation.unread}
-                                </div>
-                              )} */}
                         </div>
                         <p className="text-xs text-foreground/70">
                           {conversation?.doctorId?.specialization}
                         </p>
-                        <p>{conversation?.lastMessage?.content}</p>
+                        <p className="text-sm truncate">
+                          {conversation?.lastMessage?.content}
+                        </p>
                         <p className="text-sm truncate">
                           <span className="text-xs text-muted-foreground ml-1">
                             {conversation?.lastMessage?.timestamp
@@ -479,7 +482,10 @@ useEffect(() => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={selectedDoctor?.profile_img} />
+                  <AvatarImage
+                    src={selectedDoctor?.profile_img}
+                    alt={selectedDoctor?.name || "Doctor"}
+                  />
                   <AvatarFallback>
                     <Stethoscope className="h-5 w-5" />
                   </AvatarFallback>
@@ -512,7 +518,9 @@ useEffect(() => {
             </div>
           </div>
         ) : (
-          <div></div>
+          <div className="flex-1 flex items-center justify-center text-muted-foreground">
+            <p>Select a conversation to start messaging</p>
+          </div>
         )}
 
         <div className="flex-1 overflow-y-auto px-4 py-2">
@@ -577,79 +585,81 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Input fixed */}
-       {currentConversation?.isActive ? (
-                <div className="p-4 border-t border-border bg-card flex-shrink-0">
-          {selectedImage && (
-            <div className="mb-3 p-2 bg-accent/20 border rounded-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ImageIcon className="h-4 w-4" />
-                  <span className="text-sm">{selectedImage.name}</span>
+        {/* Input Area */}
+        {currentConversation?.isActive ? (
+          <div className="p-4 border-t border-border bg-card flex-shrink-0">
+            {selectedImage && (
+              <div className="mb-3 p-2 bg-accent/20 border rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4" />
+                    <span className="text-sm">{selectedImage.name}</span>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={removeSelectedImage}>
+                    ×
+                  </Button>
                 </div>
-                <Button variant="ghost" size="sm" onClick={removeSelectedImage}>
-                  ×
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center gap-2">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageSelect}
-              className="hidden"
-              id="image-upload"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => document.getElementById("image-upload")?.click()}
-              className="px-3"
-            >
-              <ImageIcon className="h-4 w-4" />
-            </Button>
-
-            <Button variant="outline" onClick={() => setShowEmoji(!showEmoji)}>
-              😀
-            </Button>
-
-            {showEmoji && (
-              <div className="absolute bottom-14 right-10 z-50">
-                <EmojiPicker
-                  onEmojiClick={(emojiObject) => {
-                    setMessage((prev) => prev + emojiObject.emoji);
-                    setShowEmoji(false);
-                  }}
-                />
               </div>
             )}
 
-            <Input
-              placeholder="Type your message..."
-              value={message}
-              onChange={(e) => {
-                setMessage(e.target.value);
-                handleTyping();
-              }}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-              className="flex-1"
-            />
-            <Button
-              onClick={handleSendMessage}
-              disabled={!message.trim() && !selectedImage}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+                id="image-upload"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById("image-upload")?.click()}
+                className="px-3"
+              >
+                <ImageIcon className="h-4 w-4" />
+              </Button>
+
+              <Button variant="outline" onClick={() => setShowEmoji(!showEmoji)}>
+                😀
+              </Button>
+
+              {showEmoji && (
+                <div className="absolute bottom-14 right-10 z-50">
+                  <EmojiPicker
+                    onEmojiClick={(emojiObject: EmojiClickData) => {
+                      setMessage((prev) => prev + emojiObject.emoji);
+                      setShowEmoji(false);
+                    }}
+                  />
+                </div>
+              )}
+
+              <Input
+                placeholder="Type your message..."
+                value={message}
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                  handleTyping();
+                }}
+                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                className="flex-1"
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={!message.trim() && !selectedImage}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
-        
-       ):(
-        <div>
-         <h1 style={{color:'red'}}>You can't message with this doctor because you don't have any active appointments</h1>
-        </div>
-       )}
+        ) : (
+          <div className="p-4 border-t border-border bg-card flex-shrink-0">
+            <p className="text-center text-red-600 font-medium">
+              You can&apos;t message with this doctor because you don&apos;t have any
+              active appointments
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -18,7 +18,6 @@ import VerificationList from "./pages/Admin/verificationList"
 import UserProfile from "./pages/User/userProfile"
 import { UserLayout } from "./layout/user/userLayout"
 import DoctorDetails from "@/pages/Admin/PendingDoctorDetailsPage";
-import DoctorEditPage from "./pages/Admin/DoctorEditPage"
 import AddDoctorPage from "./pages/Admin/AddDoctor"
 import DoctorDetailsPage from "./pages/Admin/DoctorDetails"
 import DoctorProfile from "./pages/Doctor/DoctorProfile"
@@ -26,7 +25,6 @@ import TimeShedule from "./pages/Doctor/TimeShedule"
 import DoctorList from "./pages/User/DoctorList"
 import UserDoctorDetailsPage from "./pages/User/DoctorDetailsPage"
 import CheckoutPage from "./pages/User/checkoutPage"
-// import PublicOnlyRoute from "./protectRoute/PublicOnlyRoute"
 import ChangePasswordPage from "./pages/User/changePasswordPage"
 import AppointmentsListDoctor from "./pages/Doctor/Appoinments"
 import { SessionCard } from "./pages/User/session"
@@ -80,7 +78,6 @@ function App() {
            <Route path="/admin/doctors" element={<AdminLayout><DoctorsList/> </AdminLayout>}/>
            <Route path="/admin/pending-verification" element={<AdminLayout><VerificationList/> </AdminLayout>}/>
            <Route path="/admin/verification-details/:doctorId" element = {<DoctorDetails/>}/>
-           <Route path="/admin/doctor-edit/:doctorId" element = {<DoctorEditPage/>}/>
            <Route path="/admin/add-doctors" element = {<AddDoctorPage/>}/>
            <Route path="/admin/doctor-details/:doctorId" element = {<DoctorDetailsPage/>}/>
            <Route path="/admin/appoinments" element = {<AdminLayout><AppointmentHistory/></AdminLayout>}/>

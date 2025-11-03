@@ -1,4 +1,4 @@
-import React from "react";
+
 import { CheckCircle } from "lucide-react";
 import {logOut} from '../../features/docotr/doctorSlice'
 import { useDispatch } from "react-redux";

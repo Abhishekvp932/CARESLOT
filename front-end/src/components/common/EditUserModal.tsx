@@ -15,15 +15,24 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { InputField } from "./InputField";
 import { userEdit } from "@/validation/userEdit.schema";
 import { z } from "zod";
+type User = {
+    name:string;
+    email:string;
+    phone:string;
+    gender:'male' | 'female' | 'others' | string;
+    dob:string;
+    profileImg?:string | File;
+  };
+interface EditUserModalProps {
+  user: User;
+  onSave: (updatedUser: User) => Promise<void>;
+}
 
-const EditUserModal = ({
+const EditUserModal:React.FC<EditUserModalProps> = ({
   user,
   onSave,
-}: {
-  user: any;
-  onSave: (updatedUser) => void;
 }) => {
-  const [formData, setFormData] = useState({ ...user });
+  const [formData, setFormData] = useState<User>({ ...user });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (
@@ -41,12 +50,14 @@ const EditUserModal = ({
     }
   };
 
+
+  type UserEditData = z.infer<typeof userEdit>;
   const handleSaveClick = () => {
     try {
-      const parsedData = userEdit.parse({
+      const parsedData : UserEditData = userEdit.parse({
         ...formData,
         dob:
-          typeof formData.dob === "string" ? formData.dob : formData.DOB || "",
+          typeof formData.dob === "string" ? (formData.dob as any).DOB || "" : "",
       });
 
       setErrors({});

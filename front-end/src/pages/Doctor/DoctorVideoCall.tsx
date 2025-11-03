@@ -1,4 +1,4 @@
-import React from "react";
+
 import { useParams } from "react-router-dom";
 import VideoCall from "@/components/common/VideoCall";
 import { useGetCallDataQuery } from "@/features/callLogs/videoCallApi";

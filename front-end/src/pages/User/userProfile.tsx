@@ -60,16 +60,26 @@ useEffect(() => {
   }
 
 
-  const handleSave = async (upadateUser) => {
+type UpadateUser = {
+    name:string;
+    email:string;
+    phone:string;
+    gender:'male' | 'female' | 'others' | string;
+    dob:string;
+    profileImg?:string | File;
+  };
+
+  const handleSave = async (upadateUser:UpadateUser) => {
     const formData = new FormData();
-    formData.append("name", upadateUser.name);
+    formData.append("name", upadateUser?.name);
 
-    formData.append("email", upadateUser.email);
-    formData.append("phoen", upadateUser.phone);
-    formData.append("gender", upadateUser.gender);
-    formData.append("dob", upadateUser.DOB);
-    formData.append("profileImage", upadateUser.profileImg);
-
+    formData.append("email", upadateUser?.email);
+    formData.append("phone", upadateUser?.phone);
+    formData.append("gender", upadateUser?.gender);
+    formData.append("dob", upadateUser?.dob);
+       if (upadateUser?.profileImg) {
+        formData.append("profileImage", upadateUser.profileImg);
+      }
     try {
       const res = await updateUserData({
         formData,
@@ -96,7 +106,13 @@ useEffect(() => {
     navigate(`/doctor-details/${doctorId}`);
   }
 
-
+type Doctor = {
+  _id:string;
+  name?:string;
+  profile_img?:string;
+  createdAt?: Date | string | undefined;
+  status?:string;
+}
 
 
   return (
@@ -117,11 +133,11 @@ useEffect(() => {
 
         <div className="flex gap-4">
           <Button variant="outline" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            <EditUserModal user={users} onSave={handleSave} />
-          </Button>
-          <Button onClick={()=>handleChangePassword(users?._id)}>Change Password</Button>
-        </div>
+              <Settings className="h-4 w-4" />
+              <EditUserModal user={users} onSave={handleSave} />
+            </Button>
+            <Button onClick={()=>handleChangePassword(users?._id)}>Change Password</Button>
+          </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -170,8 +186,8 @@ useEffect(() => {
           Recent Appointments
         </h3>
         <div className="grid gap-4">
-          {doctors?.map((apt) => (
-            <Card key={apt?.id} className="p-4">
+          {doctors?.map((apt: Doctor) => (
+            <Card key={apt?._id} className="p-4">
               <div className="flex flex-col sm:flex-row justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-12 w-12">
@@ -183,9 +199,9 @@ useEffect(() => {
                       {apt?.name}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {new Date(apt?.createdAt).toLocaleDateString()}
+                      {apt?.createdAt ? new Date(apt.createdAt).toLocaleDateString() : "No date"}
                     </p>
-                  </div>
+                  </div>  
                 </div>
                 <div className="flex items-center gap-2">
                   <span

@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-// CardDescription
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -40,19 +39,90 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
+interface Qualifications {
+  specialization: string;
+  lisence: string;
+  experince: string;
+  about: string;
+  degree: string;
+  medicalSchool: string;
+  institution: string;
+  experienceCertificate: string;
+  educationCertificate: string;
+}
+
+interface Doctor {
+  profile_img: string;
+  name: string;
+  qualifications: Qualifications;
+  avgRating: number;
+  totalRating: number;
+  isBlocked: boolean;
+  email: string;
+  phone: string;
+}
+
+interface BreakTime {
+  startTime: string;
+  endTime: string;
+}
+
+interface SlotTime {
+  daysOfWeek: string;
+  startTime: string;
+  endTime: string;
+  status: boolean;
+  breakTime: BreakTime[];
+}
+
+interface SlotDoc {
+  slotTimes: SlotTime[];
+}
+
+interface PatientInfo {
+  name: string;
+  email: string;
+}
+
+interface AppointmentSlot {
+  date: string;
+  startTime: string;
+}
+
+interface Appointment {
+  patientId: PatientInfo;
+  slot: AppointmentSlot;
+  status: string;
+}
+
+interface Rating {
+  patientId: PatientInfo;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+interface DoctorData {
+  appoinments: Appointment[];
+  slots: SlotDoc[];
+  ratings: Rating[];
+}
+
 export default function DoctorDetailsPage() {
   const { doctorId } = useParams<{ doctorId: string }>();
-  const { data: doctor } = useGetEditDoctorDataQuery(doctorId);
-  const { data = [] } = useGetAllDoctorSlotsAndAppoinmentsQuery(
+  const { data: doctor } = useGetEditDoctorDataQuery(doctorId) as {
+    data: Doctor | undefined;
+  };
+  const { data } = useGetAllDoctorSlotsAndAppoinmentsQuery(
     doctorId as string
-  );
-  console.log(data);
+  ) as { data: DoctorData | undefined };
+
   const appoinments = data?.appoinments || [];
   const slots = data?.slots || [];
   const ratings = data?.ratings || [];
+
   return (
     <div className="min-h-screen bg-gray-50/50">
-      {/* Header */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
@@ -87,9 +157,7 @@ export default function DoctorDetailsPage() {
 
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Doctor Info */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Profile Card */}
             <Card>
               <CardContent className="p-6">
                 <div className="text-center">
@@ -110,13 +178,14 @@ export default function DoctorDetailsPage() {
                   <div className="flex items-center justify-center gap-1 mb-4">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                     <span className="font-medium">{doctor?.avgRating}</span>
-                    <br />
-                    <span className="text-gray-500">({doctor?.totalRating} reviews)</span>
+                    <span className="text-gray-500">
+                      ({doctor?.totalRating} reviews)
+                    </span>
                   </div>
                   {doctor?.isBlocked ? (
                     <Badge
                       variant="secondary"
-                      className="bg-green-100 text-green-800"
+                      className="bg-red-100 text-red-800"
                     >
                       Not Active
                     </Badge>
@@ -154,7 +223,6 @@ export default function DoctorDetailsPage() {
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Quick Stats</CardTitle>
@@ -187,7 +255,6 @@ export default function DoctorDetailsPage() {
             </Card>
           </div>
 
-          {/* Right Column - Detailed Information */}
           <div className="lg:col-span-2">
             <Tabs defaultValue="overview" className="space-y-6">
               <TabsList className="grid w-full grid-cols-4">
@@ -197,10 +264,7 @@ export default function DoctorDetailsPage() {
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
               </TabsList>
 
-              {/* Overview Tab */}
               <TabsContent value="overview" className="space-y-6">
-                {/* Professional Information */}
-
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -241,7 +305,6 @@ export default function DoctorDetailsPage() {
                   </CardContent>
                 </Card>
 
-                {/* Education & Certifications */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -257,7 +320,6 @@ export default function DoctorDetailsPage() {
                           <p className="font-medium">
                             {doctor?.qualifications?.degree}
                           </p>
-                          {/* <p className="text-sm text-gray-500">2008 - 2012</p> */}
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
@@ -273,7 +335,7 @@ export default function DoctorDetailsPage() {
                         <Award className="h-4 w-4 text-blue-500 mt-1" />
                         <div>
                           <p className="font-medium">
-                            institution - {doctor?.qualifications?.institution}
+                            Institution - {doctor?.qualifications?.institution}
                           </p>
                         </div>
                       </div>
@@ -306,7 +368,7 @@ export default function DoctorDetailsPage() {
                         </div>
                         <img
                           src={doctor?.qualifications?.educationCertificate}
-                          alt="Experience Certificate"
+                          alt="Education Certificate"
                           className="w-48 h-auto rounded-lg border object-contain"
                         />
                       </div>
@@ -315,12 +377,10 @@ export default function DoctorDetailsPage() {
                 </Card>
               </TabsContent>
 
-              {/* Schedule Tab */}
               <TabsContent value="schedule" className="space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Weekly Schedule</CardTitle>
-                    {/* <CardDescription>Doctor's availability throughout the week</CardDescription> */}
                   </CardHeader>
                   <CardContent>
                     <Table>
@@ -334,10 +394,10 @@ export default function DoctorDetailsPage() {
                       </TableHeader>
                       <TableBody>
                         {Array.isArray(slots) &&
-                          slots.map((slotDoc, index) =>
-                            slotDoc?.slotTimes.map((slot, idx) =>
-                              slot?.breakTime?.map((slots, index) => (
-                                <TableRow key={`${index}-${idx}`}>
+                          slots.map((slotDoc: SlotDoc, docIndex: number) =>
+                            slotDoc?.slotTimes.map((slot: SlotTime, slotIndex: number) =>
+                              slot?.breakTime?.map((breakSlot: BreakTime, breakIndex: number) => (
+                                <TableRow key={`${docIndex}-${slotIndex}-${breakIndex}`}>
                                   <TableCell className="font-medium">
                                     {slot?.daysOfWeek}
                                   </TableCell>
@@ -362,18 +422,18 @@ export default function DoctorDetailsPage() {
                                       )}
                                   </TableCell>
                                   <TableCell>
-                                    {slots?.startTime &&
+                                    {breakSlot?.startTime &&
                                       new Date(
-                                        slots.startTime
+                                        breakSlot.startTime
                                       ).toLocaleTimeString([], {
                                         hour: "numeric",
                                         minute: "2-digit",
                                         hour12: true,
                                       })}{" "}
                                     to{" "}
-                                    {slots?.endTime &&
+                                    {breakSlot?.endTime &&
                                       new Date(
-                                        slots?.endTime
+                                        breakSlot?.endTime
                                       ).toLocaleTimeString([], {
                                         hour: "numeric",
                                         minute: "2-digit",
@@ -400,12 +460,10 @@ export default function DoctorDetailsPage() {
                 </Card>
               </TabsContent>
 
-              {/* Appointments Tab */}
               <TabsContent value="appointments" className="space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Recent Appointments</CardTitle>
-                    {/* <CardDescription>Latest patient appointments and their status</CardDescription> */}
                   </CardHeader>
                   <CardContent>
                     <Table>
@@ -419,8 +477,8 @@ export default function DoctorDetailsPage() {
                       </TableHeader>
                       <TableBody>
                         {Array.isArray(appoinments) &&
-                          appoinments?.map((app) => (
-                            <TableRow>
+                          appoinments?.map((app: Appointment, index: number) => (
+                            <TableRow key={index}>
                               <TableCell>
                                 <div>
                                   <p className="font-medium">
@@ -468,25 +526,23 @@ export default function DoctorDetailsPage() {
                 </Card>
               </TabsContent>
 
-              {/* Reviews Tab */}
               <TabsContent value="reviews" className="space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Patient Reviews</CardTitle>
-                    {/* <CardDescription>Recent feedback from patients</CardDescription> */}
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-4">
                       {Array.isArray(ratings) &&
-                        ratings?.map((rating) => (
-                          <div className="border rounded-lg p-4">
+                        ratings?.map((rating: Rating, index: number) => (
+                          <div key={index} className="border rounded-lg p-4">
                             <div className="flex items-start justify-between mb-2">
                               <div>
                                 <p className="font-medium">
                                   {rating?.patientId?.name}
                                 </p>
                                 <div className="flex items-center gap-1">
-                                  {[1, 2, 3, 4, 5].map((star) => (
+                                  {[1, 2, 3, 4, 5].map((star: number) => (
                                     <Star
                                       key={star}
                                       className={`h-4 w-4 ${
@@ -499,18 +555,17 @@ export default function DoctorDetailsPage() {
                                 </div>
                               </div>
                               <p className="text-sm text-gray-500">
-                                  {new Date(
-                                    rating?.createdAt
-                                  ).toLocaleDateString("en-GB", {
+                                {new Date(rating?.createdAt).toLocaleDateString(
+                                  "en-GB",
+                                  {
                                     day: "2-digit",
                                     month: "short",
                                     year: "numeric",
-                                  })}
+                                  }
+                                )}
                               </p>
                             </div>
-                            <p className="text-gray-700">
-                             {rating?.comment}
-                            </p>
+                            <p className="text-gray-700">{rating?.comment}</p>
                           </div>
                         ))}
                     </div>

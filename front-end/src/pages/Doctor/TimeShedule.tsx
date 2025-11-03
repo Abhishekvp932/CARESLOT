@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DoctorSidebar } from "@/layout/doctor/sideBar";
 import { useSelector } from "react-redux";
 import { useSlotAddMutation } from "@/features/docotr/doctorApi";
 import {
   Plus,
   Timer,
-  Trash2,
-  Clock,
+
   Calendar,
   Save,
   Coffee,
@@ -24,21 +23,21 @@ interface DaySchedule {
   breaks: { id: string; start: string; end: string }[];
 }
 
-interface Slot {
-  _id: string;
-  day: string;
-  startTime: string;
-  endTime: string;
-}
+// interface Slot {
+//   _id: string;
+//   day: string;
+//   startTime: string;
+//   endTime: string;
+// }
 
 export default function TimeShedule() {
  const doctor = useSelector((state:RootState)=> state.doctor.doctor);
  console.log('time slot doctor is',doctor);
-  const [slots, setSlots] = useState<Slot[]>([
-    { _id: "1", day: "Monday", startTime: "09:00", endTime: "10:00" },
-    { _id: "2", day: "Monday", startTime: "10:00", endTime: "11:00" },
-    { _id: "3", day: "Tuesday", startTime: "14:00", endTime: "15:00" },
-  ]);
+  // const [slots, setSlots] = useState<Slot[]>([
+  //   { _id: "1", day: "Monday", startTime: "09:00", endTime: "10:00" },
+  //   { _id: "2", day: "Monday", startTime: "10:00", endTime: "11:00" },
+  //   { _id: "3", day: "Tuesday", startTime: "14:00", endTime: "15:00" },
+  // ]);
 
   const [weekSchedule, setWeekSchedule] = useState<DaySchedule[]>(
     ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map(day => ({
@@ -160,9 +159,7 @@ const [slotAdd] = useSlotAddMutation()
     }
   };
 
-  const handleSlotDelete = (slotId: string) => {
-    setSlots(prev => prev.filter(slot => slot._id !== slotId));
-  };
+
 
   return (
   

@@ -26,11 +26,29 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 import { DoctorSidebar } from "@/layout/doctor/sideBar";
-
 import { useGetDoctorDashboardDataQuery } from "@/features/docotr/doctorApi";
 
+// ✅ define proper interfaces for API response
+interface StatusSummary {
+  name: string;
+  value: number;
+}
+
+interface MonthlyTrend {
+  month: string;
+  bookings: number;
+  completed: number;
+  cancelled: number;
+  totalEarnings: number;
+}
+
+interface DashboardData {
+  statusSummary: StatusSummary[];
+  monthlyTrend: MonthlyTrend[];
+}
+
 export function DoctorDashboard() {
-  const [period, setPeriod] = useState("month");
+  const [period, setPeriod] = useState<"day" | "week" | "month">("month");
   const navigate = useNavigate();
   const admin = useSelector((state: RootState) => state.admin.admin);
   const patient = useSelector((state: RootState) => state.auth.user);
@@ -38,18 +56,26 @@ export function DoctorDashboard() {
   const doctorId = doctors?._id as string;
 
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const { data = {}, isLoading } = useGetDoctorDashboardDataQuery({doctorId,period});
 
 
-  const statusSummary = data?.statusSummary || [];
-  const monthlyTrend = data?.monthlyTrend || [];
+  const { data, isLoading } = useGetDoctorDashboardDataQuery(
+    { doctorId, period },
+    {
+      
+      selectFromResult: (result: { data?: DashboardData; isLoading: boolean }) => result,
+    }
+  );
+
+  const statusSummary: StatusSummary[] = data?.statusSummary ?? [];
+  const monthlyTrend: MonthlyTrend[] = data?.monthlyTrend ?? [];
 
   const totalAppointments = statusSummary.reduce(
-    (sum: number, item) => sum + (item?.value || 0),
+    (sum, item) => sum + (item?.value ?? 0),
     0
   );
+
   const totalEarnings = monthlyTrend.reduce(
-    (sum: number, item) => sum + (item?.totalEarnings || 0),
+    (sum, item) => sum + (item?.totalEarnings ?? 0),
     0
   );
 
@@ -122,10 +148,10 @@ export function DoctorDashboard() {
 
           {/* Period Filter */}
           <div className="flex gap-2 mb-8 bg-white p-1 rounded-lg shadow-sm border border-gray-200 inline-flex">
-            {["day", "week", "month"].map((p) => (
+            {(["day", "week", "month"] as const).map((p) => (
               <Button
                 key={p}
-                onClick={() => setPeriod(p as "day" | "week" | "month")}
+                onClick={() => setPeriod(p)}
                 variant={period === p ? "default" : "ghost"}
                 className={`${
                   period === p
@@ -200,12 +226,12 @@ export function DoctorDashboard() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, value }) => `${name}: ${value}`}
+                      label={({ name, value }: { name: string; value: number }) => `${name}: ${value}`}
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {statusSummary.map((entry: any, index: number) => (
+                      {statusSummary.map((_, index) => (
                         <Cell
                           key={`cell-${index}`}
                           fill={COLORS[index % COLORS.length]}

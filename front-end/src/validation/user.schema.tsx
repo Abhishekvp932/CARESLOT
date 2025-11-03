@@ -4,13 +4,13 @@ export const userSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email"),
   phone: z.string().min(10, "Phone must be 10 digits"),
-  gender: z.union([
-    z.literal("male"),
-    z.literal("female"),
-    z.literal("others"),
-  ]).refine((val) => val !== "", {
-    message: "Gender is required",
-  }),
+ gender: z.union([
+  z.literal("male"),
+  z.literal("female"),
+  z.literal("others"),
+], {
+  required_error: "Gender is required",
+}),
   DOB: z.string().min(1, "DOB is required"),
   profileImg: z.any().optional(),
    password: z

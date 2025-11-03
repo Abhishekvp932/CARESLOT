@@ -2,35 +2,65 @@ import { CommonCardView } from "@/components/common/commonCardView";
 import { CommonTableView } from "@/components/common/commonTableView";
 import { useGetAllUsersQuery } from "@/features/admin/adminApi";
 import ActionMenu from "@/components/common/actionMenu";
-import {  Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useBlockUserMutation } from "@/features/admin/adminApi";
 import { toast, ToastContainer } from "react-toastify";
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-
 import { useAddUserMutation } from "@/features/admin/adminApi";
 import AddUserModal from "./AddUser";
-import { useState } from "react";
 
-interface Users {
-  _id?: string;
+// User interface
+interface User {
+  _id: string;
   name: string;
   email: string;
   role: string;
-  createdAt: Date;
+  createdAt: Date | string;
   isBlocked: boolean;
 }
 
+// User form data interface
+interface UserFormData {
+  name: string;
+  email: string;
+  phone: string;
+  gender: string;
+  DOB: string;
+  profileImg?: File | undefined;
+  password: string;
+  role: string;
+}
+
+// API Response interface
+interface UsersApiResponse {
+  data?: User[];
+  totalPages?: number;
+}
+
+// Error interface
+interface ApiError {
+  data?: {
+    msg?: string;
+  };
+}
+
+// Column interface for table
+interface TableColumn<T> {
+  label: string;
+  accessor: string;
+  render?: (item: T) => React.ReactNode;
+}
 
 const UsersList = () => {
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debounceSearch, setDebounce] = useState("");
-  const [users,setUsers] = useState<Users[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [debounceSearch, setDebounce] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const limit = 10;
 
+  // Debounce search term
   useEffect(() => {
     setLoading(true);
     const handler = setTimeout(() => {
@@ -41,59 +71,63 @@ const UsersList = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  const {
-    data = {},
-    isFetching,
-  } = useGetAllUsersQuery({ page, limit, search: debounceSearch });
+  // Fetch users query
+  const { data = {} as UsersApiResponse, isFetching } = useGetAllUsersQuery({
+    page,
+    limit,
+    search: debounceSearch,
+  });
 
-
+  // Update users when data changes
   useEffect(() => {
-  if (data?.data) {
-    setUsers(data.data); 
-  }
-}, [data]);
-  const totalPages = data?.totalPages || 1;
+    if (data?.data) {
+      setUsers(data.data);
+    }
+  }, [data]);
 
+  const totalPages = data?.totalPages || 1;
   const isLoading = loading || isFetching;
 
+  // Mutations
   const [blockUser] = useBlockUserMutation();
-
   const [addUser] = useAddUserMutation();
 
-const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
- 
-  setUsers((prevUsers) =>
-    Array.isArray(prevUsers)
-      ? prevUsers.map((user) =>
-          user._id === userId ? { ...user, isBlocked: !isBlocked } : user
-        )
-      : prevUsers
-  );
-
-  try {
-    const res = await blockUser({ userId, isBlocked: !isBlocked }).unwrap();
-    toast.success(res.msg);
-  } catch (error: any) {
+  // Handle block/unblock user
+  const handleBlockAndUnblock = async (
+    userId: string,
+    isBlocked: boolean
+  ): Promise<void> => {
+    // Optimistic update
     setUsers((prevUsers) =>
-      Array.isArray(prevUsers)
-        ? prevUsers.map((user) =>
-            user._id === userId ? { ...user, isBlocked } : user
-          )
-        : prevUsers
+      prevUsers.map((user) =>
+        user._id === userId ? { ...user, isBlocked: !isBlocked } : user
+      )
     );
 
-    if (error?.data?.msg) {
-      toast.error(error.data.msg);
-    } else {
-      toast.error("Something went wrong");
+    try {
+      const res = await blockUser({ userId, isBlocked: !isBlocked }).unwrap();
+      toast.success(res.msg);
+    } catch (error) {
+      // Revert optimistic update on error
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === userId ? { ...user, isBlocked } : user
+        )
+      );
+
+      const apiError = error as ApiError;
+      if (apiError?.data?.msg) {
+        toast.error(apiError.data.msg);
+      } else {
+        toast.error("Something went wrong");
+      }
     }
-  }
-};
+  };
 
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  const handleUser = async (newUser: UserFormData) => {
+  // Handle add user
+  const handleUser = async (newUser: UserFormData): Promise<void> => {
     try {
       const formData = new FormData();
       formData.append("name", newUser.name);
@@ -101,7 +135,9 @@ const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
       formData.append("phone", newUser.phone);
       formData.append("gender", newUser.gender);
       formData.append("dob", newUser.DOB);
-      formData.append("profileImage", newUser.profileImg);
+      if (newUser.profileImg) {
+        formData.append("profileImage", newUser.profileImg);
+      }
       formData.append("password", newUser.password);
       formData.append("role", newUser.role);
 
@@ -109,41 +145,33 @@ const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
       toast.success(res?.msg);
 
       setIsAddModalOpen(false);
-    
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
+    } catch (error) {
+      const apiError = error as ApiError;
+      if (apiError?.data?.msg) {
+        toast.error(apiError.data.msg);
       } else {
         toast.error("User profile updating error");
       }
     }
   };
 
-  
-
-  const columns = [
+  // Table columns configuration
+  const columns: TableColumn<User>[] = [
     { label: "Name", accessor: "name" },
     { label: "Email", accessor: "email" },
-    { label: "role", accessor: "role" },
+    { label: "Role", accessor: "role" },
     { label: "Join Date", accessor: "createdAt" },
     {
       label: "Actions",
       accessor: "actions",
-      render: (item) => (
+      render: (item: User) => (
         <div className="flex gap-2">
-          {/* <Button variant="outline" className="gap-2">
-            <Edit size={16} />
-            <EditUserModal
-              user={item}
-              onSave={(updatedData) => handleSave(updatedData, item._id)}
-            />
-          </Button> */}
-
           <button
             onClick={() => handleBlockAndUnblock(item._id, item.isBlocked)}
             className={`px-3 py-1 rounded text-white hover:opacity-90 ${
               item.isBlocked ? "bg-green-600" : "bg-red-600"
             }`}
+            type="button"
           >
             {item.isBlocked ? "Unblock" : "Block"}
           </button>
@@ -158,7 +186,7 @@ const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
         <div className="relative w-72">
           <input
             type="text"
-            placeholder="Search doctors..."
+            placeholder="Search users..."
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:border-black focus:ring-1 focus:ring-black transition text-sm"
             value={searchTerm}
             onChange={(e) => {
@@ -198,9 +226,7 @@ const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
 
       {isLoading ? (
         <div className="flex justify-center items-center mt-4">
-          {isLoading && (
-            <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
-          )}
+          <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
         </div>
       ) : (
         <div>
@@ -211,19 +237,17 @@ const handleBlockAndUnblock = async (userId: string, isBlocked: boolean) => {
             withPagination={true}
             currentPage={page}
             totalPages={totalPages}
-            onPageChange={(newPage) => setPage(newPage)}
+            onPageChange={(newPage: number) => setPage(newPage)}
           />
 
-
-
-           {!isLoading && users?.length === 0 && (
-        <p className="text-center text-gray-500 mt-4">No users found</p>
-        )}
+          {!isLoading && users?.length === 0 && (
+            <p className="text-center text-gray-500 mt-4">No users found</p>
+          )}
 
           <CommonCardView
             data={users}
             title="Users"
-            renderItem={(user: any) => (
+            renderItem={(user: User) => (
               <div className="flex justify-between items-start">
                 <div>
                   <p>

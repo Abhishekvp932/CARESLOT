@@ -1,26 +1,9 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Calendar, Clock, User } from "lucide-react";
-
-// interface Appointment {
-//   id: string
-//   title: string
-//   date: string
-//   time: string
-//   location: string
-//   doctor: string
-//   status: "completed" | "upcoming" | "cancelled" | "rescheduled"
-//   type: string
-// }
-
-// interface AppointmentCardProps {
-
-//   onReschedule?: (id: string) => void
-//   onCancel?: (id: string) => void
-// }
 
 const statusConfig = {
   completed: {
@@ -28,7 +11,7 @@ const statusConfig = {
     className: "bg-primary text-primary-foreground hover:bg-primary/90",
   },
   pending: {
-    label: "pending",
+    label: "Pending",
     className: "bg-secondary text-secondary-foreground hover:bg-secondary/90",
   },
   cancelled: {
@@ -40,11 +23,29 @@ const statusConfig = {
     label: "Rescheduled",
     className: "bg-accent text-accent-foreground hover:bg-accent/90",
   },
-};
+} as const;
 
-export function AppointmentCard({ appointment, onReschedule, onCancel }) {
-  const statusInfo = statusConfig[appointment?.status];
+export interface AppoinmentPopulatedDTO {
+  appointment: {
+    _id: string;
+    doctorId: { _id: string; name: string; specialization: string };
+    status?: keyof typeof statusConfig; 
+    transactionId?: string;
+    amount?: string;
+    patientId: { _id: string; name: string };
+    slot: { date: string; startTime: string; endTime: string };
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
 
+}
+
+export function AppointmentCard({ appointment}:AppoinmentPopulatedDTO) {
+  const statusInfo =
+    statusConfig[appointment?.status ?? "pending"] || {
+      label: "Unknown",
+      className: "bg-gray-200 text-gray-700",
+    };
   return (
     <Card className="w-full max-w-md hover:shadow-lg transition-all duration-200 hover:border-primary/20 group">
       <CardHeader className="pb-3">
@@ -92,27 +93,6 @@ export function AppointmentCard({ appointment, onReschedule, onCancel }) {
             <span>Patient : {appointment?.patientId?.name}</span>
           </div>
         </div>
-
-        {appointment?.status === "upcoming" && (
-          <div className="flex gap-2 pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 bg-transparent"
-              onClick={() => onReschedule?.(appointment?.id)}
-            >
-              Reschedule
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="flex-1"
-              onClick={() => onCancel?.(appointment?.id)}
-            >
-              Cancel
-            </Button>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

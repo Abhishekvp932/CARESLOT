@@ -9,6 +9,7 @@ type InputFieldsProps = {
     onChange:(e:React.ChangeEvent<HTMLInputElement>) => void;
     placeholder?:string;
     error?:string
+    className?:string
 };
 
 export const InputField = ({
@@ -19,9 +20,10 @@ export const InputField = ({
     onChange,
     placeholder,
     error,
+    className
 }:InputFieldsProps)=>{
     return (
-         <div className="space-y-1">
+         <div className={className}>
       <Label htmlFor={name}>{label}</Label>
       <Input
         id={name}

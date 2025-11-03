@@ -57,21 +57,23 @@ export const CommonTableView = <T,>({
               }
             >
               {columns.map((col) => {
-                const rawValue = item[col?.accessor];
+                const key = col.accessor as keyof T;
+                const rawValue = item[key];
                 const isDate =
-                  col.accessor.toLowerCase().includes("date") ||
-                  col.accessor.toLowerCase().includes("created");
+                  typeof col.accessor === "string" &&
+                  (col.accessor.toLowerCase().includes("date") ||
+                    col.accessor.toLowerCase().includes("created"));
 
                 return (
                   <td
-                    key={col.accessor}
+                    key={col.accessor as string}
                     className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap"
                   >
                     {col.render
                       ? col.render(item)
                       : isDate && rawValue
-                      ? format(new Date(rawValue), "dd MMM yyyy")
-                      : rawValue}
+                      ? format(new Date(rawValue as string), "dd MMM yyyy")
+                      : (rawValue as React.ReactNode)}
                   </td>
                 );
               })}

@@ -97,24 +97,24 @@ export function SessionCard() {
     navigate(`/video-call/${appoinmentId}`);
   };
 
-  const downloadPrescription = async (appointmentId: string) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/prescription/download/${appointmentId}`,
-        { responseType: "blob" }
-      );
+const downloadPrescription = async (appointmentId: string) => {
+  try {
+    const response = await axios.get<Blob>(
+      `http://localhost:3000/api/prescription/download/${appointmentId}`,
+      { responseType: "blob" }
+    );
 
-      const url = window.URL.createObjectURL(new Blob([response?.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `Prescription-${appointmentId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error: any) {
-      console.log(error.response?.data?.msg);
-    }
-  };
+    const url = window.URL.createObjectURL(response.data);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Prescription-${appointmentId}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error: any) {
+    console.error(error.response?.data?.msg || "Failed to download prescription");
+  }
+};
 
   return (
     <div className="space-y-4">
