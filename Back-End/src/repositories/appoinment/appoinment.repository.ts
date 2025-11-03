@@ -1,7 +1,7 @@
 import { IAppoinment } from '../../models/interface/IAppoinments';
 import Appoinment from '../../models/implementation/appoinment.model';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
-import { FilterQuery, Types } from 'mongoose';
+import { ClientSession, FilterQuery, Types } from 'mongoose';
 
 import { IPatientPopulated } from '../../types/AppointsAndPatientsDto';
 import { IDoctorPopulated } from '../../types/AppoinmentsAndDoctorDto';
@@ -11,9 +11,9 @@ import { DoctorDashboardData } from '../../types/IDoctorDashboardDto';
 
 export class AppoinmentRepository implements IAppoinmentRepository {
 
-  async create(data: Partial<IAppoinment>): Promise<IAppoinment | null> {
+  async create(data: Partial<IAppoinment>,session?:ClientSession): Promise<IAppoinment | null> {
     const newAppoinment = new Appoinment(data);
-    return await newAppoinment.save();
+    return await newAppoinment.save({session});
   }
 
   async findByDoctorId(doctorId: string): Promise<IAppoinment[]> {
@@ -98,14 +98,15 @@ export class AppoinmentRepository implements IAppoinmentRepository {
   async findByOneSlot(
     doctorId: string,
     slotDate: string,
-    startTime: string
+    startTime: string,
+    session?:ClientSession
   ): Promise<IAppoinment | null> {
     return Appoinment.findOne({
       doctorId,
       'slot.date': slotDate,
       'slot.startTime': startTime,
       status: { $in: ['pending', 'confirmed', 'rescheduled'] },
-    });
+    }).session(session ?? null);
   }
 
   async findPatientActiveAppoinments(

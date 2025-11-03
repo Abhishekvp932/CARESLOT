@@ -73,6 +73,11 @@ const DoctorsList = () => {
     isBlocked: boolean,
     reason: string
   ) => {
+    setDoctors((prevDoctors) =>
+    prevDoctors.map((doctor) =>
+      doctor._id === doctorId ? { ...doctor, isBlocked: !isBlocked } : doctor
+    )
+  );
     try {
       const res = await blockDoctor({
         doctorId,

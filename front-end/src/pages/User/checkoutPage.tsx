@@ -14,7 +14,7 @@ import Footer from "@/layout/Footer";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useGetDoctorAndSlotQuery } from "@/features/users/userApi";
-//  import { format} from 'date-fns';
+
 import { useCreateOrderMutation } from "@/features/payment/paymentSlice";
 import { useVerifyOrderMutation } from "@/features/payment/paymentSlice";
 import { toast, ToastContainer } from "react-toastify";
@@ -67,21 +67,14 @@ export default function CheckoutPage() {
     return <div className="p-8">Loading appointment details...</div>;
   }
 
-  const loadRazorpay = async () => {
-    // const payload = { // doctorId: doctorId,
-    // // date: time?.date,
-    //  // startTime: time?.startTime,
-    //  // endTime: time?.endTime,
-    //  // patientId: patient?._id,
-    //  // amount: total,
-    //  // };
+ const loadRazorpay = async () => {
+  if (!paymentMethod) {
+    toast.error("Please select a payment method");
+    return;
+  }
 
-    if (!paymentMethod) {
-      toast.error("Please Selecte a Payment Method");
-      return;
-    }
-
-    if (paymentMethod === "Online Payment") {
+  if (paymentMethod === "Online Payment") {
+    try {
       const order = await createOrder(total).unwrap();
       console.log("response from orders", order);
 
@@ -92,22 +85,38 @@ export default function CheckoutPage() {
         order_id: order.id,
         name: "CareSlot",
         description: "Doctor Appointment Payment",
+
         handler: async function (response) {
-          const verify = await verifyOrder({
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            doctorId: doctorId,
-            patientId: patient?._id,
-            date: time?.date,
-            startTime: time?.startTime,
-            endTime: time?.endTime,
-            amount: total,
-            paymentMethod: paymentMethod,
-          }).unwrap();
-          console.log("verify order", verify);
-          navigate("/");
+          try {
+            const verify = await verifyOrder({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              doctorId,
+              patientId: patient?._id,
+              date: time?.date,
+              startTime: time?.startTime,
+              endTime: time?.endTime,
+              amount: total,
+              paymentMethod,
+            }).unwrap();
+
+            toast.success("Appointment booked successfully ✅");
+            console.log("verify order", verify);
+            navigate("/");
+          } catch (error: any) {
+            console.error("Verify order error:", error);
+
+            // 🔥 Show backend message if available
+            const message =
+              error?.data?.message ||
+              error?.data?.msg ||
+              error?.message ||
+              "Booking failed, please try again.";
+            toast.error(message);
+          }
         },
+
         prefill: {
           name: patient?.name,
           email: patient?.email,
@@ -118,26 +127,42 @@ export default function CheckoutPage() {
 
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
-    }else{
-       try {
-        
-       const payload = { 
-      doctorId: doctorId,
-     date: time?.date,
-      startTime: time?.startTime,
-      endTime: time?.endTime,
-      patientId: patient?._id as string,
-      amount: total,
+    } catch (error: any) {
+      console.error("Order creation error:", error);
+      const message =
+        error?.data?.message ||
+        error?.data?.msg ||
+        error?.message ||
+        "Something went wrong creating the order.";
+      toast.error(message);
+    }
+  } else {
+    // 🧾 Wallet payment
+    try {
+      const payload = {
+        doctorId,
+        date: time?.date,
+        startTime: time?.startTime,
+        endTime: time?.endTime,
+        patientId: patient?._id as string,
+        amount: total,
       };
 
-        const res = await walletPayment(payload).unwrap();
-        console.log('wallet payment response',res);
-       } catch (error:any) {
-        console.log(error);
-        toast.error(error?.data?.msg)
-       }
+      const res = await walletPayment(payload).unwrap();
+      toast.success("Appointment booked successfully ✅");
+      console.log("wallet payment response", res);
+    } catch (error: any) {
+      console.log(error);
+      const message =
+        error?.data?.message ||
+        error?.data?.msg ||
+        error?.message ||
+        "Wallet payment failed.";
+      toast.error(message);
     }
-  };
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -394,7 +419,7 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-      <ToastContainer autoClose={200} />
+      <ToastContainer autoClose={500} />
       <Footer />
     </div>
   );

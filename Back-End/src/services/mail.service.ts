@@ -1,4 +1,5 @@
 import { IMailService } from '../interface/IMail.service';
+import logger from '../utils/logger';
 import { transporter } from '../utils/mail';
 
 export class MailService implements IMailService {
@@ -13,7 +14,7 @@ export class MailService implements IMailService {
 
   async sendBlockDoctorMail(email: string, name: string, reason: string) {
     const subject = 'Account Suspension Notification';
-    const html = `Dear Dr.${name},
+    const text = `Dear Dr.${name},
 
      We regret to inform you that your account on Our Platform has been temporarily blocked by the administrator.
 
@@ -26,12 +27,12 @@ export class MailService implements IMailService {
    Best regards,
     The CARESLOT Team`;
 
-    await this.sendMail(email, subject, html);
+    await this.sendMail(email, subject, text);
     return;
   }
   async sendDoctorUnBlockEmail(email: string, name: string) {
     const subject = 'Account Reinstatement Notification';
-    const html = `Dear Dr.${name},
+    const text = `Dear Dr.${name},
 
     We are pleased to inform you that your account on Our Platform has been reinstated and you can now access all services as usual.
 
@@ -41,8 +42,8 @@ export class MailService implements IMailService {
 
    Best regards,
    The CARESLOT Team`;
-
-    await this.sendMail(email, subject, html);
+    logger.debug(text);
+    await this.sendMail(email, subject, text);
     return;
   }
 
@@ -55,7 +56,7 @@ export class MailService implements IMailService {
     doctorName: string
   ): Promise<void> {
     const subject = 'Appointment Confirmation - CareSlot';
-    const html = `patient?.email,Hello ${Patientname},
+    const text = `patient?.email,Hello ${Patientname},
                              Your appointment has been successfully booked.
          
                              Doctor : Dr.${doctorName},
@@ -71,7 +72,7 @@ export class MailService implements IMailService {
                              
                              `;
 
-    await this.sendMail(email, subject, html);
+    await this.sendMail(email, subject, text);
   }
 
   async sendDoctorAppoinmentEmail(
@@ -83,7 +84,7 @@ export class MailService implements IMailService {
     endTime: string
   ): Promise<void> {
     const subject = 'New Appointment Booked - CareSlot';
-    const html = `Hello ${doctorName},
+    const text = `Hello ${doctorName},
                  A new appointment has been booked.
          
                              Patient : ${patientName},
@@ -97,12 +98,12 @@ export class MailService implements IMailService {
                              
                              `;
 
-    await this.sendMail(email, subject, html);
+    await this.sendMail(email, subject, text);
   }
 
   async sendDoctorRejectionEmail(email: string, doctorName: string, reason: string): Promise<void> {
     const subject = 'Application Rejected – CARESLOT';
-    const html =`
+    const text =`
     Dear Dr. ${doctorName},
     We regret to inform you that your application on CARESLOT has been reviewed and unfortunately did not meet our approval criteria at this time.
 
@@ -114,12 +115,12 @@ export class MailService implements IMailService {
     Best regards,
     The CARESLOT Team`;
 
-    await this.sendMail(email,subject,html);
+    await this.sendMail(email,subject,text);
   }
   async sendDoctorApproveEmail(email: string, doctorName: string): Promise<void> {
     
     const subject = 'Applicarion Approved - CARESLOT';
-    const html =`Dear Dr.${doctorName},
+    const text =`Dear Dr.${doctorName},
 
 We are delighted to inform you that your application to join CARESLOT has been approved!
 
@@ -132,6 +133,6 @@ Welcome aboard, and we look forward to supporting you on this journey!
 Best regards,  
 The CARESLOT Team`;
 
-await this.sendMail(email,subject,html);
+await this.sendMail(email,subject,text);
   }
 }

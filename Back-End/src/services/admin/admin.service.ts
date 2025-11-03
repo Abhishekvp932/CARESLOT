@@ -29,6 +29,7 @@ import {
 import { IRatingRepository } from '../../interface/ratings/IRatingRepository';
 import { IRatingDTO } from '../../types/ratingPatientDTO';
 import { FilteredDate } from '../../utils/FilteringWithDate';
+import logger from '../../utils/logger';
 const mailService = new MailService();
 export class AdminService implements IAdminService {
   constructor(
@@ -194,55 +195,61 @@ export class AdminService implements IAdminService {
         : 'Doctor unblocked successfully',
     };
 
-    async () => {
-      try {
-        const iter = await redisClient.keys('refresh:*');
-        if (isBlocked) {
-          await mailService.sendBlockDoctorMail(
-            doctor?.email,
-            doctor?.name,
-            reason
-          );
-          for await (const refreshKey of iter) {
-            const key = refreshKey.toString();
 
-            const sessionId = key.replace('refresh:', '');
-            const accessKey = `access:${sessionId}`;
-
-            const accessToken = await redisClient.get(accessKey);
-            const refreshToken = await redisClient.get(key);
-
-            if (!accessToken || !refreshToken) continue;
-
-            const decode = verifyAccessToken(accessToken);
-
-            if (decode?.id === doctorId) {
-              await redisClient.set(`bl_access:${accessToken}`, 'true', {
-                EX: 15 * 60,
-              });
-              await redisClient.set(`bl_refresh:${refreshToken}`, 'true', {
-                EX: 7 * 24 * 60 * 60,
-              });
-
-              await redisClient.del(accessKey);
-              await redisClient.del(key);
-            }
+      const iter = await redisClient.keys('refresh:*');
+      if (isBlocked) {
+        setImmediate(async () => {
+          try {
+            await mailService.sendBlockDoctorMail(
+              doctor?.email,
+              doctor?.name,
+              reason
+            );
+          } catch (err) {
+            logger.error(err);
           }
-        } else {
-          await this._doctorAuthRepository.updateById(doctorId, {
-            $unset: { blockReason: '' },
-            $set: { isBlocked: false },
-          });
-          await mailService.sendDoctorUnBlockEmail(doctor?.email, doctor.name);
+        });
+        for await (const refreshKey of iter) {
+          const key = refreshKey.toString();
+
+          const sessionId = key.replace('refresh:', '');
+          const accessKey = `access:${sessionId}`;
+
+          const accessToken = await redisClient.get(accessKey);
+          const refreshToken = await redisClient.get(key);
+
+          if (!accessToken || !refreshToken) continue;
+
+          const decode = verifyAccessToken(accessToken);
+
+          if (decode?.id === doctorId) {
+            await redisClient.set(`bl_access:${accessToken}`, 'true', {
+              EX: 15 * 60,
+            });
+            await redisClient.set(`bl_refresh:${refreshToken}`, 'true', {
+              EX: 7 * 24 * 60 * 60,
+            });
+
+            await redisClient.del(accessKey);
+            await redisClient.del(key);
+          }
         }
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          throw new Error(error.message);
-        } else {
-          throw new Error('Something went wrong');
-        }
+      } else {
+        await this._doctorAuthRepository.updateById(doctorId, {
+          $unset: { blockReason: '' },
+          $set: { isBlocked: false },
+        });
+        setImmediate(async () => {
+          try {
+            await mailService.sendDoctorUnBlockEmail(
+              doctor?.email,
+              doctor.name
+            );
+          } catch (err) {
+           logger.error(err);
+          }
+        });
       }
-    };
 
     return response;
   }
@@ -331,17 +338,13 @@ export class AdminService implements IAdminService {
     });
     const response = { msg: 'Doctors Approved successfully' };
 
-    async () => {
+    setImmediate(async () => {
       try {
         await mailService.sendDoctorApproveEmail(doctors?.email, doctors?.name);
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          throw new Error(error.message);
-        } else {
-          throw new Error('Something went wrong');
-        }
+      } catch (err) {
+        logger.error(err);
       }
-    };
+    });
     return response;
   }
 
@@ -361,22 +364,17 @@ export class AdminService implements IAdminService {
     });
     const response = { msg: 'Doctor reject successfully' };
 
-    async () => {
+    setImmediate(async () => {
       try {
         await mailService.sendDoctorRejectionEmail(
           doctor?.email,
           doctor?.name,
           reason
         );
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          throw new Error(error.message);
-        } else {
-          throw new Error('Something went wrong');
-        }
+      } catch (err) {
+        logger.error(err);
       }
-    };
-
+    });
     return response;
   }
 

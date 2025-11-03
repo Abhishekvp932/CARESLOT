@@ -26,6 +26,8 @@ import { IChatPopulated } from '../../types/ChatAndDoctorPopulatedDTO';
 import { ICallLogRepository } from '../../interface/callLogs/ICallLogRepository';
 import { ICallLog } from '../../models/interface/ICallLog';
 import { INotificationDto } from '../../types/INotificationDTO';
+import mongoose from 'mongoose';
+import { acquireLock, releaseLock } from '../../utils/redisLock';
 dotenv.config();
 const mailService = new MailService();
 export class PaymentService implements IPaymentService {
@@ -67,53 +69,59 @@ export class PaymentService implements IPaymentService {
     patientNotification: INotificationDto | null;
     doctorNotification: INotificationDto | null;
   }> {
-    const doctor = await this._doctorRepository.findById(doctorId);
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    const slotKey = `lock:slot:${doctorId}:${date}:${startTime}`;
+    const ttl = 5000;
+    try {
+      const getLock = await acquireLock(slotKey, ttl);
 
-    if (!doctor) {
-      throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
-    }
+      if (!getLock) {
+        throw new Error('Slot already booked. Please choose another slot.');
+      }
 
-    const patient = await this._patientRepository.findById(patientId);
+      const doctor = await this._doctorRepository.findById(doctorId);
+      if (!doctor) throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
 
-    if (!patient) {
-      throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
-    }
-    const appoinmentExists = await this._appoinmentRepository.findByOneSlot(
-      doctorId,
-      date,
-      startTime
-    );
+      const patient = await this._patientRepository.findById(patientId);
+      if (!patient) throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
 
-    if (appoinmentExists) {
-      throw new Error('Appointment already booked');
-    }
+      const appoinmentExists = await this._appoinmentRepository.findByOneSlot(
+        doctorId,
+        date,
+        startTime,
+        session
+      );
+      if (appoinmentExists) throw new Error('Appointment already booked');
 
-    const body = orderId + '|' + paymentId;
+      const body = orderId + '|' + paymentId;
+      const expectedSignature = crypto
+        .createHmac('sha256', process.env.RAZORPAY_SECRET as string)
+        .update(body.toString())
+        .digest('hex');
 
-    const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_SECRET as string)
-      .update(body.toString())
-      .digest('hex');
+      const isValid = expectedSignature === signature;
+      let response = null;
 
-    const isValid = expectedSignature === signature;
-    let response = null;
+      if (!isValid) {
+        return {
+          status: 'failed',
+          patientNotification: null,
+          doctorNotification: null,
+        };
+      }
 
-    if (isValid) {
       const newAppoinment = {
         doctorId: new Types.ObjectId(doctorId as string),
         patientId: new Types.ObjectId(patientId as string),
-        slot: {
-          date: date,
-          startTime: startTime,
-          endTime: endTime,
-        },
-        amount: amount,
+        slot: { date, startTime, endTime },
+        amount,
       };
-
-      const appoinment = await this._appoinmentRepository.create(newAppoinment);
-      if (!appoinment) {
-        throw new Error('appoinment not found');
-      }
+      const appoinment = await this._appoinmentRepository.create(
+        newAppoinment,
+        session
+      );
+      if (!appoinment) throw new Error('appoinment not found');
 
       const newPayment = {
         appoinmentId: new Types.ObjectId(appoinment?._id as string),
@@ -127,11 +135,12 @@ export class PaymentService implements IPaymentService {
         paymentMethod: paymentMethod,
       };
       const payment = await this._paymentRepository.create(newPayment);
+
       await this._appoinmentRepository.findByIdAndUpdate(
         appoinment?._id as string,
         { transactionId: new Types.ObjectId(payment?._id as string) }
       );
-      logger.info('22');
+
       const scheduledStart = new Date(
         `${appoinment.slot.date}T${appoinment.slot.startTime}`
       );
@@ -151,18 +160,15 @@ export class PaymentService implements IPaymentService {
         status: 'scheduled',
       };
       await this._callLogRepository.create(newCallLogs);
+
       const userChat = await this._chatRepository.findPatientChat(
         patient?._id as string
       );
-      logger.info('user chat');
-      logger.debug(userChat);
-
       const exists = userChat.some(
         (c: IChatPopulated) =>
           c.doctorId._id.toString() === doctorId &&
           c.patiendId.toString() === patientId
       );
-      logger.debug(exists);
 
       if (!exists) {
         const newChat: Partial<IChat> = {
@@ -193,7 +199,6 @@ export class PaymentService implements IPaymentService {
           role: 'doctor',
           balance: Number(amount),
         };
-
         const wallet = await this._walletRepository.create(newWallet);
 
         const newWalletHistory: Partial<IWalletHistory> = {
@@ -216,12 +221,13 @@ export class PaymentService implements IPaymentService {
           source: 'consultation',
           status: 'success',
         };
-
         await this._walletHistoryRepository.create(newWalletHistory);
 
         await this._walletRepository.findByIdAndUpdate(
           doctorWallet?._id as string,
-          { $inc: { balance: Number(amount) } }
+          {
+            $inc: { balance: Number(amount) },
+          }
         );
       }
 
@@ -231,7 +237,6 @@ export class PaymentService implements IPaymentService {
         message: `Your appointment with doctor ${doctor?.name} is booked at ${date} - ${startTime}`,
         isRead: false,
       });
-
       io.to(patientId).emit('notification', patientNotif);
 
       const doctorNotif = await this._notificationRepository.create({
@@ -270,19 +275,21 @@ export class PaymentService implements IPaymentService {
           }
         }
       })();
+
       response = {
         status: 'success',
         patientNotification: patientNotif,
         doctorNotification: doctorNotif,
       };
-    } else {
-      response = {
-        status: 'failed',
-        patientNotification: null,
-        doctorNotification: null,
-      };
+      await session.commitTransaction();
+      return response;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+      await releaseLock(slotKey);
     }
-    return response;
   }
 
   async walletPayment(
@@ -297,170 +304,206 @@ export class PaymentService implements IPaymentService {
     patientNotification: INotificationDto | null;
     doctorNotification: INotificationDto | null;
   }> {
-    const fees = Number(amount);
-    const doctor = await this._doctorRepository.findById(doctorId);
-    if (!doctor) {
-      throw new Error('Doctor Not found');
-    }
-    const patient = await this._patientRepository.findById(patientId);
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    const slotKey = `lock:slot:${doctorId}:${date}:${startTime}`;
+    const ttl = 5000;
+    try {
+      const getLock = await acquireLock(slotKey, ttl);
 
-    if (!patient) {
-      throw new Error('Patient Not found');
-    }
-    const wallet = await this._walletRepository.findByUserId(
-      patient?._id as string
-    );
-    if (!wallet) {
-      throw new Error('Wallet Not found');
-    }
-
-    if (wallet.balance < fees) {
-      throw new Error('insufficient balance');
-    }
-    const newAppoinment: Partial<IAppoinment> = {
-      doctorId: new Types.ObjectId(doctor?._id as string),
-      patientId: new Types.ObjectId(patient?._id as string),
-      slot: {
-        date: date,
-        startTime: startTime,
-        endTime: endTime,
-      },
-      amount: amount,
-    };
-
-    const appoinment = await this._appoinmentRepository.create(newAppoinment);
-
-    await this._walletRepository.findByIdAndUpdate(wallet?._id as string, {
-      $inc: { balance: -fees },
-    });
-
-    const newWalletHistory: Partial<IWalletHistory> = {
-      walletId: new Types.ObjectId(wallet?._id as string),
-      appoinmentId: new Types.ObjectId(appoinment?._id as string),
-      amount: Number(amount),
-      type: 'debit',
-      source: 'consultation',
-      status: 'success',
-    };
-    await this._walletHistoryRepository.create(newWalletHistory);
-
-    const patientNotif = await this._notificationRepository.create({
-      userId: patientId,
-      title: 'Appoinment Booked',
-      message: `Your appointment with doctor ${doctor?.name} is booked at ${date} - ${startTime}`,
-      isRead: false,
-    });
-    io.to(patientId).emit('notification', patientNotif);
-    const doctorNotif = await this._notificationRepository.create({
-      userId: doctorId,
-      title: 'New Appoinment Booked',
-      message: `New Appoinment Booked Patient Name ${patient?.name} time slot ${date} ${startTime}`,
-      isRead: false,
-    });
-    io.to(doctorId).emit('notification', doctorNotif);
-
-    const response = {
-      status: 'success',
-      patientNotification: patientNotif,
-      doctorNotification: doctorNotif,
-    };
-
-    const userChat = await this._chatRepository.findPatientChat(
-      patient?._id as string
-    );
-    const exists = userChat.some(
-      (c: IChatPopulated) =>
-        c.doctorId._id.toString() === doctorId &&
-        c.patiendId.toString() === patientId
-    );
-
-    if (!exists) {
-      const newChat: Partial<IChat> = {
-        appoinmentId: new Types.ObjectId(appoinment?._id as string),
-        doctorId: new Types.ObjectId(appoinment?.doctorId),
-        patiendId: new Types.ObjectId(appoinment?.patientId),
-        participants: [
-          new Types.ObjectId(appoinment?.doctorId),
-          new Types.ObjectId(appoinment?.patientId),
-        ],
-      };
-
-      await this._chatRepository.create(newChat);
-    } else {
-      await this._chatRepository.findByPatientIdAndUpdate(patientId, doctorId, {
-        isActive: true,
-      });
-    }
-
-    const doctorWallet = await this._walletRepository.findByUserId(
-      doctor?._id as string
-    );
-
-    if (!doctorWallet) {
-      const newWallet: Partial<IWallet> = {
-        userId: new Types.ObjectId(doctorId as string),
-        role: 'doctor',
-        balance: Number(amount),
-      };
-
-      const newDoctorWallet = await this._walletRepository.create(newWallet);
-
-      const newWalletHistory: Partial<IWalletHistory> = {
-        walletId: new Types.ObjectId(newDoctorWallet?._id as string),
-        appoinmentId: new Types.ObjectId(appoinment?._id as string),
-        amount: Number(amount),
-        type: 'credit',
-        source: 'consultation',
-        status: 'success',
-      };
-      await this._walletHistoryRepository.create(newWalletHistory);
-    } else {
-      const newWalletHistory: Partial<IWalletHistory> = {
-        walletId: new Types.ObjectId(doctorWallet?._id as string),
-        appoinmentId: new Types.ObjectId(appoinment?._id as string),
-        amount: Number(amount),
-        type: 'credit',
-        source: 'consultation',
-        status: 'success',
-      };
-
-      await this._walletHistoryRepository.create(newWalletHistory);
-
-      await this._walletRepository.findByIdAndUpdate(
-        doctorWallet?._id as string,
-        { $inc: { balance: Number(amount) } }
-      );
-    }
-
-    (async () => {
-      try {
-        await mailService.sendPatientAppoinmentEmail(
-          patient?.email,
-          patient?.name,
-          date,
-          startTime,
-          endTime,
-          doctor?.name
-        );
-        await mailService.sendDoctorAppoinmentEmail(
-          doctor?.email,
-          doctor?.name,
-          patient?.name,
-          date,
-          startTime,
-          endTime
-        );
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          logger.error(error.message);
-          throw new Error(error.message);
-        } else {
-          logger.error('Unknown error', error);
-          throw new Error('Something went wrong');
-        }
+      if (!getLock) {
+        throw new Error('Slot already booked. Please choose another slot.');
       }
-    })();
 
-    return response;
+      const fees = Number(amount);
+      const doctor = await this._doctorRepository.findById(doctorId);
+      if (!doctor) {
+        throw new Error('Doctor Not found');
+      }
+      const patient = await this._patientRepository.findById(patientId);
+
+      if (!patient) {
+        throw new Error('Patient Not found');
+      }
+
+
+      const appoinmentExists = await this._appoinmentRepository.findByOneSlot(
+      doctorId,
+      date,
+      startTime,
+      session
+      );
+      if (appoinmentExists) throw new Error('Appointment already booked');
+
+
+      const wallet = await this._walletRepository.findByUserId(
+        patient?._id as string
+      );
+      if (!wallet) {
+        throw new Error('Wallet Not found');
+      }
+
+      if (wallet.balance < fees) {
+        throw new Error('insufficient balance');
+      }
+      const newAppoinment: Partial<IAppoinment> = {
+        doctorId: new Types.ObjectId(doctor?._id as string),
+        patientId: new Types.ObjectId(patient?._id as string),
+        slot: {
+          date: date,
+          startTime: startTime,
+          endTime: endTime,
+        },
+        amount: amount,
+      };
+
+      const appoinment = await this._appoinmentRepository.create(
+        newAppoinment,
+        session
+      );
+
+      await this._walletRepository.findByIdAndUpdate(wallet?._id as string, {
+        $inc: { balance: -fees },
+      });
+
+      const newWalletHistory: Partial<IWalletHistory> = {
+        walletId: new Types.ObjectId(wallet?._id as string),
+        appoinmentId: new Types.ObjectId(appoinment?._id as string),
+        amount: Number(amount),
+        type: 'debit',
+        source: 'consultation',
+        status: 'success',
+      };
+      await this._walletHistoryRepository.create(newWalletHistory);
+
+      const patientNotif = await this._notificationRepository.create({
+        userId: patientId,
+        title: 'Appoinment Booked',
+        message: `Your appointment with doctor ${doctor?.name} is booked at ${date} - ${startTime}`,
+        isRead: false,
+      });
+      io.to(patientId).emit('notification', patientNotif);
+      const doctorNotif = await this._notificationRepository.create({
+        userId: doctorId,
+        title: 'New Appoinment Booked',
+        message: `New Appoinment Booked Patient Name ${patient?.name} time slot ${date} ${startTime}`,
+        isRead: false,
+      });
+      io.to(doctorId).emit('notification', doctorNotif);
+
+      const response = {
+        status: 'success',
+        patientNotification: patientNotif,
+        doctorNotification: doctorNotif,
+      };
+
+      const userChat = await this._chatRepository.findPatientChat(
+        patient?._id as string
+      );
+      const exists = userChat.some(
+        (c: IChatPopulated) =>
+          c.doctorId._id.toString() === doctorId &&
+          c.patiendId.toString() === patientId
+      );
+
+      if (!exists) {
+        const newChat: Partial<IChat> = {
+          appoinmentId: new Types.ObjectId(appoinment?._id as string),
+          doctorId: new Types.ObjectId(appoinment?.doctorId),
+          patiendId: new Types.ObjectId(appoinment?.patientId),
+          participants: [
+            new Types.ObjectId(appoinment?.doctorId),
+            new Types.ObjectId(appoinment?.patientId),
+          ],
+        };
+
+        await this._chatRepository.create(newChat);
+      } else {
+        await this._chatRepository.findByPatientIdAndUpdate(
+          patientId,
+          doctorId,
+          {
+            isActive: true,
+          }
+        );
+      }
+
+      const doctorWallet = await this._walletRepository.findByUserId(
+        doctor?._id as string
+      );
+
+      if (!doctorWallet) {
+        const newWallet: Partial<IWallet> = {
+          userId: new Types.ObjectId(doctorId as string),
+          role: 'doctor',
+          balance: Number(amount),
+        };
+
+        const newDoctorWallet = await this._walletRepository.create(newWallet);
+
+        const newWalletHistory: Partial<IWalletHistory> = {
+          walletId: new Types.ObjectId(newDoctorWallet?._id as string),
+          appoinmentId: new Types.ObjectId(appoinment?._id as string),
+          amount: Number(amount),
+          type: 'credit',
+          source: 'consultation',
+          status: 'success',
+        };
+        await this._walletHistoryRepository.create(newWalletHistory);
+      } else {
+        const newWalletHistory: Partial<IWalletHistory> = {
+          walletId: new Types.ObjectId(doctorWallet?._id as string),
+          appoinmentId: new Types.ObjectId(appoinment?._id as string),
+          amount: Number(amount),
+          type: 'credit',
+          source: 'consultation',
+          status: 'success',
+        };
+
+        await this._walletHistoryRepository.create(newWalletHistory);
+
+        await this._walletRepository.findByIdAndUpdate(
+          doctorWallet?._id as string,
+          { $inc: { balance: Number(amount) } }
+        );
+      }
+
+      (async () => {
+        try {
+          await mailService.sendPatientAppoinmentEmail(
+            patient?.email,
+            patient?.name,
+            date,
+            startTime,
+            endTime,
+            doctor?.name
+          );
+          await mailService.sendDoctorAppoinmentEmail(
+            doctor?.email,
+            doctor?.name,
+            patient?.name,
+            date,
+            startTime,
+            endTime
+          );
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            logger.error(error.message);
+            throw new Error(error.message);
+          } else {
+            logger.error('Unknown error', error);
+            throw new Error('Something went wrong');
+          }
+        }
+      })();
+      await session.commitTransaction();
+      return response;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+      await releaseLock(slotKey);
+    }
   }
 }
