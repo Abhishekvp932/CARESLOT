@@ -13,9 +13,12 @@ import { AdminlogOut as adminLogOut } from "@/features/admin/adminSlice";
 import type { RootState } from "./store";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:3000/api",
+  baseUrl: process.env.NODE_ENV === "production"
+    ? "https://careslot.ddns.net/api"
+    : "http://localhost:3000/api",
   credentials: "include",
 });
+
 
 export const customBaseQuery: BaseQueryFn<
   string | FetchArgs,

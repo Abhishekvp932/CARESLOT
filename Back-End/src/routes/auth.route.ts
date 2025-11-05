@@ -62,7 +62,7 @@ router.get(
     logger.info('google auth user info');
     logger.debug(user);
     if (!user) {
-      return res.redirect('http://localhost:2025/login');
+      return res.redirect('https://careslot.ddns.net/login');
     }
 
     const payload = {
@@ -88,7 +88,7 @@ router.get(
       maxAge: Number(process.env.REDIS_SESSION_MAX_AGE),
     });
     logger.info('last step is completed');
-    return res.redirect('http://localhost:2025/');
+    return res.redirect('https://careslot.ddns.net/');
   }
 );
 

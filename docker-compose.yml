@@ -2,27 +2,23 @@ version: "3.9"
 
 services:
   app:
-    build:
-      context: ./Back-End
-      dockerfile: Dockerfile
+    image: abhishekcareslot/app:latest
+    container_name: careslot-app
     ports:
       - "3000:3000"
-    volumes:
-      - ./Back-End:/app
-      - /app/node_modules
     env_file:
       - ./Back-End/.env
     environment:
       - TZ=Asia/Kolkata
-    command: npm run dev
+    restart: always
 
   frontend:
-    build:
-      context: ./front-end
-      dockerfile: Dockerfile
+    image: abhishekcareslot/frontend:latest
+    container_name: careslot-frontend
     ports:
       - "2025:80"
     depends_on:
       - app
     environment:
       - TZ=Asia/Kolkata
+    restart: always

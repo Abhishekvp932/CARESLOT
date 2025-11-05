@@ -9,7 +9,7 @@ interface VideoCallProps {
   onCallEnd?: () => void;
 }
 
-const socket: Socket = io("http://localhost:3000");
+const socket: Socket = io("https://careslot.ddns.net");
 
 type CallStatus = 'idle' | 'calling' | 'incoming' | 'active' | 'rejected' | 'ended';
 
