@@ -1,20 +1,18 @@
-version: "3.9"
-
 services:
   app:
     image: abhishekcareslot/app:latest
-    container_name: careslot-app
+    build:
+      context: ./Back-End
     ports:
       - "3000:3000"
-    env_file:
-      - ./Back-End/.env
     environment:
       - TZ=Asia/Kolkata
     restart: always
 
   frontend:
     image: abhishekcareslot/frontend:latest
-    container_name: careslot-frontend
+    build:
+      context: ./Front-End
     ports:
       - "2025:80"
     depends_on:
