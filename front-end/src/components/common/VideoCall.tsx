@@ -26,6 +26,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [remoteVideoReady, setRemoteVideoReady] = useState(false);
+  const [tracksReceived, setTracksReceived] = useState({ video: false, audio: false });
 
   useEffect(() => {
     console.log("Joining room with userId:", userId, "appointmentId:", appointmentId);
@@ -126,7 +127,9 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     };
   }, [appointmentId, userId, onCallEnd]);
 
-  // Attach remote stream when it's available
+  // Attach remote stream when it's available - using a better dependency
+  const [remoteStreamUpdate, setRemoteStreamUpdate] = useState(0);
+  
   useEffect(() => {
     if (remoteStreamRef.current && remoteVideoRef.current) {
       console.log("🔄 Attaching remote stream to video element");
@@ -134,7 +137,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       remoteVideoRef.current.play().catch(err => console.log("Remote video play error:", err));
       setRemoteVideoReady(true);
     }
-  }, [remoteStreamRef.current]);
+  }, [remoteStreamUpdate]);
 
   const setupPeerConnection = async (targetSocketId?: string) => {
     const pc = new RTCPeerConnection({
@@ -165,11 +168,17 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       if (localVideoRef.current) {
         console.log("📹 Attaching local stream to video element");
         localVideoRef.current.srcObject = stream;
+        
+        // Add event listeners for local video too
+        localVideoRef.current.onloadedmetadata = () => {
+          console.log("📺 Local video metadata loaded");
+        };
+        
         localVideoRef.current.play().catch(err => console.log("Local video play error:", err));
       }
       
       stream.getTracks().forEach(track => {
-        console.log("Adding track:", track.kind);
+        console.log("➕ Adding track to peer connection:", track.kind, "enabled:", track.enabled, "readyState:", track.readyState);
         pc.addTrack(track, stream);
       });
     } catch (err) {
@@ -179,19 +188,54 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     }
 
     pc.ontrack = (event) => {
-      console.log("🎥 Received remote track:", event.track.kind);
+      console.log("🎥 Received remote track:", event.track.kind, "readyState:", event.track.readyState);
+      
+      // Update tracks received status
+      setTracksReceived(prev => ({
+        ...prev,
+        [event.track.kind]: true
+      }));
+      
+      // Log all streams
+      event.streams.forEach((stream, index) => {
+        console.log(`Stream ${index}:`, stream.id, "tracks:", stream.getTracks().length);
+      });
+      
       const stream = event.streams[0];
       
       if (stream) {
-        console.log("✅ Setting remote stream reference");
+        console.log("✅ Setting remote stream reference with", stream.getTracks().length, "tracks");
         remoteStreamRef.current = stream;
+        
+        // Force update to trigger useEffect
+        setRemoteStreamUpdate(prev => prev + 1);
         
         // Immediately attach to video element
         if (remoteVideoRef.current) {
-          console.log("✅ Attaching remote stream to video element");
+          console.log("✅ Directly attaching remote stream to video element");
           remoteVideoRef.current.srcObject = stream;
-          remoteVideoRef.current.play().catch(err => console.log("Remote video play error:", err));
-          setRemoteVideoReady(true);
+          
+          // Add event listeners to track video status
+          remoteVideoRef.current.onloadedmetadata = () => {
+            console.log("📺 Remote video metadata loaded");
+            remoteVideoRef.current?.play()
+              .then(() => console.log("✅ Remote video playing"))
+              .catch(err => console.error("❌ Remote video play error:", err));
+          };
+          
+          remoteVideoRef.current.onplay = () => {
+            console.log("▶️ Remote video started playing");
+            setRemoteVideoReady(true);
+          };
+          
+          remoteVideoRef.current.onerror = (e) => {
+            console.error("❌ Remote video error:", e);
+          };
+          
+          // Try to play immediately
+          remoteVideoRef.current.play()
+            .then(() => console.log("✅ Remote video play initiated"))
+            .catch(err => console.log("⏳ Remote video play pending:", err.message));
         }
       }
     };
@@ -211,21 +255,32 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     };
 
     pc.onconnectionstatechange = () => {
-      console.log("Connection state:", pc.connectionState);
-      if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+      console.log("🔌 Connection state:", pc.connectionState);
+      if (pc.connectionState === 'connected') {
+        console.log("✅ Peer connection established!");
+      } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+        console.error("❌ Connection failed or disconnected");
         setRemoteVideoReady(false);
+    setTracksReceived({ video: false, audio: false });
       }
     };
 
     pc.oniceconnectionstatechange = () => {
-      console.log("ICE connection state:", pc.iceConnectionState);
+      console.log("🧊 ICE connection state:", pc.iceConnectionState);
+      if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+        console.log("✅ ICE connection successful!");
+      }
+    };
+    
+    pc.onsignalingstatechange = () => {
+      console.log("📡 Signaling state:", pc.signalingState);
     };
 
     return pc;
   };
 
   const startCall = async () => {
-    console.log("Starting call to otherUserId:", otherUserId);
+    console.log("📞 Starting call to otherUserId:", otherUserId);
     setCallStatus('calling');
     const pc = await setupPeerConnection();
     if (!pc) {
@@ -233,43 +288,67 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       return;
     }
 
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    
-    console.log("Sending start-call to:", otherUserId);
-    socket.emit("start-call", { 
-      appointmentId, 
-      offer, 
-      to: otherUserId,
-      from: userId
-    });
+    try {
+      const offer = await pc.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true
+      });
+      console.log("📝 Created offer:", offer.type);
+      await pc.setLocalDescription(offer);
+      console.log("✅ Set local description");
+      
+      console.log("📤 Sending start-call to:", otherUserId);
+      socket.emit("start-call", { 
+        appointmentId, 
+        offer, 
+        to: otherUserId,
+        from: userId
+      });
+    } catch (err) {
+      console.error("❌ Error in startCall:", err);
+      alert("Failed to start call: " + err);
+      setCallStatus('idle');
+      cleanup();
+    }
   };
 
   const acceptCall = async () => {
-    console.log("Accepting call from:", incomingCallFrom);
+    console.log("📞 Accepting call from:", incomingCallFrom);
     const pc = await setupPeerConnection(incomingCallFrom);
     if (!pc) {
       setCallStatus('idle');
       return;
     }
 
-    const offerStr = sessionStorage.getItem('pendingOffer');
-    if (offerStr) {
-      const offer = JSON.parse(offerStr);
-      await pc.setRemoteDescription(new RTCSessionDescription(offer));
-      
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      
-      console.log("Sending accept-call to:", incomingCallFrom);
-      socket.emit("accept-call", { 
-        appointmentId, 
-        answer, 
-        to: incomingCallFrom
-      });
-      
-      setCallStatus('active');
-      sessionStorage.removeItem('pendingOffer');
+    try {
+      const offerStr = sessionStorage.getItem('pendingOffer');
+      if (offerStr) {
+        const offer = JSON.parse(offerStr);
+        console.log("📝 Setting remote description from offer");
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        console.log("✅ Remote description set");
+        
+        console.log("📝 Creating answer");
+        const answer = await pc.createAnswer();
+        console.log("✅ Answer created:", answer.type);
+        await pc.setLocalDescription(answer);
+        console.log("✅ Local description set");
+        
+        console.log("📤 Sending accept-call to:", incomingCallFrom);
+        socket.emit("accept-call", { 
+          appointmentId, 
+          answer, 
+          to: incomingCallFrom
+        });
+        
+        setCallStatus('active');
+        sessionStorage.removeItem('pendingOffer');
+      }
+    } catch (err) {
+      console.error("❌ Error in acceptCall:", err);
+      alert("Failed to accept call: " + err);
+      setCallStatus('idle');
+      cleanup();
     }
   };
 
@@ -473,7 +552,11 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
                 <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Video size={32} />
                 </div>
-                <p>Connecting...</p>
+                <p className="mb-2">Connecting...</p>
+                <div className="text-xs text-gray-400">
+                  <p>Audio: {tracksReceived.audio ? '✓' : '...'}</p>
+                  <p>Video: {tracksReceived.video ? '✓' : '...'}</p>
+                </div>
               </div>
             </div>
           )}
