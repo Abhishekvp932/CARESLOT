@@ -135,7 +135,8 @@ export class PaymentService implements IPaymentService {
         paymentMethod: paymentMethod,
       };
       const payment = await this._paymentRepository.create(newPayment);
-
+      logger.info('Payment created:');
+      logger.debug(payment);
       await this._appoinmentRepository.findByIdAndUpdate(
         appoinment?._id as string,
         { transactionId: new Types.ObjectId(payment?._id as string) }
@@ -159,6 +160,9 @@ export class PaymentService implements IPaymentService {
         ),
         status: 'scheduled',
       };
+      logger.info('Creating call log:');
+      logger.debug(newCallLogs);
+      
       await this._callLogRepository.create(newCallLogs);
 
       const userChat = await this._chatRepository.findPatientChat(

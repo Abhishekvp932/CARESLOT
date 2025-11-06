@@ -12,7 +12,7 @@ export class CallLogRepository
     super(CallLog);
   }
   async findByAppoinmentId(appoinmentId: string): Promise<ICallLog | null> {
-    return await CallLog.findOne({ appoinmentId: appoinmentId });
+    return await CallLog.findOne({ appoinmentId });
   }
 async findByAppoinmentIdAndUpdate(appoinmentId: string, update: UpdateQuery<ICallLog>): Promise<ICallLog | null> {
   return await CallLog.findOneAndUpdate({appoinmentId},update,{new:true});

@@ -3,21 +3,19 @@ import { ICallLogService } from '../../interface/callLogs/ICallLogService';
 import { ICallLogRepository } from '../../interface/callLogs/ICallLogRepository';
 
 import { ICallLogDto } from '../../types/ICallLogDTO';
+import logger from '../../utils/logger';
 
 export class CallLogService implements ICallLogService {
   constructor(private _callLogRepository: ICallLogRepository) {}
 
   async getCallData(appoinmentId: string): Promise<ICallLogDto> {
-    if (!appoinmentId) {
-      throw new Error('Appoinment id not found');
-    }
-    const callLog = await this._callLogRepository.findByAppoinmentId(
-      appoinmentId
-    );
+    logger.info('appoinment id is');
+  logger.debug(appoinmentId);
+    const callLog = await this._callLogRepository.findByAppoinmentId(appoinmentId);
 
-    if (!callLog) {
-      throw new Error('No call data found');
-    }
+   if(!callLog){
+    throw new Error('Call log not found');
+   }
 
     return callLog;
   }

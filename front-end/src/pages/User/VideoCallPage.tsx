@@ -7,7 +7,7 @@ export default function UserVideoCall() {
   const { appoinmentId } = useParams();
   console.log('appoinmentId',appoinmentId);
   const { data: callData = {} } = useGetCallDataQuery(appoinmentId);
-  console.log('call data ',callData);
+  console.log(' user call data ',callData);
   return (
     <div>
       {callData && (
