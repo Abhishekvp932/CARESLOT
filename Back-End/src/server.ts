@@ -26,6 +26,7 @@ import chatRoute from './routes/chat.route';
 import callLogRoute from './routes/callLog.route';
 import ratingRoute from './routes/rating.route';
 import prescriptionRoute from './routes/prescription.route';
+import contactRoute from './routes/contact.route';
 import { initChatSocket } from './utils/scoket/chat.scoket';
 import logger from './utils/logger';
 import { initVideoCallSocket } from './utils/scoket/video.call.socket';
@@ -53,7 +54,7 @@ const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: 'https://careslot.ddns.net',
+    origin: 'http://localhost:2025',
     credentials: true,
   },
 });
@@ -74,7 +75,7 @@ io.on('connection', (socket) => {
 });
 
 const corsOperation = {
-  origin: 'https://careslot.ddns.net',
+  origin: 'http://localhost:2025',
   credentials: true,
 };
 app.use(cookieParser());
@@ -111,7 +112,7 @@ app.use('/api/chat', chatRoute);
 app.use('/api/call', callLogRoute);
 app.use('/api/rating', ratingRoute);
 app.use('/api/prescription',prescriptionRoute);
-
+app.use('/api/contact',contactRoute);
 app.use(errorHandler);
 const PORT = process.env.PORT;
 

@@ -27,8 +27,8 @@ export const API_ROUTES = {
     DOCTOR_APPROVE: (doctorId: string) => `/admin/doctor/${doctorId}`,
     DOCTOR_REJECT: (doctorId: string) => `/admin/doctor/${doctorId}`,
     DOCTOR_DETAILS: (doctorId: string) => `/admin/doctor-details/${doctorId}`,
-    ADMIN_APPOINTMENTS: (status?: string) =>
-      `/admin/appoinments?status=${status || ""}`,
+    ADMIN_APPOINTMENTS: (status:string,page:number,limit:number) =>
+      `/admin/appoinments?status=${status || ""}&page=${page}&limit=${limit}`,
     GET_DOCTOR_SLOTS: (doctorId: string) => `/admin/getSlots/${doctorId}`,
      GET_DASHBOARD_DATA:(filter:string) => `/admin/dashboard?filter=${filter}`,
   },
@@ -132,5 +132,9 @@ export const API_ROUTES = {
 
   PRESCRIPTION : {
     CREATE:'/prescription/prescription',
+  },
+  CONTACT:{
+      CREATE:(name:string,email:string,phone:string,message:string)=> `/contact/contact?name=${name}&email=${email}&phone=${phone}&message=${message}`,
+      GETCONTACTDATA:(search?:string,page?:number,limit?:string)=> `/contact/getContacts?search=${search}&page=${page}&limit=${limit}`
   }
 };

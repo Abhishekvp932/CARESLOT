@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetEditDoctorDataQuery } from "@/features/admin/adminApi";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetAllDoctorSlotsAndAppoinmentsQuery } from "@/features/admin/adminApi";
 import {
   ArrowLeft,
@@ -38,6 +38,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/app/store";
+import { useEffect, useState } from "react";
 
 interface Qualifications {
   specialization: string;
@@ -120,6 +123,28 @@ export default function DoctorDetailsPage() {
   const appoinments = data?.appoinments || [];
   const slots = data?.slots || [];
   const ratings = data?.ratings || [];
+ 
+  const navigate = useNavigate();
+
+   const admin = useSelector((state: RootState) => state.admin)
+      const user = useSelector((state: RootState) => state.auth.user)
+      const doctors = useSelector((state: RootState) => state.doctor.doctor)
+    
+      const [isAuthorized, setIsAuthorized] = useState(false)
+    
+      useEffect(() => {
+        if (admin?.role === "admin") {
+          setIsAuthorized(true)
+        } else if (user) {
+          navigate("/")
+        } else if (doctors) {
+          navigate("/doctor")
+        } else {
+          navigate("/login")
+        }
+      }, [admin, user, doctors, navigate])
+    
+      if (!isAuthorized) return null
 
   return (
     <div className="min-h-screen bg-gray-50/50">

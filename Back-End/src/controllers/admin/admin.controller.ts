@@ -343,8 +343,10 @@ export class AdminController implements IAdminController {
     try {
       logger.info('Admin appointment fetch request received');
       const status = req.query.status as string;
-      const result = await this._adminService.getAllAppoinments(status);
-      res.status(HttpStatus.OK).json(result);
+      const page = parseInt(req.query.page as string);
+      const limit = parseInt(req.query.limit as string);
+      const result = await this._adminService.getAllAppoinments(status,page,limit);
+      res.status(HttpStatus.OK).json({data:result.appoinments,currentPage:page,totalPages: Math.ceil(result.total / limit), totalItem: result.total});
     } catch (error) {
       next(error as Error);
     }

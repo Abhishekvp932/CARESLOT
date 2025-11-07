@@ -1,25 +1,39 @@
 "use client"
 
-import {useState } from "react"
+import {useEffect, useState } from "react"
 import { AppointmentCard } from "@/components/common/admin/appoinment_card"
 
 import { Button } from "@/components/ui/button"
 
 
 import { useGetAllAdminAppoinmentsQuery } from "@/features/admin/adminApi"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 
 
 export function AppointmentHistory() {
 
-
+ const [page,setPage] = useState<number>(1);
   const [statusFilter, setStatusFilter] = useState<string>("all")
-  // const limit = 10;
+  const limit = 10;
  
-const {data = {}} = useGetAllAdminAppoinmentsQuery({status:statusFilter});
+const {data = {}} = useGetAllAdminAppoinmentsQuery({status:statusFilter,page,limit});
   console.log(data);
 
-  const appointments = data || []
+  const appointments = data.data || []
+  const totalPages = Number(data?.totalPages ?? 1);
+  const totalItems = Number(data?.totalItem ?? 0);
+
+  const canPrev = page > 1;
+  const canNext = page < totalPages;
+
+  const handlePrev = () => canPrev && setPage((p) => p - 1);
+  const handleNext = () => canNext && setPage((p) => p + 1);
+
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -74,12 +88,59 @@ const {data = {}} = useGetAllAdminAppoinmentsQuery({status:statusFilter});
         ))}
       </div>
 
-      {/* {filteredAppointments.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground text-lg">No appointments found</p>
-          <p className="text-muted-foreground text-sm mt-2">Try adjusting your search or filter criteria</p>
-        </div>
-      )} */}
+     {totalPages > 1 && (
+  <div className="flex flex-col sm:flex-row items-center justify-between border-t border-border pt-6 gap-4">
+    {/* Left side text */}
+    <div className="text-sm text-muted-foreground">
+      Page {page} of {totalPages}
+      {totalItems ? ` • ${totalItems} total` : null}
+      {totalPages - page > 0
+        ? ` • ${totalPages - page} page${totalPages - page > 1 ? "s" : ""} left`
+        : ""}
+    </div>
+
+    {/* Right side buttons */}
+    <div className="flex items-center gap-2">
+      {/* Prev button */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handlePrev}
+        disabled={!canPrev}
+        className="bg-transparent"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+
+      {/* Numbered buttons */}
+      <div className="flex items-center gap-1">
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+          <Button
+            key={p}
+            variant={page === p ? "default" : "outline"}
+            size="sm"
+            onClick={() => setPage(p)}
+            className={page === p ? "" : "bg-transparent"}
+          >
+            {p}
+          </Button>
+        ))}
+      </div>
+
+      {/* Next button */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleNext}
+        disabled={!canNext}
+        className="bg-transparent"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+    </div>
+  </div>
+)}
+
     </div>
   )
 }

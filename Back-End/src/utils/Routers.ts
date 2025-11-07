@@ -91,5 +91,9 @@ export const Routers = {
     prescriptionRouters:{
         create:'/prescription',
         download:'/download/:appoinmentId'
+    },
+    contactRouters:{
+        create:'/contact',
+        getContacts:'/getContacts'
     }
 };

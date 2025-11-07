@@ -152,6 +152,12 @@ import { API_ROUTES } from "@/constants/apiRoutes";
           method:'GET',
         }),
       }),
+      createContactInformation:builder.mutation({
+        query:({name,email,phone,message})=>({
+          url:API_ROUTES.CONTACT.CREATE(name,email,phone,message),
+          method:"POST",
+        }),
+      }),
     }),
   });
 
@@ -179,5 +185,6 @@ import { API_ROUTES } from "@/constants/apiRoutes";
     useReadAllNotificationMutation,
     useAddRatingMutation,
     useFindDoctorRatingsQuery,
+    useCreateContactInformationMutation,
     }
     = userApi;

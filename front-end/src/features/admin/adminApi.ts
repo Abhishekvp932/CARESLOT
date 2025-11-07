@@ -93,8 +93,8 @@ export const adminApi = api.injectEndpoints({
         }),
       }),
       getAllAdminAppoinments:builder.query({
-        query:({status})=>({
-            url:API_ROUTES.ADMIN.ADMIN_APPOINTMENTS(status),
+        query:({status,page,limit})=>({
+            url:API_ROUTES.ADMIN.ADMIN_APPOINTMENTS(status,page,limit),
             method:'GET'
         }),
       }),
@@ -108,6 +108,12 @@ export const adminApi = api.injectEndpoints({
         query:(filter:string)=>({
           url:API_ROUTES.ADMIN.GET_DASHBOARD_DATA(filter),
           method:'GET',
+        }),
+      }),
+      getContactsData:builder.query({
+        query:({search,page,limit})=>({
+          url:API_ROUTES.CONTACT.GETCONTACTDATA(search,page,limit),
+          method:"GET",
         }),
       }),
     }),
@@ -130,4 +136,5 @@ export const {
     useGetAllAdminAppoinmentsQuery,
     useGetAllDoctorSlotsAndAppoinmentsQuery,
     useGetAdminDashboardDataQuery,
+    useGetContactsDataQuery,
 } = adminApi

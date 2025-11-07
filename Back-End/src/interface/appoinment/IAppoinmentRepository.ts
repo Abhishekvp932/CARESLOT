@@ -13,11 +13,12 @@ export interface IAppoinmentRepository{
     findByIdAndUpdate(appoinmentId:string | Types.ObjectId,update:Partial<IAppoinment>):Promise<IAppoinment | null>;
     findAppoinmentsByDoctor(doctorId:string,skip:number,limit:number,filter?:FilterQuery<IAppoinment>):Promise<(IAppoinment & {patientId:IPatientPopulated})[]>;
     findAppoinmentsByPatient(patientId:string,skip:number,limit:number):Promise<(IAppoinment & {doctorId:IDoctorPopulated})[]>;
-    findAll(filter:FilterQuery<IAppoinment>):Promise<AppoinmentPopulatedDTO[]>;
+    findAll(filter:FilterQuery<IAppoinment>,skip:number,limit:number):Promise<AppoinmentPopulatedDTO[]>;
     countPatientAppoinment(patientId:string):Promise<number>;
     countDoctorAppoinment(doctorId:string):Promise<number>;
     findByOneSlot(doctorId:string,slotDate:string,startTime:string,session?:ClientSession):Promise<IAppoinment | null>;
     findPatientActiveAppoinments(patientId:string,doctorId:string):Promise<IAppoinment[]>;
     adminDashboardData(filter:FilterQuery<IAppoinment>):Promise<DashboardData>;
     doctorDashboardData(doctorId:string,filter?:FilterQuery<IAppoinment>):Promise<DoctorDashboardData>;
+    countAll(filter?:FilterQuery<IAppoinment>):Promise<number>;
 }

@@ -74,7 +74,9 @@ export class AppoinmentRepository implements IAppoinmentRepository {
   }
 
   async findAll(
-    filter: FilterQuery<IAppoinment>
+    filter: FilterQuery<IAppoinment>,
+    skip:number,
+    limit:number
   ): Promise<AppoinmentPopulatedDTO[]> {
     const appoinment = await Appoinment.find(filter)
       .populate(
@@ -82,6 +84,9 @@ export class AppoinmentRepository implements IAppoinmentRepository {
         '_id name email phone profile_img qualifications.fees qualifications.specialization'
       )
       .populate('patientId', '_id name email phone profile_img')
+      .sort({createdAt:-1})
+      .skip(skip)
+      .limit(limit)
       .lean()
       .exec();
 
@@ -291,6 +296,10 @@ const result = await Appoinment.aggregate([
 ]);
 
     return result[0];
+  }
+
+  async countAll(filter?: FilterQuery<IAppoinment>): Promise<number> {
+    return await Appoinment.countDocuments(filter);
   }
 
 }

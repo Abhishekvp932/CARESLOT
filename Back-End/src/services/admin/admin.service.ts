@@ -17,7 +17,7 @@ import { MailService } from '../mail.service';
 import redisClient from '../../config/redisClient';
 import { verifyAccessToken } from '../../utils/jwt';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
-import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
+import { AppoinmentPaginationDTO, AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
 import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
 import { ISlotRepository } from '../../interface/Slots/ISlotRepository';
 import { ISlotDto } from '../../types/ISlotDTO';
@@ -547,7 +547,8 @@ export class AdminService implements IAdminService {
     await this._doctorAuthRepository.create(doctorData);
     return { msg: 'New doctor added successfully' };
   }
-  async getAllAppoinments(status: string): Promise<AppoinmentPopulatedDTO[]> {
+  async getAllAppoinments(status: string,page:number,limit:number): Promise<AppoinmentPaginationDTO> {
+    const skip = (page -1) * limit;
     let filter = {};
 
     if (status === 'upcoming') {
@@ -558,8 +559,8 @@ export class AdminService implements IAdminService {
       filter = { status: 'cancelled' };
     }
 
-    const appoinmentsList = await this._appoinmentRepository.findAll(filter);
-
+    const appoinmentsList = await this._appoinmentRepository.findAll(filter,skip,limit);
+   const total = await this._appoinmentRepository.countAll(filter);
     if (!appoinmentsList) {
       throw new Error('No Appoinments');
     }
@@ -595,7 +596,7 @@ export class AdminService implements IAdminService {
       };
     });
 
-    return appoinments;
+    return {appoinments,total};
   }
 
   async getDoctorSlotAndAppoinment(doctorId: string): Promise<{

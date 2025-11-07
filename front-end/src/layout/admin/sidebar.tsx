@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, X, Home, User, Stethoscope, CalendarDays, Timer, LogOut, ChevronRight } from "lucide-react"
+import { Menu, X, Home, User, Stethoscope, CalendarDays, Timer, LogOut, ChevronRight, MessageCircle } from "lucide-react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { AdminlogOut as adminLogOut } from "@/features/admin/adminSlice"
@@ -48,6 +48,12 @@ export const Sidebar = () => {
       label: "Appointments",
       href: "/admin/appoinments",
       active: location.pathname === "/admin/appoinments",
+    },
+     {
+      icon: MessageCircle,
+      label: "Messages",
+      href: "/admin/messages",
+      active: location.pathname === "/admin/messages",
     },
   ]
 

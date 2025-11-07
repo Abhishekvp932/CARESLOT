@@ -39,7 +39,7 @@ import DoctorWalletPage from "./pages/Doctor/DoctorWallet"
 import ContactPage from "./pages/User/Contact-page"
 import ServicePage from "./pages/User/servicePage"
 import { DoctorDashboard } from "./pages/Doctor/Dashboard"
-
+import MessagesPage from "./pages/Admin/Messages"
 
 function App() {
 
@@ -81,6 +81,7 @@ function App() {
            <Route path="/admin/add-doctors" element = {<AddDoctorPage/>}/>
            <Route path="/admin/doctor-details/:doctorId" element = {<DoctorDetailsPage/>}/>
            <Route path="/admin/appoinments" element = {<AdminLayout><AppointmentHistory/></AdminLayout>}/>
+           <Route path="/admin/messages" element = {<AdminLayout><MessagesPage/></AdminLayout>}/>
 
            {/* doctor */}
 

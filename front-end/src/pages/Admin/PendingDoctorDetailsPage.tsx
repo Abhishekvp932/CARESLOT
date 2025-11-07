@@ -30,8 +30,10 @@ import {
 } from "lucide-react";
 import BackButton from "@/layout/admin/backButton";
 import { useGetDoctorDataQuery } from "@/features/admin/adminApi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RejectionReasonModal from "@/components/common/admin/rejectionReasonModal";
+import type { RootState } from "@/app/store";
+import { useSelector } from "react-redux";
 const DoctorDetails = () => {
   const navigate = useNavigate();
   const { doctorId } = useParams<{ doctorId: string }>();
@@ -41,6 +43,27 @@ const DoctorDetails = () => {
   console.log("doctors", doctor);
   const [doctorApprove] = useDoctorApproveMutation();
   const [doctorReject] = useDoctorRejectMutation();
+ 
+  
+    const admin = useSelector((state: RootState) => state.admin)
+    const user = useSelector((state: RootState) => state.auth.user)
+    const doctors = useSelector((state: RootState) => state.doctor.doctor)
+  
+    const [isAuthorized, setIsAuthorized] = useState(false)
+  
+    useEffect(() => {
+      if (admin?.role === "admin") {
+        setIsAuthorized(true)
+      } else if (user) {
+        navigate("/")
+      } else if (doctors) {
+        navigate("/doctor")
+      } else {
+        navigate("/login")
+      }
+    }, [admin, user, doctors, navigate])
+  
+    if (!isAuthorized) return null
 
   const handleApprove = async (doctorId: string) => {
     try {

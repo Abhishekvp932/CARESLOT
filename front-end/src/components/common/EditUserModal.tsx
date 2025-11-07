@@ -56,8 +56,7 @@ const EditUserModal:React.FC<EditUserModalProps> = ({
     try {
       const parsedData : UserEditData = userEdit.parse({
         ...formData,
-        dob:
-          typeof formData.dob === "string" ? (formData.dob as any).DOB || "" : "",
+        dob:formData.dob,
       });
 
       setErrors({});

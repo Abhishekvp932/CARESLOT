@@ -110,13 +110,18 @@ export class AuthService implements IAuthService{
     role: string
   ): Promise<{ msg: string }> {
     const otp = generateOTP();
-
+     logger.info('otp is');
+     logger.debug(otp);
     const otpExpire = new Date(Date.now() + 60 * 1000);
     const hashedPassword = await hashPassword(password);
 
     if (role === 'patients') {
       const existingUser = await this._patientRepository.findByEmail(email);
       if (existingUser) {
+        throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
+      }
+      const isexistsingDoctor = await this._doctorRepository.findByEmail(email);
+      if(isexistsingDoctor){
         throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
       }
 
@@ -138,6 +143,10 @@ export class AuthService implements IAuthService{
       const existingDoctor = await this._doctorRepository.findByEmail(email);
 
       if (existingDoctor) {
+        throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
+      }
+      const isexistsingPatient = await this._patientRepository.findByEmail(email);
+      if(isexistsingPatient){
         throw new Error(SERVICE_MESSAGE.USER_ALREADY_EXISTS);
       }
 

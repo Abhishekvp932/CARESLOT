@@ -15,3 +15,8 @@ export interface AppoinmentPopulatedDTO{
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+export interface AppoinmentPaginationDTO{
+  appoinments:AppoinmentPopulatedDTO[],
+  total:number;
+}

@@ -37,7 +37,7 @@ interface userInfo{
     const getUserData = async()=>{
 
       try {
-        const res = await axios.get<userInfo>('https://careslot.ddns.net/api/auth/me',{
+        const res = await axios.get<userInfo>('http://localhost:3000/api/auth/me',{
           withCredentials:true
         });
        

@@ -3,7 +3,7 @@ import { DoctorListResult } from '../../types/doctorListResult';
 import { UserListResult } from '../../types/userListsResult';
 import { doctorDetails } from '../../types/doctorDetails';
 import { IPatient } from '../../models/interface/IPatient';
-import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
+import { AppoinmentPaginationDTO} from '../../types/AppoinmentDTO';
 import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
 import { ISlotDto } from '../../types/ISlotDTO';
 import { DashboardData } from '../../types/IAdminDashboardDataLookup';
@@ -41,7 +41,7 @@ export interface IAdminService {
 
 addDoctor(data:unknown):Promise<{msg:string}>
 
-getAllAppoinments(status:string):Promise<AppoinmentPopulatedDTO[]>
+getAllAppoinments(status:string,page:number,limit:number):Promise<AppoinmentPaginationDTO>
 
 getDoctorSlotAndAppoinment(doctorId:string):Promise<{slots:ISlotDto[],appoinments:AppointmentPatientDTO[],ratings:IRatingDTO[]}>
 getAdminDashboardData(filter:string):Promise<DashboardData>;

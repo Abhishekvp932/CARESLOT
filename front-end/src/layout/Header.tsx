@@ -224,13 +224,13 @@ const Header = () => {
               >
                 Doctors
               </Link>
-              <a
-                href="#services"
+              <Link
+                to="/service"
                 onClick={closeMobileMenu}
                 className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors"
               >
                 Services
-              </a>
+              </Link>
               <Link
                 to="/about-page"
                 onClick={closeMobileMenu}
