@@ -49,7 +49,6 @@ router
   .route(Routers.patientRouters.doctors)
   .get(
     authMiddleware.isBlockedOrNot,
-    authMiddleware.protect,
     patientController.getAllDoctors.bind(patientController)
   );
 
