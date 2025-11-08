@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Calendar,
   Clock,
@@ -33,6 +33,12 @@ export function DoctorSidebar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
+  useEffect(()=>{
+    if(!doctor){
+      navigate('/login');
+    }
+  },[doctor]);
+  
   const [showNotification, setNotification] = useState(false);
 
   const [notiCount, setCount] = useState<number>(0);

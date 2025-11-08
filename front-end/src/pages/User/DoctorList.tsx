@@ -30,6 +30,8 @@ import { useGetAllApprovedDoctorsQuery } from "@/features/users/userApi";
 import { useNavigate } from "react-router-dom";
 import Pagination from "@/components/common/user/pagination";
 import { useGetAllSpecializationsQuery } from "@/features/users/userApi";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/app/store";
 
 export default function DoctorList() {
   const [page, setPage] = useState(1);
@@ -40,6 +42,16 @@ export default function DoctorList() {
   const [loading, setLoading] = useState(false);
 
   const limit = 10;
+  const navigate = useNavigate();
+    const patient = useSelector(
+      (state: RootState) => state.auth.user
+    );
+  
+    useEffect(()=>{
+      if(!patient){
+        navigate('/login')
+      }
+    },[patient]);
 
   useEffect(() => {
     setLoading(true);
@@ -64,7 +76,7 @@ export default function DoctorList() {
   const totalPages = data?.totalPages || 1;
 
   const isLoading = loading || isFetching;
-  const navigate = useNavigate();
+
   
   const handleDoctorDetailsPage = async (doctorId: string) => {
     navigate(`/doctor-details/${doctorId}`);

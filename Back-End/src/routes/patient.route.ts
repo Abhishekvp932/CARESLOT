@@ -49,6 +49,7 @@ router
   .route(Routers.patientRouters.doctors)
   .get(
     authMiddleware.isBlockedOrNot,
+     authMiddleware.protect,
     patientController.getAllDoctors.bind(patientController)
   );
 
@@ -56,6 +57,7 @@ router
   .route(Routers.patientRouters.doctorId)
   .get(
     authMiddleware.isBlockedOrNot,
+     authMiddleware.protect,
     patientController.getDoctorDetails.bind(patientController)
   );
 
@@ -63,6 +65,7 @@ router
   .route(Routers.patientRouters.slot)
   .get(
     authMiddleware.isBlockedOrNot,
+     authMiddleware.protect,
     patientController.getDoctorSlots.bind(patientController)
   );
 
@@ -70,6 +73,7 @@ router
   .route(Routers.patientRouters.specializations)
   .get(
     authMiddleware.isBlockedOrNot,
+     authMiddleware.protect,
     patientController.getAllspecializations.bind(patientController)
   );
 
@@ -85,6 +89,7 @@ router
   .route(Routers.patientRouters.relatedDoctors)
   .get(
     authMiddleware.isBlockedOrNot,
+     authMiddleware.protect,
     patientController.getRelatedDoctor.bind(patientController)
   );
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { AvatarImage, Avatar } from "@/components/ui/avatar";
 import { useGetUserDataQuery } from "@/features/users/userApi";
@@ -20,8 +20,16 @@ const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState("Profile");
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: users } = useGetUserDataQuery(user?._id);
 const navigate = useNavigate();
+   
+ useEffect(()=>{
+   if(!user){
+    navigate('/login');
+   }
+ },[user]);
+
+  const { data: users } = useGetUserDataQuery(user?._id);
+
   const menuItems = [
     { name: "Profile", icon: User, color: "text-green-500",path:'/profile'},
     { name: "Sessions", icon: BarChart3, color: "text-purple-500",path:'/sessions'},

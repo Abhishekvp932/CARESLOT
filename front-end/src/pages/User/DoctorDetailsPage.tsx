@@ -86,6 +86,13 @@ const UserDoctorDetailsPage = () => {
   const patient: Patient | null = useSelector(
     (state: RootState) => state.auth.user
   );
+
+  useEffect(()=>{
+    if(!patient){
+      navigate('/login')
+    }
+  },[patient]);
+  
   const patientId = patient?._id as string;
   const { data: doctor } = useGetDoctorDetailPageQuery(doctorId);
 

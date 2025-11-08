@@ -73,7 +73,6 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Redirect to login if no patient
   useEffect(() => {
     if (!patient) {
       navigate("/login");
