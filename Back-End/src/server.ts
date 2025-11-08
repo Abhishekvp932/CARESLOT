@@ -54,7 +54,7 @@ const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:2025',
+    origin: 'https://careslot.ddns.net',
     credentials: true,
   },
 });
@@ -75,7 +75,7 @@ io.on('connection', (socket) => {
 });
 
 const corsOperation = {
-  origin: 'http://localhost:2025',
+  origin: 'https://careslot.ddns.net',
   credentials: true,
 };
 app.use(cookieParser());
