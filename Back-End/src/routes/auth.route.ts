@@ -87,8 +87,10 @@ router.get(
       sameSite: 'lax',
       maxAge: Number(process.env.REDIS_SESSION_MAX_AGE),
     });
-    logger.info('last step is completed');
-    return res.redirect('https://careslot.ddns.net/');
+
+
+   const redirectUrl = process.env.CLIENT_URL as string;
+     res.redirect(redirectUrl);
   }
 );
 
