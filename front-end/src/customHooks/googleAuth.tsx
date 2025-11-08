@@ -1,6 +1,7 @@
 export const useGoogleAuth = ()=>{
     const handleGoogleLogin = ()=>{
-         window.location.href = "http://localhost:3000/api/auth/google";
+         window.location.href = "https://careslot.ddns.net/api/auth/google";
     }
     return handleGoogleLogin
 }
+
