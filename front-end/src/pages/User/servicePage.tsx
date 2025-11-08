@@ -75,7 +75,7 @@ export default function ServicePage() {
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/5 to-accent/5">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6 text-balance">
-              Comprehensive Healthcare Services at Your Fingertips sttuttutututut sdjsdkfjksdjfkjsdkfjksdjkfjsdkfjksdjfkjsdk
+              Comprehensive Healthcare Services at Your Fingertips
             </h1>
             <p className="text-lg text-muted-foreground mb-8 text-balance">
               Connect with qualified healthcare professionals across multiple specialties. Book appointments, get
