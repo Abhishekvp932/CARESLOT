@@ -9,10 +9,7 @@ interface VideoCallProps {
   onCallEnd?: () => void;
 }
 
-const socket: Socket = io("https://careslot.ddns.net", {
-  withCredentials: true,
-  transports: ["websocket"],
-});
+const socket: Socket = io("https://careslot.ddns.net");
 
 type CallStatus = 'idle' | 'calling' | 'incoming' | 'active' | 'rejected' | 'ended';
 
@@ -23,12 +20,14 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
   const localStreamRef = useRef<MediaStream | null>(null);
   const remoteStreamRef = useRef<MediaStream | null>(null);
   
+  // Buffer for ICE candidates that arrive before peer connection is ready
+  const iceCandidateBufferRef = useRef<RTCIceCandidateInit[]>([]);
+  
   const [callStatus, setCallStatus] = useState<CallStatus>('idle');
   const [incomingCallFrom, setIncomingCallFrom] = useState<string>('');
   const [remoteSocketId, setRemoteSocketId] = useState<string>('');
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
-
 
   useEffect(() => {
     console.log("Joining room with userId:", userId, "appointmentId:", appointmentId);
@@ -64,9 +63,20 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     socket.on("call-accepted", async ({ answer, from }) => {
       console.log("Call accepted by:", from);
       if (pcRef.current) {
-        await pcRef.current.setRemoteDescription(new RTCSessionDescription(answer));
-        setCallStatus('active');
-        setRemoteSocketId(from);
+        try {
+          await pcRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+          setCallStatus('active');
+          setRemoteSocketId(from);
+          
+          // Process buffered ICE candidates
+          console.log(`Processing ${iceCandidateBufferRef.current.length} buffered ICE candidates`);
+          for (const candidate of iceCandidateBufferRef.current) {
+            await pcRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+          }
+          iceCandidateBufferRef.current = [];
+        } catch (err) {
+          console.error("Error in call-accepted:", err);
+        }
       }
     });
 
@@ -87,31 +97,19 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       }, 2000);
     });
 
-    socket.on("receive-call", async ({ from, offer }) => {
-      console.log("Receive call from:", from);
-      setIncomingCallFrom(from);
-      setRemoteSocketId(from);
-      setCallStatus('incoming');
-      sessionStorage.setItem('pendingOffer', JSON.stringify(offer));
-    });
-
-    socket.on("call-answered", async ({ answer, from }) => {
-      console.log("Call answered by:", from);
-      if (pcRef.current) {
-        await pcRef.current.setRemoteDescription(new RTCSessionDescription(answer));
-        setCallStatus('active');
-        setRemoteSocketId(from);
-      }
-    });
-
     socket.on("ice-candidate", async ({ candidate, from }) => {
       console.log("ICE candidate from:", from);
-      if (pcRef.current) {
+      
+      if (pcRef.current && pcRef.current.remoteDescription) {
         try {
           await pcRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+          console.log("✅ ICE candidate added successfully");
         } catch (err) {
-          console.error("Error adding ICE candidate:", err);
+          console.error("❌ Error adding ICE candidate:", err);
         }
+      } else {
+        console.log("⏳ Buffering ICE candidate (peer connection not ready)");
+        iceCandidateBufferRef.current.push(candidate);
       }
     });
 
@@ -123,12 +121,9 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       socket.off("call-rejected");
       socket.off("call-ended");
       socket.off("call-failed");
-      socket.off("receive-call");
-      socket.off("call-answered");
       socket.off("ice-candidate");
     };
   }, [appointmentId, userId, onCallEnd]);
-
 
   useEffect(() => {
     if (remoteStreamRef.current && remoteVideoRef.current && callStatus === 'active') {
@@ -136,7 +131,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       remoteVideoRef.current.srcObject = remoteStreamRef.current;
     }
   }, [callStatus]);
-
 
   useEffect(() => {
     if (localStreamRef.current && localVideoRef.current && (callStatus === 'calling' || callStatus === 'active')) {
@@ -146,41 +140,34 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
   }, [callStatus]);
 
   const setupPeerConnection = async (targetSocketId?: string) => {
-const pc = new RTCPeerConnection({
-  iceServers: [
-    {
-      urls: [
-     
-        "stun:stun.l.google.com:19302",
-        "stun:stun1.l.google.com:19302",
-        "stun:stun2.l.google.com:19302",
-        "stun:stun3.l.google.com:19302",
-        "stun:stun4.l.google.com:19302",
-
-      
-        "stun:stun.services.mozilla.com",
-        "stun:global.relay.metered.ca:80",
-        "stun:stun1.l.google.com:19305",
-        "stun:stun2.l.google.com:19305",
-        "stun:bn-turn1.xirsys.com",
+    const pc = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: [
+            "stun:stun.l.google.com:19302",
+            "stun:stun1.l.google.com:19302",
+            "stun:stun2.l.google.com:19302",
+            "stun:stun3.l.google.com:19302",
+            "stun:stun4.l.google.com:19302",
+            "stun:stun.services.mozilla.com",
+            "stun:global.relay.metered.ca:80",
+          ],
+        },
+        {
+          urls: [
+            "turn:bn-turn1.xirsys.com:80?transport=udp",
+            "turn:bn-turn1.xirsys.com:3478?transport=udp",
+            "turn:bn-turn1.xirsys.com:80?transport=tcp",
+            "turn:bn-turn1.xirsys.com:3478?transport=tcp",
+            "turns:bn-turn1.xirsys.com:443?transport=tcp",
+            "turns:bn-turn1.xirsys.com:5349?transport=tcp",
+          ],
+          username: "755lOUxgC038eVVWmighZ6n56l-LnHyx2nTMBm7PTs3H1FZCPYkn8SsJ-KaUlCB6AAAAAGkR0NxBYmhpc2hla3Zw",
+          credential: "0fab11e4-be2b-11f0-a1ef-0242ac140004",
+        },
       ],
-    },
-    {
-      urls: [
-        "turn:bn-turn1.xirsys.com:80?transport=udp",
-        "turn:bn-turn1.xirsys.com:3478?transport=udp",
-        "turn:bn-turn1.xirsys.com:80?transport=tcp",
-        "turn:bn-turn1.xirsys.com:3478?transport=tcp",
-        "turns:bn-turn1.xirsys.com:443?transport=tcp",
-        "turns:bn-turn1.xirsys.com:5349?transport=tcp",
-      ],
-      username:
-        "755lOUxgC038eVVWmighZ6n56l-LnHyx2nTMBm7PTs3H1FZCPYkn8SsJ-KaUlCB6AAAAAGkR0NxBYmhpc2hla3Zw",
-      credential: "0fab11e4-be2b-11f0-a1ef-0242ac140004",
-    },
-  ],
-});
-
+      iceCandidatePoolSize: 10, // Pre-gather ICE candidates
+    });
 
     pcRef.current = pc;
 
@@ -191,11 +178,9 @@ const pc = new RTCPeerConnection({
       });
       localStreamRef.current = stream;
       
-      
       if (localVideoRef.current) {
         console.log("📹 Attaching local stream to video element");
         localVideoRef.current.srcObject = stream;
-     
         localVideoRef.current.play().catch(err => console.log("Local video play error:", err));
       }
       
@@ -209,108 +194,147 @@ const pc = new RTCPeerConnection({
       return null;
     }
 
-  
+    // Handle incoming tracks
     pc.ontrack = (event) => {
-      console.log("🎥 Received remote track:", event.track.kind);
+      console.log("🎥 Received remote track:", event.track.kind, "readyState:", event.track.readyState);
       const stream = event.streams[0];
       
       if (stream) {
+        console.log("📺 Remote stream received with", stream.getTracks().length, "tracks");
         remoteStreamRef.current = stream;
+        
         if (remoteVideoRef.current) {
           console.log("✅ Attaching remote stream to video element");
           remoteVideoRef.current.srcObject = stream;
-          // Force play
-          remoteVideoRef.current.play().catch(err => console.log("Remote video play error:", err));
+          
+          // Ensure the video element is ready
+          remoteVideoRef.current.onloadedmetadata = () => {
+            console.log("🎬 Remote video metadata loaded");
+            remoteVideoRef.current?.play().catch(err => 
+              console.error("Remote video play error:", err)
+            );
+          };
         } else {
-          console.log("⏳ Remote video ref not ready yet");
+          console.warn("⚠️ Remote video ref not available");
         }
       }
     };
 
-  
+    // ICE candidate handler
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         const targetId = targetSocketId || remoteSocketId;
         if (targetId) {
-          console.log("Sending ICE candidate to:", targetId);
+          console.log("📤 Sending ICE candidate to:", targetId);
           socket.emit("ice-candidate", { 
             appointmentId, 
-            candidate: event.candidate,
+            candidate: event.candidate.toJSON(),
             to: targetId
           });
         } else {
-          console.warn("No target socket ID for ICE candidate");
+          console.warn("⚠️ No target socket ID for ICE candidate");
         }
+      } else {
+        console.log("✅ ICE gathering complete");
       }
     };
 
- 
     pc.onconnectionstatechange = () => {
-      console.log("Connection state:", pc.connectionState);
+      console.log("🔗 Connection state:", pc.connectionState);
+      if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+        console.error("Connection failed or disconnected");
+      }
     };
 
     pc.oniceconnectionstatechange = () => {
-      console.log("ICE connection state:", pc.iceConnectionState);
+      console.log("🧊 ICE connection state:", pc.iceConnectionState);
     };
 
     pc.onicegatheringstatechange = () => {
-      console.log("ICE gathering state:", pc.iceGatheringState);
+      console.log("🔍 ICE gathering state:", pc.iceGatheringState);
     };
 
     return pc;
   };
 
   const startCall = async () => {
-    console.log("Starting call to otherUserId:", otherUserId);
+    console.log("📞 Starting call to otherUserId:", otherUserId);
     setCallStatus('calling');
+    
     const pc = await setupPeerConnection();
     if (!pc) {
       setCallStatus('idle');
       return;
     }
 
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    
-    console.log("Sending start-call to:", otherUserId);
-    socket.emit("start-call", { 
-      appointmentId, 
-      offer, 
-      to: otherUserId,
-      from: userId
-    });
+    try {
+      const offer = await pc.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true,
+      });
+      await pc.setLocalDescription(offer);
+      
+      console.log("📤 Sending start-call to:", otherUserId);
+      socket.emit("start-call", { 
+        appointmentId, 
+        offer, 
+        to: otherUserId,
+        from: userId
+      });
+    } catch (err) {
+      console.error("Error creating offer:", err);
+      setCallStatus('idle');
+      cleanup();
+    }
   };
 
   const acceptCall = async () => {
-    console.log("Accepting call from:", incomingCallFrom);
-    const pc = await setupPeerConnection();
+    console.log("✅ Accepting call from:", incomingCallFrom);
+    
+    const pc = await setupPeerConnection(incomingCallFrom);
     if (!pc) {
       setCallStatus('idle');
       return;
     }
 
-    const offerStr = sessionStorage.getItem('pendingOffer');
-    if (offerStr) {
-      const offer = JSON.parse(offerStr);
-      await pc.setRemoteDescription(new RTCSessionDescription(offer));
-      
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      
-      console.log("Sending accept-call to:", incomingCallFrom);
-      socket.emit("accept-call", { 
-        appointmentId, 
-        answer, 
-        to: incomingCallFrom
-      });
-      
-      setCallStatus('active');
-      sessionStorage.removeItem('pendingOffer');
+    try {
+      const offerStr = sessionStorage.getItem('pendingOffer');
+      if (offerStr) {
+        const offer = JSON.parse(offerStr);
+        
+        console.log("📥 Setting remote description (offer)");
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        
+        console.log("📝 Creating answer");
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        
+        console.log("📤 Sending accept-call to:", incomingCallFrom);
+        socket.emit("accept-call", { 
+          appointmentId, 
+          answer, 
+          to: incomingCallFrom
+        });
+        
+        setCallStatus('active');
+        sessionStorage.removeItem('pendingOffer');
+        
+        // Process buffered ICE candidates after setting remote description
+        console.log(`Processing ${iceCandidateBufferRef.current.length} buffered ICE candidates`);
+        for (const candidate of iceCandidateBufferRef.current) {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        }
+        iceCandidateBufferRef.current = [];
+      }
+    } catch (err) {
+      console.error("Error accepting call:", err);
+      setCallStatus('idle');
+      cleanup();
     }
   };
 
   const rejectCall = () => {
-    console.log("Rejecting call from:", incomingCallFrom);
+    console.log("❌ Rejecting call from:", incomingCallFrom);
     socket.emit("reject-call", { 
       appointmentId, 
       to: incomingCallFrom 
@@ -320,7 +344,7 @@ const pc = new RTCPeerConnection({
   };
 
   const endCall = () => {
-    console.log("Ending call with:", remoteSocketId);
+    console.log("📴 Ending call with:", remoteSocketId);
     socket.emit("end-call", { 
       appointmentId, 
       to: remoteSocketId
@@ -341,6 +365,9 @@ const pc = new RTCPeerConnection({
     if (remoteStreamRef.current) {
       remoteStreamRef.current = null;
     }
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = null;
+    }
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = null;
     }
@@ -348,6 +375,7 @@ const pc = new RTCPeerConnection({
       pcRef.current.close();
       pcRef.current = null;
     }
+    iceCandidateBufferRef.current = [];
   };
 
   const toggleVideo = () => {
@@ -370,7 +398,6 @@ const pc = new RTCPeerConnection({
     }
   };
 
-  
   if (callStatus === 'idle') {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -392,7 +419,6 @@ const pc = new RTCPeerConnection({
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-12 rounded-2xl shadow-lg text-center max-w-md">
-         
           {localStreamRef.current && (
             <div className="mb-6 relative">
               <video
@@ -488,11 +514,9 @@ const pc = new RTCPeerConnection({
     );
   }
 
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">
       <div className="flex-1 flex gap-4 p-6">
-        
         <div className="flex-1 relative bg-black rounded-2xl overflow-hidden">
           <video
             ref={remoteVideoRef}
@@ -503,9 +527,13 @@ const pc = new RTCPeerConnection({
           <div className="absolute top-4 left-4 bg-black/50 text-white px-4 py-2 rounded-lg">
             Other User
           </div>
+          {!remoteStreamRef.current && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+              <p className="text-white">Waiting for video...</p>
+            </div>
+          )}
         </div>
 
-       
         <div className="w-80 relative bg-black rounded-2xl overflow-hidden">
           <video
             ref={localVideoRef}
@@ -520,7 +548,6 @@ const pc = new RTCPeerConnection({
         </div>
       </div>
 
-      {/* Controls */}
       <div className="flex justify-center gap-4 p-6 bg-gray-800">
         <button
           onClick={toggleAudio}
