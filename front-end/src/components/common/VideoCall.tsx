@@ -26,6 +26,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
   const [remoteSocketId, setRemoteSocketId] = useState<string>('');
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+  // const [, forceUpdate] = useState({});
 
   // Attach remote stream whenever it changes or video ref becomes available
   useEffect(() => {
@@ -35,6 +36,15 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       remoteVideoRef.current.play().catch(err => console.log("Remote video play error:", err));
     }
   }, [remoteStreamRef.current, callStatus]);
+
+  // Attach local stream whenever it changes or video ref becomes available
+  useEffect(() => {
+    if (localStreamRef.current && localVideoRef.current) {
+      console.log("✅ Attaching local stream to video element");
+      localVideoRef.current.srcObject = localStreamRef.current;
+      localVideoRef.current.play().catch(err => console.log("Local video play error:", err));
+    }
+  }, [localStreamRef.current, callStatus]);
 
   useEffect(() => {
     console.log("Joining room with userId:", userId, "appointmentId:", appointmentId);
