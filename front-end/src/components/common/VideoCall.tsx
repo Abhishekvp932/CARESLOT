@@ -9,7 +9,10 @@ interface VideoCallProps {
   onCallEnd?: () => void;
 }
 
-const socket: Socket = io("https://careslot.ddns.net");
+const socket: Socket = io("https://careslot.ddns.net", {
+  withCredentials: true,
+  transports: ["websocket"],
+});
 
 type CallStatus = 'idle' | 'calling' | 'incoming' | 'active' | 'rejected' | 'ended';
 
@@ -19,32 +22,13 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const remoteStreamRef = useRef<MediaStream | null>(null);
-  const iceCandidatesQueue = useRef<RTCIceCandidateInit[]>([]);
   
   const [callStatus, setCallStatus] = useState<CallStatus>('idle');
   const [incomingCallFrom, setIncomingCallFrom] = useState<string>('');
   const [remoteSocketId, setRemoteSocketId] = useState<string>('');
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
-  // const [, forceUpdate] = useState({});
 
-  // Attach remote stream whenever it changes or video ref becomes available
-  useEffect(() => {
-    if (remoteStreamRef.current && remoteVideoRef.current) {
-      console.log("✅ Attaching remote stream to video element");
-      remoteVideoRef.current.srcObject = remoteStreamRef.current;
-      remoteVideoRef.current.play().catch(err => console.log("Remote video play error:", err));
-    }
-  }, [remoteStreamRef.current, callStatus]);
-
-  // Attach local stream whenever it changes or video ref becomes available
-  useEffect(() => {
-    if (localStreamRef.current && localVideoRef.current) {
-      console.log("✅ Attaching local stream to video element");
-      localVideoRef.current.srcObject = localStreamRef.current;
-      localVideoRef.current.play().catch(err => console.log("Local video play error:", err));
-    }
-  }, [localStreamRef.current, callStatus]);
 
   useEffect(() => {
     console.log("Joining room with userId:", userId, "appointmentId:", appointmentId);
@@ -83,8 +67,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
         await pcRef.current.setRemoteDescription(new RTCSessionDescription(answer));
         setCallStatus('active');
         setRemoteSocketId(from);
-        // Process queued ICE candidates
-        await processIceCandidatesQueue();
       }
     });
 
@@ -119,23 +101,17 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
         await pcRef.current.setRemoteDescription(new RTCSessionDescription(answer));
         setCallStatus('active');
         setRemoteSocketId(from);
-        // Process queued ICE candidates
-        await processIceCandidatesQueue();
       }
     });
 
     socket.on("ice-candidate", async ({ candidate, from }) => {
       console.log("ICE candidate from:", from);
-      if (pcRef.current && pcRef.current.remoteDescription) {
+      if (pcRef.current) {
         try {
           await pcRef.current.addIceCandidate(new RTCIceCandidate(candidate));
-          console.log("✅ Added ICE candidate");
         } catch (err) {
           console.error("Error adding ICE candidate:", err);
         }
-      } else {
-        console.log("⏳ Queuing ICE candidate (remote description not set yet)");
-        iceCandidatesQueue.current.push(candidate);
       }
     });
 
@@ -150,41 +126,61 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       socket.off("receive-call");
       socket.off("call-answered");
       socket.off("ice-candidate");
-      cleanup();
     };
   }, [appointmentId, userId, onCallEnd]);
 
-  const processIceCandidatesQueue = async () => {
-    if (pcRef.current && pcRef.current.remoteDescription && iceCandidatesQueue.current.length > 0) {
-      console.log(`Processing ${iceCandidatesQueue.current.length} queued ICE candidates`);
-      for (const candidate of iceCandidatesQueue.current) {
-        try {
-          await pcRef.current.addIceCandidate(new RTCIceCandidate(candidate));
-          console.log("✅ Added queued ICE candidate");
-        } catch (err) {
-          console.error("Error adding queued ICE candidate:", err);
-        }
-      }
-      iceCandidatesQueue.current = [];
-    }
-  };
 
-  const setupPeerConnection = async (targetSocketId: string) => {
-    const pc = new RTCPeerConnection({
-      iceServers: [
-        {
-          urls: [
-            "stun:stun.l.google.com:19302",
-            "stun:stun1.l.google.com:19302",
-          ],
-        },
-        {
-          urls: "turn:relay1.expressturn.com:3478",
-          username: "efQnZ1k1eZ8W4M6x2xqz1AovxjP9Pz8t2",
-          credential: "8fYEH2H7mRQp4aC6xPq8rLs6bK3vKc9D",
-        },
-      ]
-    });
+  useEffect(() => {
+    if (remoteStreamRef.current && remoteVideoRef.current && callStatus === 'active') {
+      console.log("🔄 Syncing remote stream to video element");
+      remoteVideoRef.current.srcObject = remoteStreamRef.current;
+    }
+  }, [callStatus]);
+
+
+  useEffect(() => {
+    if (localStreamRef.current && localVideoRef.current && (callStatus === 'calling' || callStatus === 'active')) {
+      console.log("🔄 Syncing local stream to video element");
+      localVideoRef.current.srcObject = localStreamRef.current;
+    }
+  }, [callStatus]);
+
+  const setupPeerConnection = async (targetSocketId?: string) => {
+const pc = new RTCPeerConnection({
+  iceServers: [
+    {
+      urls: [
+     
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun3.l.google.com:19302",
+        "stun:stun4.l.google.com:19302",
+
+      
+        "stun:stun.services.mozilla.com",
+        "stun:global.relay.metered.ca:80",
+        "stun:stun1.l.google.com:19305",
+        "stun:stun2.l.google.com:19305",
+        "stun:bn-turn1.xirsys.com",
+      ],
+    },
+    {
+      urls: [
+        "turn:bn-turn1.xirsys.com:80?transport=udp",
+        "turn:bn-turn1.xirsys.com:3478?transport=udp",
+        "turn:bn-turn1.xirsys.com:80?transport=tcp",
+        "turn:bn-turn1.xirsys.com:3478?transport=tcp",
+        "turns:bn-turn1.xirsys.com:443?transport=tcp",
+        "turns:bn-turn1.xirsys.com:5349?transport=tcp",
+      ],
+      username:
+        "755lOUxgC038eVVWmighZ6n56l-LnHyx2nTMBm7PTs3H1FZCPYkn8SsJ-KaUlCB6AAAAAGkR0NxBYmhpc2hla3Zw",
+      credential: "0fab11e4-be2b-11f0-a1ef-0242ac140004",
+    },
+  ],
+});
+
 
     pcRef.current = pc;
 
@@ -195,9 +191,11 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       });
       localStreamRef.current = stream;
       
+      
       if (localVideoRef.current) {
         console.log("📹 Attaching local stream to video element");
         localVideoRef.current.srcObject = stream;
+     
         localVideoRef.current.play().catch(err => console.log("Local video play error:", err));
       }
       
@@ -211,39 +209,44 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       return null;
     }
 
+  
     pc.ontrack = (event) => {
       console.log("🎥 Received remote track:", event.track.kind);
       const stream = event.streams[0];
       
       if (stream) {
-        console.log("✅ Remote stream received with", stream.getTracks().length, "tracks");
         remoteStreamRef.current = stream;
-        
-        // Force update by setting srcObject immediately
         if (remoteVideoRef.current) {
-          console.log("✅ Immediately attaching remote stream to video element");
+          console.log("✅ Attaching remote stream to video element");
           remoteVideoRef.current.srcObject = stream;
+          // Force play
           remoteVideoRef.current.play().catch(err => console.log("Remote video play error:", err));
+        } else {
+          console.log("⏳ Remote video ref not ready yet");
         }
       }
     };
 
+  
     pc.onicecandidate = (event) => {
       if (event.candidate) {
-        console.log("Sending ICE candidate to:", targetSocketId);
-        socket.emit("ice-candidate", { 
-          appointmentId, 
-          candidate: event.candidate,
-          to: targetSocketId
-        });
+        const targetId = targetSocketId || remoteSocketId;
+        if (targetId) {
+          console.log("Sending ICE candidate to:", targetId);
+          socket.emit("ice-candidate", { 
+            appointmentId, 
+            candidate: event.candidate,
+            to: targetId
+          });
+        } else {
+          console.warn("No target socket ID for ICE candidate");
+        }
       }
     };
 
+ 
     pc.onconnectionstatechange = () => {
       console.log("Connection state:", pc.connectionState);
-      if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-        console.error("Connection failed or disconnected");
-      }
     };
 
     pc.oniceconnectionstatechange = () => {
@@ -258,12 +261,9 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
   };
 
   const startCall = async () => {
-    console.log("Starting call to user:", otherUserId);
+    console.log("Starting call to otherUserId:", otherUserId);
     setCallStatus('calling');
-    
-    // Use remoteSocketId if available, otherwise let server route by userId
-    const targetId = remoteSocketId || otherUserId;
-    const pc = await setupPeerConnection(targetId);
+    const pc = await setupPeerConnection();
     if (!pc) {
       setCallStatus('idle');
       return;
@@ -272,18 +272,18 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
     
-    console.log("Sending start-call to user:", otherUserId, "socket:", remoteSocketId);
+    console.log("Sending start-call to:", otherUserId);
     socket.emit("start-call", { 
       appointmentId, 
       offer, 
-      to: otherUserId, // Send to user ID, server will route to correct socket
+      to: otherUserId,
       from: userId
     });
   };
 
   const acceptCall = async () => {
     console.log("Accepting call from:", incomingCallFrom);
-    const pc = await setupPeerConnection(incomingCallFrom);
+    const pc = await setupPeerConnection();
     if (!pc) {
       setCallStatus('idle');
       return;
@@ -293,9 +293,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     if (offerStr) {
       const offer = JSON.parse(offerStr);
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
-      
-      // Process any queued ICE candidates
-      await processIceCandidatesQueue();
       
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
@@ -344,9 +341,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     if (remoteStreamRef.current) {
       remoteStreamRef.current = null;
     }
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = null;
-    }
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = null;
     }
@@ -354,7 +348,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       pcRef.current.close();
       pcRef.current = null;
     }
-    iceCandidatesQueue.current = [];
   };
 
   const toggleVideo = () => {
@@ -377,6 +370,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     }
   };
 
+  
   if (callStatus === 'idle') {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -389,12 +383,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
             <Video size={24} />
             Start Call
           </button>
-          {remoteSocketId && (
-            <p className="text-green-600 text-sm mt-2">✓ Other user is online</p>
-          )}
-          {!remoteSocketId && (
-            <p className="text-amber-600 text-sm mt-2">⏳ Waiting for other user to join...</p>
-          )}
         </div>
       </div>
     );
@@ -404,6 +392,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-12 rounded-2xl shadow-lg text-center max-w-md">
+         
           {localStreamRef.current && (
             <div className="mb-6 relative">
               <video
@@ -499,9 +488,11 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     );
   }
 
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">
       <div className="flex-1 flex gap-4 p-6">
+        
         <div className="flex-1 relative bg-black rounded-2xl overflow-hidden">
           <video
             ref={remoteVideoRef}
@@ -512,16 +503,9 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
           <div className="absolute top-4 left-4 bg-black/50 text-white px-4 py-2 rounded-lg">
             Other User
           </div>
-          {!remoteStreamRef.current && (
-            <div className="absolute inset-0 flex items-center justify-center text-white">
-              <div className="text-center">
-                <div className="animate-pulse mb-2">📹</div>
-                <p>Waiting for remote video...</p>
-              </div>
-            </div>
-          )}
         </div>
 
+       
         <div className="w-80 relative bg-black rounded-2xl overflow-hidden">
           <video
             ref={localVideoRef}
@@ -536,6 +520,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
         </div>
       </div>
 
+      {/* Controls */}
       <div className="flex justify-center gap-4 p-6 bg-gray-800">
         <button
           onClick={toggleAudio}
