@@ -15,10 +15,12 @@ import { InputField } from "@/components/common/InputField";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
+import { useGoogleAuth } from "@/customHooks/googleAuth";
 
 const Signup = () => {
   const navigate = useNavigate();
   // const user = useSelector((state: RootState) => state.auth.token);
+  const googleAuth = useGoogleAuth();
   const [signup, { isLoading }] = useSignupMutation();
 
  const admin = useSelector((state: RootState) => state.admin);
@@ -246,7 +248,7 @@ const Signup = () => {
                   <span>or continue with</span>
                 </div>
                 <div className="social-signup">
-                  <button type="button" className="btn-google">
+                  <button type="button" className="btn-google" onClick={googleAuth}>
                     <span>G</span> Google
                   </button>
                 </div>
