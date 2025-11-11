@@ -166,7 +166,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
           credential: "0fab11e4-be2b-11f0-a1ef-0242ac140004",
         },
       ],
-      iceCandidatePoolSize: 10,
+      iceCandidatePoolSize: 10, // Pre-gather ICE candidates
     });
 
     pcRef.current = pc;
@@ -194,6 +194,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       return null;
     }
 
+    // Handle incoming tracks
     pc.ontrack = (event) => {
       console.log("🎥 Received remote track:", event.track.kind, "readyState:", event.track.readyState);
       const stream = event.streams[0];
@@ -206,6 +207,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
           console.log("✅ Attaching remote stream to video element");
           remoteVideoRef.current.srcObject = stream;
           
+          // Ensure the video element is ready
           remoteVideoRef.current.onloadedmetadata = () => {
             console.log("🎬 Remote video metadata loaded");
             remoteVideoRef.current?.play().catch(err => 
@@ -218,6 +220,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       }
     };
 
+    // ICE candidate handler
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         const targetId = targetSocketId || remoteSocketId;
@@ -316,6 +319,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
         setCallStatus('active');
         sessionStorage.removeItem('pendingOffer');
         
+        // Process buffered ICE candidates after setting remote description
         console.log(`Processing ${iceCandidateBufferRef.current.length} buffered ICE candidates`);
         for (const candidate of iceCandidateBufferRef.current) {
           await pc.addIceCandidate(new RTCIceCandidate(candidate));
@@ -396,12 +400,12 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
   if (callStatus === 'idle') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-md">
-          <h2 className="text-xl sm:text-2xl font-bold mb-6 text-center">Video Call</h2>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-white p-8 rounded-2xl shadow-lg">
+          <h2 className="text-2xl font-bold mb-6 text-center">Video Call</h2>
           <button
             onClick={startCall}
-            className="w-full flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-semibold transition-colors"
+            className="flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-colors"
           >
             <Video size={24} />
             Start Call
@@ -413,8 +417,8 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
   if (callStatus === 'calling') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-        <div className="bg-white p-6 sm:p-12 rounded-2xl shadow-lg text-center w-full max-w-md">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-white p-12 rounded-2xl shadow-lg text-center max-w-md">
           {localStreamRef.current && (
             <div className="mb-6 relative">
               <video
@@ -422,7 +426,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
                 autoPlay
                 muted
                 playsInline
-                className="w-full h-48 sm:h-64 object-cover rounded-xl bg-black"
+                className="w-full h-64 object-cover rounded-xl bg-black"
               />
               <div className="absolute top-2 left-2 bg-black/50 text-white px-3 py-1 rounded text-sm">
                 You
@@ -430,18 +434,18 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
             </div>
           )}
           <div className="mb-6">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-              <Phone size={40} className="sm:w-12 sm:h-12 text-blue-500" />
+            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <Phone size={48} className="text-blue-500" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold mb-2">Calling...</h2>
-            <p className="text-sm sm:text-base text-gray-600">Waiting for the other person to answer</p>
+            <h2 className="text-2xl font-bold mb-2">Calling...</h2>
+            <p className="text-gray-600">Waiting for the other person to answer</p>
           </div>
           <button
             onClick={() => {
               cleanup();
               setCallStatus('idle');
             }}
-            className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
+            className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
           >
             Cancel Call
           </button>
@@ -452,26 +456,26 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
   if (callStatus === 'incoming') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-        <div className="bg-white p-6 sm:p-12 rounded-2xl shadow-lg text-center w-full max-w-md">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-white p-12 rounded-2xl shadow-lg text-center">
           <div className="mb-8">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-              <Phone size={40} className="sm:w-12 sm:h-12 text-green-500" />
+            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+              <Phone size={48} className="text-green-500" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold mb-2">Incoming Call</h2>
-            <p className="text-sm sm:text-base text-gray-600">Someone is calling you...</p>
+            <h2 className="text-2xl font-bold mb-2">Incoming Call</h2>
+            <p className="text-gray-600">Someone is calling you...</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex gap-4">
             <button
               onClick={acceptCall}
-              className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 sm:py-4 rounded-xl font-semibold transition-colors"
+              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-xl font-semibold transition-colors"
             >
               <Phone size={20} />
               Accept
             </button>
             <button
               onClick={rejectCall}
-              className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 sm:py-4 rounded-xl font-semibold transition-colors"
+              className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-xl font-semibold transition-colors"
             >
               <PhoneOff size={20} />
               Reject
@@ -484,13 +488,13 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
   if (callStatus === 'rejected') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-        <div className="bg-white p-6 sm:p-12 rounded-2xl shadow-lg text-center w-full max-w-md">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <PhoneOff size={40} className="sm:w-12 sm:h-12 text-red-500" />
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-white p-12 rounded-2xl shadow-lg text-center">
+          <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <PhoneOff size={48} className="text-red-500" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold mb-2 text-red-600">Call Rejected</h2>
-          <p className="text-sm sm:text-base text-gray-600">The call was declined</p>
+          <h2 className="text-2xl font-bold mb-2 text-red-600">Call Rejected</h2>
+          <p className="text-gray-600">The call was declined</p>
         </div>
       </div>
     );
@@ -498,13 +502,13 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
   if (callStatus === 'ended') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-        <div className="bg-white p-6 sm:p-12 rounded-2xl shadow-lg text-center w-full max-w-md">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <PhoneOff size={40} className="sm:w-12 sm:h-12 text-gray-500" />
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-white p-12 rounded-2xl shadow-lg text-center">
+          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <PhoneOff size={48} className="text-gray-500" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold mb-2">Call Ended</h2>
-          <p className="text-sm sm:text-base text-gray-600">The call has been disconnected</p>
+          <h2 className="text-2xl font-bold mb-2">Call Ended</h2>
+          <p className="text-gray-600">The call has been disconnected</p>
         </div>
       </div>
     );
@@ -512,28 +516,25 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">
-      {/* Video Container - Responsive Layout */}
-      <div className="flex-1 flex flex-col md:flex-row gap-2 sm:gap-4 p-2 sm:p-4 md:p-6">
-        {/* Remote Video - Main/Large Video */}
-        <div className="flex-1 relative bg-black rounded-xl md:rounded-2xl overflow-hidden">
+      <div className="flex-1 flex gap-4 p-6">
+        <div className="flex-1 relative bg-black rounded-2xl overflow-hidden">
           <video
             ref={remoteVideoRef}
             autoPlay
             playsInline
             className="w-full h-full object-cover"
           />
-          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-black/50 text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm md:text-base">
+          <div className="absolute top-4 left-4 bg-black/50 text-white px-4 py-2 rounded-lg">
             Other User
           </div>
           {!remoteStreamRef.current && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-              <p className="text-white text-sm sm:text-base">Waiting for video...</p>
+              <p className="text-white">Waiting for video...</p>
             </div>
           )}
         </div>
 
-        {/* Local Video - Picture-in-Picture Style */}
-        <div className="w-full h-48 md:w-72 md:h-auto lg:w-96 relative bg-black rounded-xl md:rounded-2xl overflow-hidden">
+        <div className="w-80 relative bg-black rounded-2xl overflow-hidden">
           <video
             ref={localVideoRef}
             autoPlay
@@ -541,52 +542,48 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
             playsInline
             className="w-full h-full object-cover"
           />
-          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-black/50 text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm md:text-base">
+          <div className="absolute top-4 left-4 bg-black/50 text-white px-4 py-2 rounded-lg">
             You
           </div>
         </div>
       </div>
 
-      {/* Controls - Fixed at Bottom */}
-      <div className="flex justify-center items-center gap-3 sm:gap-4 p-4 sm:p-6 bg-gray-800">
+      <div className="flex justify-center gap-4 p-6 bg-gray-800">
         <button
           onClick={toggleAudio}
-          className={`p-3 sm:p-4 rounded-full transition-colors ${
+          className={`p-4 rounded-full transition-colors ${
             isAudioEnabled 
               ? 'bg-gray-700 hover:bg-gray-600' 
               : 'bg-red-500 hover:bg-red-600'
           }`}
-          aria-label={isAudioEnabled ? "Mute audio" : "Unmute audio"}
         >
           {isAudioEnabled ? (
-            <Phone size={20} className="sm:w-6 sm:h-6 text-white" />
+            <Phone size={24} className="text-white" />
           ) : (
-            <PhoneOff size={20} className="sm:w-6 sm:h-6 text-white" />
+            <PhoneOff size={24} className="text-white" />
           )}
         </button>
         
         <button
           onClick={toggleVideo}
-          className={`p-3 sm:p-4 rounded-full transition-colors ${
+          className={`p-4 rounded-full transition-colors ${
             isVideoEnabled 
               ? 'bg-gray-700 hover:bg-gray-600' 
               : 'bg-red-500 hover:bg-red-600'
           }`}
-          aria-label={isVideoEnabled ? "Turn off video" : "Turn on video"}
         >
           {isVideoEnabled ? (
-            <Video size={20} className="sm:w-6 sm:h-6 text-white" />
+            <Video size={24} className="text-white" />
           ) : (
-            <VideoOff size={20} className="sm:w-6 sm:h-6 text-white" />
+            <VideoOff size={24} className="text-white" />
           )}
         </button>
 
         <button
           onClick={endCall}
-          className="p-3 sm:p-4 bg-red-500 hover:bg-red-600 rounded-full transition-colors"
-          aria-label="End call"
+          className="p-4 bg-red-500 hover:bg-red-600 rounded-full transition-colors"
         >
-          <PhoneOff size={20} className="sm:w-6 sm:h-6 text-white" />
+          <PhoneOff size={24} className="text-white" />
         </button>
       </div>
     </div>
