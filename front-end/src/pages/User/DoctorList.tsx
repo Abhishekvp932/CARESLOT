@@ -32,6 +32,7 @@ import Pagination from "@/components/common/user/pagination";
 import { useGetAllSpecializationsQuery } from "@/features/users/userApi";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
+import { ToastContainer } from "react-toastify";
 
 export default function DoctorList() {
   const [page, setPage] = useState(1);
@@ -337,6 +338,7 @@ export default function DoctorList() {
       </div>
 
       <Footer />
+         <ToastContainer autoClose={2000} />
     </div>
   );
 }

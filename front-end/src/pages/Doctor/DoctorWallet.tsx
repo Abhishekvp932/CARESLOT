@@ -6,6 +6,7 @@ import { useGetDoctorWalletQuery } from "@/features/docotr/doctorApi"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/store"
 import { useEffect } from "react"
+import { ToastContainer } from "react-toastify"
 
 function formatDate(iso: string) {
   const d = new Date(iso)
@@ -82,6 +83,7 @@ export default function DoctorWalletPage() {
           </TableBody>
         </Table>
       </section>
+         <ToastContainer autoClose={2000} />
     </main>
   )
 }

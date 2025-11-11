@@ -32,6 +32,7 @@ import {
   ArrowLeft,
   Menu,
 } from "lucide-react";
+import { ToastContainer } from "react-toastify";
 
 // Type definitions
 interface DoctorInfo {
@@ -728,6 +729,7 @@ export function UserMessagingPage() {
           </div>
         )}
       </div>
+         <ToastContainer autoClose={2000} />
     </div>
   );
 }

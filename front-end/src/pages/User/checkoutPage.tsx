@@ -129,7 +129,9 @@ export default function CheckoutPage() {
               }).unwrap();
 
               toast.success("Appointment booked successfully ✅");
-              navigate("/");
+              setTimeout(()=>{
+                  navigate('/sessions')
+              },3000)
             } catch (error) {
               const err = error as { data?: { message?: string; msg?: string }; message?: string };
               const message =
@@ -173,7 +175,7 @@ export default function CheckoutPage() {
 
         await walletPayment(payload).unwrap();
         toast.success("Appointment booked successfully ✅");
-        navigate("/");
+        navigate("/sessions");
       } catch (error) {
         const err = error as { data?: { message?: string; msg?: string }; message?: string };
         const message =

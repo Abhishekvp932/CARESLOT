@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import Header from "@/layout/Header"
 import Footer from "@/layout/Footer"
 import CEO from '../../assets/1745997285118.jpeg'
+import { ToastContainer } from "react-toastify"
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -233,6 +234,7 @@ export default function AboutPage() {
       </section>
 
       <Footer/>
+         <ToastContainer autoClose={2000} />
     </div>
   )
 }

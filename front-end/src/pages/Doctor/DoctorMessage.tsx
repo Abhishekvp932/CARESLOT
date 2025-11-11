@@ -32,6 +32,7 @@ import {
   ImageIcon,
   MoreVertical,
 } from "lucide-react";
+import { ToastContainer } from "react-toastify";
 
 // Message interface
 interface Message {
@@ -715,6 +716,7 @@ export function DoctorMessagingPage() {
           </div>
         </div>
       </div>
+         <ToastContainer autoClose={2000} />
     </div>
   );
 }

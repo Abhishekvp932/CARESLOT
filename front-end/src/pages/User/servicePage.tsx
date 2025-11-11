@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card"
 import { Heart, Brain, Stethoscope, Eye, Smile, Activity, Clock, Shield, Users, Zap } from "lucide-react"
 import Header from "@/layout/Header"
 import Footer from "@/layout/Footer"
+import { ToastContainer } from "react-toastify"
 
 const services = [
   {
@@ -159,6 +160,7 @@ export default function ServicePage() {
         </section>
       </main>
       <Footer />
+         <ToastContainer autoClose={2000} />
     </div>
   )
 }

@@ -27,6 +27,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 import { DoctorSidebar } from "@/layout/doctor/sideBar";
 import { useGetDoctorDashboardDataQuery } from "@/features/docotr/doctorApi";
+import { ToastContainer } from "react-toastify";
 
 // ✅ define proper interfaces for API response
 interface StatusSummary {
@@ -285,6 +286,7 @@ export function DoctorDashboard() {
           </Card>
         </div>
       </div>
+         <ToastContainer autoClose={2000} />
     </div>
   );
 }

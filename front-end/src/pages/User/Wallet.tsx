@@ -28,6 +28,7 @@ import {
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 import { useGetWalletDataQuery } from "@/features/users/userApi";
+import { ToastContainer } from "react-toastify";
 export default function UserWallet() {
   const patient = useSelector((state: RootState) => state.auth.user);
   const patientId = patient?._id as string;
@@ -245,6 +246,7 @@ export default function UserWallet() {
           </TabsContent>
         </Tabs>
       </div>
+         <ToastContainer autoClose={2000} />
     </main>
   );
 }
