@@ -72,7 +72,7 @@ const Index = () => {
             <div className="space-y-6 text-center md:text-left z-10">
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
                 <Heart className="w-4 h-4" />
-                Trusted by 50,000+ Patients
+                Trusted by 50,000+ Patients Abhishek vp
               </div>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
