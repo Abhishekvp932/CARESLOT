@@ -26,29 +26,26 @@ const Login = () => {
   const googleAuth = useGoogleAuth();
   const dispatch = useDispatch<AppDispatch>();
 
-  const admin = useSelector((state:RootState)=> state.admin.admin);
-  const doctor = useSelector((state:RootState)=> state.doctor.doctor);
-  const user = useSelector((state:RootState)=> state.auth.user);
- 
+  const admin = useSelector((state: RootState) => state.admin.admin);
+  const doctor = useSelector((state: RootState) => state.doctor.doctor);
+  const user = useSelector((state: RootState) => state.auth.user);
 
-  useEffect(()=>{
-    if(user){
-      navigate('/');
+  useEffect(() => {
+    if (user) {
+      navigate("/");
     }
-  })
-  useEffect(()=>{
-    if(doctor){
-      navigate('/doctor')
+  });
+  useEffect(() => {
+    if (doctor) {
+      navigate("/doctor");
     }
-  })
-  useEffect(()=>{
-    if(admin){
-      navigate('/admin');
+  });
+  useEffect(() => {
+    if (admin) {
+      navigate("/admin");
     }
-  })
+  });
   const [login, { isLoading }] = useLoginMutation();
-
-
 
   type formType = {
     email: string;
@@ -88,34 +85,33 @@ const Login = () => {
 
     try {
       const res = await login(form).unwrap();
-       
-     console.log('login response',res);
+
       toast.success(res.msg);
       const roles = res?.user?.role;
-       
+
       if (roles === "patients") {
-       dispatch(
-        setCredentials({
-          user:res?.user?.id,
-          role:res?.user?.role
-        })
-       )
+        dispatch(
+          setCredentials({
+            user: res?.user?.id,
+            role: res?.user?.role,
+          })
+        );
         navigate("/");
       } else if (roles === "doctors") {
         dispatch(
           setCredentialsDoctor({
-            doctor:res?.user?.id,
-            role:res?.user?.role
+            doctor: res?.user?.id,
+            role: res?.user?.role,
           })
-        )
+        );
         navigate("/doctor");
-      } else if(roles === 'admin') {  
+      } else if (roles === "admin") {
         dispatch(
           setCredentialsAdmin({
-             admin:res?.user?.id,
-            role:res?.user?.role
+            admin: res?.user?.id,
+            role: res?.user?.role,
           })
-        )
+        );
         navigate("/admin");
       }
     } catch (error: any) {

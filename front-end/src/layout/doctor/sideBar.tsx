@@ -17,6 +17,7 @@ import { logOut } from "@/features/docotr/doctorSlice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import LiveNotifications from "@/components/common/LiveNotification";
 import NotificationComponent from "@/components/common/notifications";
+import { useGetUserNotificationQuery } from "@/features/users/userApi";
 
 const navItems = [
   { title: "Dashboard", url: "/doctor", icon: Home },
@@ -33,19 +34,27 @@ export function DoctorSidebar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
-  useEffect(()=>{
-    if(!doctor){
-      navigate('/login');
+  const patientId = doctor?._id as string;
+
+  const { data = [] } = useGetUserNotificationQuery(
+    { patientId },
+    {
+      skip: !patientId,
     }
-  },[doctor]);
-  
+  );
+
+  const unreadCount = Array.isArray(data)
+    ? data.filter((n) => !n.isRead).length
+    : 0;
+
+  useEffect(() => {
+    if (!doctor) {
+      navigate("/login");
+    }
+  }, [doctor]);
+
   const [showNotification, setNotification] = useState(false);
 
-  const [notiCount, setCount] = useState<number>(0);
-
-  const handleNotificationCount = (count: number) => {
-    setCount(count);
-  };
   const handleLogout = async () => {
     dispatch(logOut());
     navigate("/login");
@@ -77,9 +86,9 @@ export function DoctorSidebar() {
             onClick={() => setNotification(!showNotification)}
           >
             <span className="text-xl">🔔</span>
-            {notiCount > 0 && (
-              <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                {notiCount}
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {unreadCount}
               </span>
             )}
           </button>
@@ -88,10 +97,7 @@ export function DoctorSidebar() {
 
           {showNotification && (
             <div className="fixed top-14 right-6 w-96 bg-white border rounded-lg shadow-lg z-50">
-              <NotificationComponent
-                patientId={doctor?._id}
-                onCountChange={handleNotificationCount}
-              />
+              <NotificationComponent patientId={doctor?._id} />
             </div>
           )}
         </div>
@@ -144,8 +150,6 @@ export function DoctorSidebar() {
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
-
-       
       </div>
     </div>
   );

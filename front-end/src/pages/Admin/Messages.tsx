@@ -91,7 +91,7 @@ export default function MessagesPage() {
               Loading…
             </div>
           ) : messages.length > 0 ? (
-            messages.map((message: ContactInterface) => ( 
+            messages.map((message: ContactInterface) => (
               <Card
                 key={message._id}
                 className="p-4 hover:shadow-lg transition-shadow"

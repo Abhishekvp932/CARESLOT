@@ -2,28 +2,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 type InputFieldsProps = {
-    label:string;
-    name : string;
-    type?:string;
-    value?:string;
-    onChange:(e:React.ChangeEvent<HTMLInputElement>) => void;
-    placeholder?:string;
-    error?:string
-    className?:string
+  label: string;
+  name: string;
+  type?: string;
+  value?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  error?: string;
+  className?: string;
 };
 
 export const InputField = ({
-    label,
-    name,
-    type ='text',
-    value,
-    onChange,
-    placeholder,
-    error,
-    className
-}:InputFieldsProps)=>{
-    return (
-         <div className={className}>
+  label,
+  name,
+  type = "text",
+  value,
+  onChange,
+  placeholder,
+  error,
+  className,
+}: InputFieldsProps) => {
+  return (
+    <div className={className}>
       <Label htmlFor={name}>{label}</Label>
       <Input
         id={name}
@@ -36,5 +36,5 @@ export const InputField = ({
       />
       {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
-    )
-}
+  );
+};

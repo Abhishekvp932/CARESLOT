@@ -1,35 +1,35 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import type { RootState } from "@/app/store"
-import { Sidebar } from "./sidebar"
-import { useSelector } from "react-redux"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import type { RootState } from "@/app/store";
+import { Sidebar } from "./sidebar";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const admin = useSelector((state: RootState) => state.admin)
-  const user = useSelector((state: RootState) => state.auth.user)
-  const doctor = useSelector((state: RootState) => state.doctor.doctor)
+  const admin = useSelector((state: RootState) => state.admin);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const doctor = useSelector((state: RootState) => state.doctor.doctor);
 
-  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
     if (admin?.role === "admin") {
-      setIsAuthorized(true)
+      setIsAuthorized(true);
     } else if (user) {
-      navigate("/")
+      navigate("/");
     } else if (doctor) {
-      navigate("/doctor")
+      navigate("/doctor");
     } else {
-      navigate("/login")
+      navigate("/login");
     }
-  }, [admin, user, doctor, navigate])
+  }, [admin, user, doctor, navigate]);
 
-  if (!isAuthorized) return null
+  if (!isAuthorized) return null;
 
   return (
     <div className="flex min-h-screen">
@@ -40,5 +40,5 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </main>
     </div>
-  )
-}
+  );
+};

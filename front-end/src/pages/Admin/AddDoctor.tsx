@@ -11,27 +11,27 @@ const AddDoctorPage = () => {
   const [activeSection, setActiveSection] = useState("personal");
   const [addDoctor] = useAddDoctorMutation();
   const navigate = useNavigate();
-type DoctorFormData = {
-  name: string;
-  email: string;
-  phone: string;
-  DOB: string;
-  gender: string;
-  profileImage: File | null;
-  qualifications: {
-    degree: string;
-    institution: string;
-    specialization: string;
-    medicalSchool: string;
-    experince: number;
-    graduationYear: number;
-    fees: number;
-    license: string;
-    about: string;
-    educationCertificate: File | null;
-    experienceCertificate: File | null;
+  type DoctorFormData = {
+    name: string;
+    email: string;
+    phone: string;
+    DOB: string;
+    gender: string;
+    profileImage: File | null;
+    qualifications: {
+      degree: string;
+      institution: string;
+      specialization: string;
+      medicalSchool: string;
+      experince: number;
+      graduationYear: number;
+      fees: number;
+      license: string;
+      about: string;
+      educationCertificate: File | null;
+      experienceCertificate: File | null;
+    };
   };
-};
 
   const [formData, setFormData] = useState<DoctorFormData>({
     name: "",
@@ -57,7 +57,7 @@ type DoctorFormData = {
 
   const handleInputChange = (
     field: string,
-    value:string | number | File | null,
+    value: string | number | File | null,
     isQualification = false
   ) => {
     setFormData((prev) => {
@@ -77,8 +77,7 @@ type DoctorFormData = {
   const handleSave = async () => {
     try {
       const fd = new FormData();
-    
-      
+
       fd.append("name", formData.name || "");
       fd.append("email", formData.email || "");
       fd.append("phone", formData.phone || "");
@@ -89,7 +88,6 @@ type DoctorFormData = {
         fd.append("profileImage", formData.profileImage);
       }
 
-   
       const q = formData.qualifications || {};
       fd.append("degree", q.degree || "");
       fd.append("institution", q.institution || "");

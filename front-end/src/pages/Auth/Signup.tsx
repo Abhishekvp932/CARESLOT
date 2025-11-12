@@ -23,7 +23,7 @@ const Signup = () => {
   const googleAuth = useGoogleAuth();
   const [signup, { isLoading }] = useSignupMutation();
 
- const admin = useSelector((state: RootState) => state.admin);
+  const admin = useSelector((state: RootState) => state.admin);
   const user = useSelector((state: RootState) => state.auth);
   const doctor = useSelector((state: RootState) => state.doctor);
 
@@ -31,17 +31,17 @@ const Signup = () => {
 
   useEffect(() => {
     if (admin?.role === "admin") {
-     navigate('/admin')
-    } else if (user.role === 'patients') {
+      navigate("/admin");
+    } else if (user.role === "patients") {
       navigate("/");
-    } else if (doctor.role ==='doctors') {
+    } else if (doctor.role === "doctors") {
       navigate("/doctor");
     } else {
       navigate("/signup");
     }
   }, [admin, user, doctor, navigate]);
 
-  // if (!isAuthorized) return null; 
+  // if (!isAuthorized) return null;
 
   type formType = {
     name: string;
@@ -100,7 +100,9 @@ const Signup = () => {
 
       toast.success(res.msg);
       setTimeout(() => {
-        navigate("/otp-verification", { state: { email: form.email,role:form.role}});
+        navigate("/otp-verification", {
+          state: { email: form.email, role: form.role },
+        });
       }, 3000);
     } catch (error: any) {
       console.error("Signup error:", error);
@@ -123,8 +125,8 @@ const Signup = () => {
             <div className="signup-form-container">
               <h1>Create Account</h1>
               <p className="signup-subtitle">
-                Join thousands of patients who trust careslot for their
-                medical needs
+                Join thousands of patients who trust careslot for their medical
+                needs
               </p>
 
               <form className="signup-form" onSubmit={handleSubmit}>
@@ -203,9 +205,13 @@ const Signup = () => {
                 </div>
                 <div className="form-group">
                   <label htmlFor="role">Role</label>
-                  <select name="role" value={form.role} onChange={(e)=>{
-                    setForm({...form,role:e.target.value});
-                  }}>
+                  <select
+                    name="role"
+                    value={form.role}
+                    onChange={(e) => {
+                      setForm({ ...form, role: e.target.value });
+                    }}
+                  >
                     <option value="">Select your role</option>
                     <option value="patients">Patient</option>
                     <option value="doctors">Doctor</option>
@@ -248,7 +254,11 @@ const Signup = () => {
                   <span>or continue with</span>
                 </div>
                 <div className="social-signup">
-                  <button type="button" className="btn-google" onClick={googleAuth}>
+                  <button
+                    type="button"
+                    className="btn-google"
+                    onClick={googleAuth}
+                  >
                     <span>G</span> Google
                   </button>
                 </div>

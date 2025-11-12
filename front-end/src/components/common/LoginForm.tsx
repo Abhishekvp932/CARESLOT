@@ -12,7 +12,9 @@ type Props = {
     email: string;
     password: string;
   };
-  setForm: React.Dispatch<React.SetStateAction<{ email: string; password: string }>>;
+  setForm: React.Dispatch<
+    React.SetStateAction<{ email: string; password: string }>
+  >;
   errors: {
     email?: string;
     password?: string;
@@ -38,14 +40,19 @@ const LoginForm: React.FC<Props> = ({
           <img src={Login_img} alt="Healthcare Login" />
           <div className="image-overlay">
             <h2>Welcome Back</h2>
-            <p>Access your healthcare dashboard and manage your appointments with ease</p>
+            <p>
+              Access your healthcare dashboard and manage your appointments with
+              ease
+            </p>
           </div>
         </div>
 
         <div className="login-form-section">
           <div className="login-form-container">
             <h1>Login</h1>
-            <p className="login-subtitle">Enter your credentials to access your account</p>
+            <p className="login-subtitle">
+              Enter your credentials to access your account
+            </p>
 
             <form className="login-form" onSubmit={onSubmit}>
               <div className="form-group">
@@ -67,7 +74,9 @@ const LoginForm: React.FC<Props> = ({
                   name="password"
                   placeholder="Enter your password"
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
                 />
                 {errors.password && <p className="errors">{errors.password}</p>}
               </div>
@@ -87,7 +96,11 @@ const LoginForm: React.FC<Props> = ({
 
             {onGoogleLogin && (
               <div className="social-login">
-                <button type="button" className="btn-google" onClick={onGoogleLogin}>
+                <button
+                  type="button"
+                  className="btn-google"
+                  onClick={onGoogleLogin}
+                >
                   <span>G</span> Google
                 </button>
               </div>

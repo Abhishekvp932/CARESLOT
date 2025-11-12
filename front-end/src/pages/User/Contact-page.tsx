@@ -72,7 +72,12 @@ export default function ContactPage() {
       const email = formData.email;
       const phone = formData.phone;
       const message = formData.message;
-      const res = await createContactInformation({name,email,phone,message}).unwrap();
+      const res = await createContactInformation({
+        name,
+        email,
+        phone,
+        message,
+      }).unwrap();
       toast.success(res?.msg);
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error: any) {

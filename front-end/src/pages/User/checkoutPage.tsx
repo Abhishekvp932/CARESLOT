@@ -54,9 +54,6 @@ declare global {
   }
 }
 
-
-
-
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [createOrder] = useCreateOrderMutation();
@@ -64,12 +61,14 @@ export default function CheckoutPage() {
   const [walletPayment] = useWalletPaymentMutation();
 
   type Patient = {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-};
-  const patient:Patient | null = useSelector((state: RootState) => state.auth.user);
+    _id: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
+  const patient: Patient | null = useSelector(
+    (state: RootState) => state.auth.user
+  );
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -129,11 +128,14 @@ export default function CheckoutPage() {
               }).unwrap();
 
               toast.success("Appointment booked successfully ✅");
-              setTimeout(()=>{
-                  navigate('/sessions')
-              },3000)
+              setTimeout(() => {
+                navigate("/sessions");
+              }, 3000);
             } catch (error) {
-              const err = error as { data?: { message?: string; msg?: string }; message?: string };
+              const err = error as {
+                data?: { message?: string; msg?: string };
+                message?: string;
+              };
               const message =
                 err?.data?.message ||
                 err?.data?.msg ||
@@ -153,7 +155,10 @@ export default function CheckoutPage() {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } catch (error) {
-        const err = error as { data?: { message?: string; msg?: string }; message?: string };
+        const err = error as {
+          data?: { message?: string; msg?: string };
+          message?: string;
+        };
         const message =
           err?.data?.message ||
           err?.data?.msg ||
@@ -177,7 +182,10 @@ export default function CheckoutPage() {
         toast.success("Appointment booked successfully ✅");
         navigate("/sessions");
       } catch (error) {
-        const err = error as { data?: { message?: string; msg?: string }; message?: string };
+        const err = error as {
+          data?: { message?: string; msg?: string };
+          message?: string;
+        };
         const message =
           err?.data?.message ||
           err?.data?.msg ||

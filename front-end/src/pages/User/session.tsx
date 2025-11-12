@@ -95,7 +95,7 @@ export function SessionCard() {
   }
 
   const handleVideoCall = (appoinmentId: string) => {
-    console.log("video call appoinment id ", appoinmentId);
+ 
     navigate(`/video-call/${appoinmentId}`);
   };
 
@@ -114,7 +114,9 @@ export function SessionCard() {
       link.click();
       link.remove();
     } catch (error: any) {
-      console.error(error.response?.data?.msg || "Failed to download prescription");
+      console.error(
+        error.response?.data?.msg || "Failed to download prescription"
+      );
     }
   };
 
@@ -223,26 +225,26 @@ export function SessionCard() {
                       Join Call
                     </Button>
                   )}
-                  
-                  {appoinment?.status !== "cancelled" && appoinment?.status === 'completed' && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full sm:w-auto bg-transparent text-xs sm:text-sm"
-                      onClick={() => downloadPrescription(appoinment?._id)}
-                    >
-                      <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      <span className="hidden sm:inline">Download Prescription</span>
-                      <span className="sm:hidden">Prescription</span>
-                    </Button>
-                  )}
+
+                  {appoinment?.status !== "cancelled" &&
+                    appoinment?.status === "completed" && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full sm:w-auto bg-transparent text-xs sm:text-sm"
+                        onClick={() => downloadPrescription(appoinment?._id)}
+                      >
+                        <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">
+                          Download Prescription
+                        </span>
+                        <span className="sm:hidden">Prescription</span>
+                      </Button>
+                    )}
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button 
-    
-                        className="w-full sm:w-auto sm:ml-auto bg-transparent"
-                      >
+                      <button className="w-full sm:w-auto sm:ml-auto bg-transparent">
                         <MoreHorizontal className="w-4 h-4" />
                       </button>
                     </DropdownMenuTrigger>

@@ -85,7 +85,9 @@ interface PrescriptionData {
 const AppointmentsListDoctor: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedAppoinment, setSelectedAppoinment] = useState<string | null>(null);
+  const [selectedAppoinment, setSelectedAppoinment] = useState<string | null>(
+    null
+  );
   const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
   const limit = 10;
@@ -195,7 +197,9 @@ const AppointmentsListDoctor: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Appointments
+                </h1>
                 <p className="text-sm text-muted-foreground mt-1">
                   {totalItem} appointment{totalItem !== 1 ? "s" : ""} found
                 </p>
@@ -210,16 +214,20 @@ const AppointmentsListDoctor: React.FC = () => {
                   <span className="text-sm font-medium">Filters:</span>
                 </div>
                 <div className="flex gap-2">
-                  {["all", "completed", "pending", "cancelled"].map((status) => (
-                    <Button
-                      key={status}
-                      variant={statusFilter === status ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleStatusFilter(status)}
-                    >
-                      {status.charAt(0).toUpperCase() + status.slice(1)}
-                    </Button>
-                  ))}
+                  {["all", "completed", "pending", "cancelled"].map(
+                    (status) => (
+                      <Button
+                        key={status}
+                        variant={
+                          statusFilter === status ? "default" : "outline"
+                        }
+                        size="sm"
+                        onClick={() => handleStatusFilter(status)}
+                      >
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                      </Button>
+                    )
+                  )}
                 </div>
               </div>
             </div>
@@ -303,7 +311,9 @@ const AppointmentsListDoctor: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 text-sm">
                           <Clock className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">{appointment.slot.date}</span>
+                          <span className="font-medium">
+                            {appointment.slot.date}
+                          </span>
                           <span className="text-muted-foreground">
                             ({appointment.slot.startTime})
                           </span>
@@ -315,7 +325,9 @@ const AppointmentsListDoctor: React.FC = () => {
 
                       <div className="flex items-center space-x-2 text-sm">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">Consultation</span>
+                        <span className="text-muted-foreground">
+                          Consultation
+                        </span>
                       </div>
 
                       <div className="flex space-x-2 pt-2">
@@ -349,7 +361,9 @@ const AppointmentsListDoctor: React.FC = () => {
                               open={open}
                               onClose={() => setOpen(false)}
                               onSubmit={handlePrescriptionSave}
-                              patientName={appointment?.patientId.name ?? "Unknown"}
+                              patientName={
+                                appointment?.patientId.name ?? "Unknown"
+                              }
                             />
                           </div>
                         ) : null}
@@ -363,7 +377,9 @@ const AppointmentsListDoctor: React.FC = () => {
                 <CardContent>
                   <div className="text-muted-foreground">
                     <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-medium mb-2">No appointments found</p>
+                    <p className="text-lg font-medium mb-2">
+                      No appointments found
+                    </p>
                     <p className="text-sm">
                       {statusFilter === "all"
                         ? "You don't have any appointments yet."
@@ -393,17 +409,19 @@ const AppointmentsListDoctor: React.FC = () => {
                       Previous
                     </Button>
 
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                      <Button
-                        key={p}
-                        variant={page === p ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => goToPage(p)}
-                        className="w-8 h-8"
-                      >
-                        {p}
-                      </Button>
-                    ))}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (p) => (
+                        <Button
+                          key={p}
+                          variant={page === p ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => goToPage(p)}
+                          className="w-8 h-8"
+                        >
+                          {p}
+                        </Button>
+                      )
+                    )}
 
                     <Button
                       variant="outline"

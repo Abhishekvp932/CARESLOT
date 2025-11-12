@@ -1,8 +1,7 @@
-
 import { Shield, Clock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SubmitButton } from "@/components/common/SubmitButton";
-import { toast,ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useResendOTPMutation } from "@/features/auth/authApi";
 import { useNavigate } from "react-router-dom";
 interface OTPVerificationProps {
@@ -20,31 +19,31 @@ const VerificationOTP: React.FC<OTPVerificationProps> = ({
   title = "Verify Your Email",
   message = "We've sent a 6-digit verification code to",
 }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [otp, setOtp] = useState(Array(6).fill(""));
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
- const [timeLeft,setTimeLeft] = useState(60)
- const [resendDisabled,setResendDisabled] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [resendDisabled, setResendDisabled] = useState(true);
 
- const [resendOTP] = useResendOTPMutation()
+  const [resendOTP] = useResendOTPMutation();
 
- useEffect(()=>{
-  let timer : NodeJS.Timeout
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
 
-  if(resendDisabled && timeLeft > 0){
-    timer = setInterval(()=>{
-     setTimeLeft((prev) =>{
-       if(prev === 1){
-          setResendDisabled(false);
-          clearInterval(timer)
-          return 0
-        }
-        return prev - 1
-     });
-    },1000);
-  }
-  return ()=> clearInterval(timer)
- },[resendDisabled,setTimeLeft]);
+    if (resendDisabled && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev === 1) {
+            setResendDisabled(false);
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendDisabled, setTimeLeft]);
   const handleChange = (value: string, index: number) => {
     if (!/^[0-9]?$/.test(value)) return;
     const newOtp = [...otp];
@@ -70,28 +69,25 @@ const VerificationOTP: React.FC<OTPVerificationProps> = ({
     await onVerify(fullOtp);
   };
 
-  const handleResnedOtp = async()=>{
-
-    setResendDisabled(true)
+  const handleResnedOtp = async () => {
+    setResendDisabled(true);
     setTimeLeft(60);
     setOtp(Array(6).fill(""));
-   
-     try {
-      
-       const res = await resendOTP({email}).unwrap()
-       
-       toast.success(res.msg)    
-     } catch (error : any) {
-      
-    if (error?.data?.msg) {
-      toast.error(error.data.msg);
-    } 
-     }
-  }
 
-  const handleBack = ()=>{
-    navigate(-1)
-  }
+    try {
+      const res = await resendOTP({ email }).unwrap();
+
+      toast.success(res.msg);
+    } catch (error: any) {
+      if (error?.data?.msg) {
+        toast.error(error.data.msg);
+      }
+    }
+  };
+
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
@@ -134,25 +130,31 @@ const VerificationOTP: React.FC<OTPVerificationProps> = ({
           />
         </div>
 
-        
         <div className="text-center">
           <div className="flex items-center justify-center text-gray-600 mb-4">
             <Clock className="w-4 h-4 mr-2" />
             {resendDisabled ? (
-               <span className="text-sm">
-              Resend code in <span className="font-semibold text-blue-600">{timeLeft}</span>
-            </span>
-            ):(
-              <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors mb-4" onClick={handleResnedOtp}>
+              <span className="text-sm">
+                Resend code in{" "}
+                <span className="font-semibold text-blue-600">{timeLeft}</span>
+              </span>
+            ) : (
+              <button
+                className="text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors mb-4"
+                onClick={handleResnedOtp}
+              >
                 Resend verification code
-                </button>
+              </button>
             )}
-       
           </div>
 
           <p className="text-xs text-gray-500">
             Didn't receive the code? Check your spam folder or{" "}
-            <a href="" className="text-blue-600 hover:text-blue-700 font-medium" onClick={handleBack}>
+            <a
+              href=""
+              className="text-blue-600 hover:text-blue-700 font-medium"
+              onClick={handleBack}
+            >
               change your email address
             </a>
           </p>
@@ -173,7 +175,7 @@ const VerificationOTP: React.FC<OTPVerificationProps> = ({
           </div>
         </div>
       </div>
-        <ToastContainer autoClose={2000} />
+      <ToastContainer autoClose={2000} />
     </div>
   );
 };

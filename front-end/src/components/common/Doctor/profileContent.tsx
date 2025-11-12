@@ -1,27 +1,45 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Calendar, Clock, Users, TrendingUp, Star, Phone, Video, MessageSquare, AlertCircle } from "lucide-react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Calendar,
+  Clock,
+  Users,
+  TrendingUp,
+  Star,
+  Phone,
+  Video,
+  MessageSquare,
+  AlertCircle,
+} from "lucide-react";
 
 export function DashboardContent() {
   return (
     <div className="space-y-6">
-      {/* Welcome Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg p-6">
         <h1 className="text-2xl font-bold mb-2">Welcome back, Dr. Johnson!</h1>
-        <p className="text-blue-100">You have 8 appointments scheduled for today</p>
+        <p className="text-blue-100">
+          You have 8 appointments scheduled for today
+        </p>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Today's Appointments</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Today's Appointments
+                </p>
                 <p className="text-2xl font-bold">8</p>
               </div>
               <Calendar className="h-8 w-8 text-blue-600" />
@@ -37,7 +55,9 @@ export function DashboardContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Patients</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Total Patients
+                </p>
                 <p className="text-2xl font-bold">1,247</p>
               </div>
               <Users className="h-8 w-8 text-green-600" />
@@ -53,13 +73,17 @@ export function DashboardContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Average Rating</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Average Rating
+                </p>
                 <p className="text-2xl font-bold">4.8</p>
               </div>
               <Star className="h-8 w-8 text-yellow-500" />
             </div>
             <div className="flex items-center mt-2">
-              <span className="text-sm text-muted-foreground">Based on 324 reviews</span>
+              <span className="text-sm text-muted-foreground">
+                Based on 324 reviews
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -68,20 +92,23 @@ export function DashboardContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Hours This Week</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Hours This Week
+                </p>
                 <p className="text-2xl font-bold">42</p>
               </div>
               <Clock className="h-8 w-8 text-purple-600" />
             </div>
             <div className="flex items-center mt-2">
-              <span className="text-sm text-muted-foreground">6 hours remaining</span>
+              <span className="text-sm text-muted-foreground">
+                6 hours remaining
+              </span>
             </div>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Today's Schedule */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -99,12 +126,17 @@ export function DashboardContent() {
                 </Avatar>
                 <div>
                   <p className="font-medium">John Smith</p>
-                  <p className="text-sm text-muted-foreground">Routine Checkup</p>
+                  <p className="text-sm text-muted-foreground">
+                    Routine Checkup
+                  </p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="font-medium">9:00 AM</p>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800"
+                >
                   Confirmed
                 </Badge>
               </div>
@@ -123,7 +155,10 @@ export function DashboardContent() {
               </div>
               <div className="text-right">
                 <p className="font-medium">10:30 AM</p>
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                <Badge
+                  variant="secondary"
+                  className="bg-blue-100 text-blue-800"
+                >
                   In Progress
                 </Badge>
               </div>
@@ -142,7 +177,10 @@ export function DashboardContent() {
               </div>
               <div className="text-right">
                 <p className="font-medium">2:00 PM</p>
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                <Badge
+                  variant="secondary"
+                  className="bg-yellow-100 text-yellow-800"
+                >
                   Upcoming
                 </Badge>
               </div>
@@ -162,19 +200,31 @@ export function DashboardContent() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="h-20 flex flex-col gap-2 bg-transparent">
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col gap-2 bg-transparent"
+              >
                 <Phone className="h-6 w-6" />
                 <span className="text-sm">Call Patient</span>
               </Button>
-              <Button variant="outline" className="h-20 flex flex-col gap-2 bg-transparent">
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col gap-2 bg-transparent"
+              >
                 <Video className="h-6 w-6" />
                 <span className="text-sm">Video Call</span>
               </Button>
-              <Button variant="outline" className="h-20 flex flex-col gap-2 bg-transparent">
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col gap-2 bg-transparent"
+              >
                 <MessageSquare className="h-6 w-6" />
                 <span className="text-sm">Send Message</span>
               </Button>
-              <Button variant="outline" className="h-20 flex flex-col gap-2 bg-transparent">
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col gap-2 bg-transparent"
+              >
                 <Calendar className="h-6 w-6" />
                 <span className="text-sm">Schedule</span>
               </Button>
@@ -190,22 +240,32 @@ export function DashboardContent() {
                 <div className="flex items-start gap-3 p-2 bg-blue-50 rounded-lg">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">New appointment request</p>
-                    <p className="text-xs text-muted-foreground">Sarah Wilson - 2 min ago</p>
+                    <p className="text-sm font-medium">
+                      New appointment request
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Sarah Wilson - 2 min ago
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-2 bg-green-50 rounded-lg">
                   <div className="w-2 h-2 bg-green-600 rounded-full mt-2"></div>
                   <div className="flex-1">
                     <p className="text-sm font-medium">Payment received</p>
-                    <p className="text-xs text-muted-foreground">John Smith - 5 min ago</p>
+                    <p className="text-xs text-muted-foreground">
+                      John Smith - 5 min ago
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-2 bg-yellow-50 rounded-lg">
                   <div className="w-2 h-2 bg-yellow-600 rounded-full mt-2"></div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">Appointment rescheduled</p>
-                    <p className="text-xs text-muted-foreground">Emily Davis - 10 min ago</p>
+                    <p className="text-sm font-medium">
+                      Appointment rescheduled
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Emily Davis - 10 min ago
+                    </p>
                   </div>
                 </div>
               </div>
@@ -214,5 +274,5 @@ export function DashboardContent() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -43,7 +43,7 @@ export default function UserWallet() {
   const walletHistory = data?.data || [];
 
   const totalPages = data?.totalPages || 1;
-  const walletBalance = data?.balance ||  0;
+  const walletBalance = data?.balance || 0;
 
   const getTransactionIcon = (type: string) => {
     switch (type) {
@@ -71,15 +71,14 @@ export default function UserWallet() {
     }
   };
 
-
   type Transaction = {
-    _id:string;
-    amount:number;
-    type:string;
-    source:string;
-    paymentMethod:string;
-    createdAt:string;
-  }
+    _id: string;
+    amount: number;
+    type: string;
+    source: string;
+    paymentMethod: string;
+    createdAt: string;
+  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -246,7 +245,7 @@ export default function UserWallet() {
           </TabsContent>
         </Tabs>
       </div>
-         <ToastContainer autoClose={2000} />
+      <ToastContainer autoClose={2000} />
     </main>
   );
 }

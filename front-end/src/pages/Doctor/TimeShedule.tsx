@@ -5,7 +5,6 @@ import { useSlotAddMutation } from "@/features/docotr/doctorApi";
 import {
   Plus,
   Timer,
-
   Calendar,
   Save,
   Coffee,
@@ -14,7 +13,7 @@ import {
   Edit,
 } from "lucide-react";
 import type { RootState } from "@/app/store";
-import {toast,ToastContainer} from 'react-toastify'
+import { toast, ToastContainer } from "react-toastify";
 
 interface DaySchedule {
   day: string;
@@ -31,21 +30,17 @@ interface DaySchedule {
 // }
 
 export default function TimeShedule() {
- const doctor = useSelector((state:RootState)=> state.doctor.doctor);
- console.log('time slot doctor is',doctor);
-  // const [slots, setSlots] = useState<Slot[]>([
-  //   { _id: "1", day: "Monday", startTime: "09:00", endTime: "10:00" },
-  //   { _id: "2", day: "Monday", startTime: "10:00", endTime: "11:00" },
-  //   { _id: "3", day: "Tuesday", startTime: "14:00", endTime: "15:00" },
-  // ]);
+  const doctor = useSelector((state: RootState) => state.doctor.doctor);
 
   const [weekSchedule, setWeekSchedule] = useState<DaySchedule[]>(
-    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map(day => ({
-      day,
-      startTime: "09:00",
-      endTime: "17:00",
-      breaks: [],
-    }))
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map(
+      (day) => ({
+        day,
+        startTime: "09:00",
+        endTime: "17:00",
+        breaks: [],
+      })
+    )
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,44 +51,65 @@ export default function TimeShedule() {
     const times = [];
     for (let hour = 6; hour < 22; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
-        times.push(`${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`);
+        times.push(
+          `${hour.toString().padStart(2, "0")}:${minute
+            .toString()
+            .padStart(2, "0")}`
+        );
       }
     }
     return times;
   };
   const timeOptions = generateTimeOptions();
 
-  const updateDaySchedule = (day: string, field: keyof DaySchedule, value: any) => {
+  const updateDaySchedule = (
+    day: string,
+    field: keyof DaySchedule,
+    value: any
+  ) => {
     if (!isEditing) return; // Prevent updates when not in edit mode
-    
-    setWeekSchedule(prev =>
-      prev.map(d => (d.day === day ? { ...d, [field]: value } : d))
+
+    setWeekSchedule((prev) =>
+      prev.map((d) => (d.day === day ? { ...d, [field]: value } : d))
     );
     setHasUnsavedChanges(true);
   };
 
   const addBreak = (day: string) => {
     if (!isEditing) return; // Prevent adding breaks when not in edit mode
-    
-    setWeekSchedule(prev =>
-      prev.map(d =>
+
+    setWeekSchedule((prev) =>
+      prev.map((d) =>
         d.day === day
-          ? { ...d, breaks: [...d.breaks, { id: Date.now().toString(), start: "12:00", end: "13:00" }] }
+          ? {
+              ...d,
+              breaks: [
+                ...d.breaks,
+                { id: Date.now().toString(), start: "12:00", end: "13:00" },
+              ],
+            }
           : d
       )
     );
     setHasUnsavedChanges(true);
   };
 
-  const updateBreak = (day: string, id: string, field: "start" | "end", value: string) => {
+  const updateBreak = (
+    day: string,
+    id: string,
+    field: "start" | "end",
+    value: string
+  ) => {
     if (!isEditing) return; // Prevent updates when not in edit mode
-    
-    setWeekSchedule(prev =>
-      prev.map(d =>
+
+    setWeekSchedule((prev) =>
+      prev.map((d) =>
         d.day === day
           ? {
               ...d,
-              breaks: d.breaks.map(b => (b.id === id ? { ...b, [field]: value } : b)),
+              breaks: d.breaks.map((b) =>
+                b.id === id ? { ...b, [field]: value } : b
+              ),
             }
           : d
       )
@@ -103,39 +119,44 @@ export default function TimeShedule() {
 
   const removeBreak = (day: string, id: string) => {
     if (!isEditing) return; // Prevent removing breaks when not in edit mode
-    
-    setWeekSchedule(prev =>
-      prev.map(d => (d.day === day ? { ...d, breaks: d.breaks.filter(b => b.id !== id) } : d))
+
+    setWeekSchedule((prev) =>
+      prev.map((d) =>
+        d.day === day
+          ? { ...d, breaks: d.breaks.filter((b) => b.id !== id) }
+          : d
+      )
     );
     setHasUnsavedChanges(true);
   };
 
-const [slotAdd] = useSlotAddMutation()
+  const [slotAdd] = useSlotAddMutation();
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
       const data = {
-      doctorId : doctor?._id,
-      recurrenceType:"weekly",
-      recurrenceStartDate:new Date(),
-      recurrenceEndDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-      daysOfWeek: weekSchedule.map((day) => ({
-      daysOfWeek: day.day,
-      startTime: day.startTime,
-      endTime: day.endTime,
-      breakTime: day.breaks.map((b) => ({
-        startTime: b.start,
-        endTime: b.end,
-      })),
-    })),
-    }
-    console.log('time slot payload',data);
-      const res = await slotAdd({data}).unwrap()
-      toast.success(res?.msg);
-      console.log(res);
+        doctorId: doctor?._id,
+        recurrenceType: "weekly",
+        recurrenceStartDate: new Date(),
+        recurrenceEndDate: new Date(
+          new Date().setMonth(new Date().getMonth() + 1)
+        ),
+        daysOfWeek: weekSchedule.map((day) => ({
+          daysOfWeek: day.day,
+          startTime: day.startTime,
+          endTime: day.endTime,
+          breakTime: day.breaks.map((b) => ({
+            startTime: b.start,
+            endTime: b.end,
+          })),
+        })),
+      };
       
-      // After successful save, exit edit mode
+      const res = await slotAdd({ data }).unwrap();
+      toast.success(res?.msg);
+     
+
       setIsEditing(false);
       setHasUnsavedChanges(false);
     } catch (error) {
@@ -159,15 +180,10 @@ const [slotAdd] = useSlotAddMutation()
     }
   };
 
-
-
   return (
-  
     <div className="min-h-screen bg-gray-50 flex">
-
       <DoctorSidebar />
 
-      
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-6 py-4">
@@ -175,9 +191,13 @@ const [slotAdd] = useSlotAddMutation()
             <div className="flex items-center gap-3">
               <Timer className="h-6 w-6 text-gray-700" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Time Schedule</h1>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Time Schedule
+                </h1>
                 <p className="text-sm text-gray-500">
-                  {isEditing ? "Edit your weekly recurring slots" : "Manage your weekly recurring slots"}
+                  {isEditing
+                    ? "Edit your weekly recurring slots"
+                    : "Manage your weekly recurring slots"}
                 </p>
               </div>
             </div>
@@ -185,9 +205,9 @@ const [slotAdd] = useSlotAddMutation()
               onClick={handleEditToggle}
               disabled={isSubmitting}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                isEditing 
-                  ? 'bg-gray-900 text-white hover:bg-gray-800' 
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                isEditing
+                  ? "bg-gray-900 text-white hover:bg-gray-800"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
               }`}
             >
               {isSubmitting ? (
@@ -197,12 +217,15 @@ const [slotAdd] = useSlotAddMutation()
               ) : (
                 <Edit className="h-4 w-4" />
               )}
-              {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Edit Schedule"}
+              {isSubmitting
+                ? "Saving..."
+                : isEditing
+                ? "Save Changes"
+                : "Edit Schedule"}
             </button>
           </div>
         </div>
 
-       
         {isEditing && (
           <div className="bg-blue-50 border-b border-blue-200 px-6 py-2">
             <div className="flex items-center gap-2 text-blue-700 text-sm">
@@ -215,24 +238,24 @@ const [slotAdd] = useSlotAddMutation()
           </div>
         )}
 
-       
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
-           
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
               {weekSchedule.map((day) => (
                 <div
                   key={day.day}
                   className={`bg-white rounded-lg border shadow-sm transition-all ${
-                    isEditing 
-                      ? 'border-blue-200 hover:shadow-md' 
-                      : 'border-gray-200 hover:shadow-md'
-                  } ${!isEditing ? 'opacity-90' : ''}`}
+                    isEditing
+                      ? "border-blue-200 hover:shadow-md"
+                      : "border-gray-200 hover:shadow-md"
+                  } ${!isEditing ? "opacity-90" : ""}`}
                 >
                   {/* Day Header */}
-                  <div className={`px-4 py-3 border-b border-gray-200 ${
-                    isEditing ? 'bg-blue-50' : 'bg-gray-50'
-                  }`}>
+                  <div
+                    className={`px-4 py-3 border-b border-gray-200 ${
+                      isEditing ? "bg-blue-50" : "bg-gray-50"
+                    }`}
+                  >
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-gray-900">{day.day}</h3>
                       <div className="flex items-center gap-2">
@@ -244,7 +267,6 @@ const [slotAdd] = useSlotAddMutation()
                     </div>
                   </div>
 
-                  
                   <div className="p-4 space-y-6">
                     {/* Work Hours */}
                     <div className="space-y-3">
@@ -254,36 +276,56 @@ const [slotAdd] = useSlotAddMutation()
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <label className="text-xs text-gray-500">Start Time</label>
+                          <label className="text-xs text-gray-500">
+                            Start Time
+                          </label>
                           <select
                             value={day.startTime}
-                            onChange={e => updateDaySchedule(day.day, "startTime", e.target.value)}
+                            onChange={(e) =>
+                              updateDaySchedule(
+                                day.day,
+                                "startTime",
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                             className={`w-full p-2 border rounded-md text-sm transition-colors ${
-                              isEditing 
-                                ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-gray-400' 
-                                : 'border-gray-200 bg-gray-50 cursor-not-allowed text-gray-600'
+                              isEditing
+                                ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-gray-400"
+                                : "border-gray-200 bg-gray-50 cursor-not-allowed text-gray-600"
                             }`}
                           >
-                            {timeOptions.map(t => (
-                              <option key={t} value={t}>{t}</option>
+                            {timeOptions.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
                             ))}
                           </select>
                         </div>
                         <div className="space-y-1">
-                          <label className="text-xs text-gray-500">End Time</label>
+                          <label className="text-xs text-gray-500">
+                            End Time
+                          </label>
                           <select
                             value={day.endTime}
-                            onChange={e => updateDaySchedule(day.day, "endTime", e.target.value)}
+                            onChange={(e) =>
+                              updateDaySchedule(
+                                day.day,
+                                "endTime",
+                                e.target.value
+                              )
+                            }
                             disabled={!isEditing}
                             className={`w-full p-2 border rounded-md text-sm transition-colors ${
-                              isEditing 
-                                ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-gray-400' 
-                                : 'border-gray-200 bg-gray-50 cursor-not-allowed text-gray-600'
+                              isEditing
+                                ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-gray-400"
+                                : "border-gray-200 bg-gray-50 cursor-not-allowed text-gray-600"
                             }`}
                           >
-                            {timeOptions.map(t => (
-                              <option key={t} value={t}>{t}</option>
+                            {timeOptions.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
                             ))}
                           </select>
                         </div>
@@ -318,43 +360,63 @@ const [slotAdd] = useSlotAddMutation()
                             <div
                               key={breakItem.id}
                               className={`flex gap-2 items-center p-2 rounded-md border ${
-                                isEditing 
-                                  ? 'bg-blue-50 border-blue-200' 
-                                  : 'bg-gray-50 border-gray-200'
+                                isEditing
+                                  ? "bg-blue-50 border-blue-200"
+                                  : "bg-gray-50 border-gray-200"
                               }`}
                             >
                               <select
                                 value={breakItem.start}
-                                onChange={e => updateBreak(day.day, breakItem.id, "start", e.target.value)}
+                                onChange={(e) =>
+                                  updateBreak(
+                                    day.day,
+                                    breakItem.id,
+                                    "start",
+                                    e.target.value
+                                  )
+                                }
                                 disabled={!isEditing}
                                 className={`flex-1 p-1 border rounded text-xs transition-colors ${
-                                  isEditing 
-                                    ? 'border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent' 
-                                    : 'border-gray-200 bg-gray-100 cursor-not-allowed text-gray-600'
+                                  isEditing
+                                    ? "border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                                    : "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-600"
                                 }`}
                               >
-                                {timeOptions.map(t => (
-                                  <option key={t} value={t}>{t}</option>
+                                {timeOptions.map((t) => (
+                                  <option key={t} value={t}>
+                                    {t}
+                                  </option>
                                 ))}
                               </select>
                               <span className="text-gray-500 text-xs">to</span>
                               <select
                                 value={breakItem.end}
-                                onChange={e => updateBreak(day.day, breakItem.id, "end", e.target.value)}
+                                onChange={(e) =>
+                                  updateBreak(
+                                    day.day,
+                                    breakItem.id,
+                                    "end",
+                                    e.target.value
+                                  )
+                                }
                                 disabled={!isEditing}
                                 className={`flex-1 p-1 border rounded text-xs transition-colors ${
-                                  isEditing 
-                                    ? 'border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent' 
-                                    : 'border-gray-200 bg-gray-100 cursor-not-allowed text-gray-600'
+                                  isEditing
+                                    ? "border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                                    : "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-600"
                                 }`}
                               >
-                                {timeOptions.map(t => (
-                                  <option key={t} value={t}>{t}</option>
+                                {timeOptions.map((t) => (
+                                  <option key={t} value={t}>
+                                    {t}
+                                  </option>
                                 ))}
                               </select>
                               {isEditing && (
                                 <button
-                                  onClick={() => removeBreak(day.day, breakItem.id)}
+                                  onClick={() =>
+                                    removeBreak(day.day, breakItem.id)
+                                  }
                                   className="p-1 text-gray-400 hover:text-red-500 transition-colors"
                                 >
                                   <X className="h-3 w-3" />
@@ -421,7 +483,7 @@ const [slotAdd] = useSlotAddMutation()
           </div>
         </div>
       </div>
-      <ToastContainer autoClose={300}/>
+      <ToastContainer autoClose={300} />
     </div>
   );
 }

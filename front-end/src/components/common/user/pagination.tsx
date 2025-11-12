@@ -1,11 +1,14 @@
-
 import { Button } from "@/components/ui/button";
 interface IPagination {
-    currentPage:number;
-    totalPages:number;
-    onPageChange:(page:number)=> void;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
-export default function Pagination({ currentPage, totalPages, onPageChange }:IPagination) {
+export default function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: IPagination) {
   return (
     <div
       style={{
@@ -40,7 +43,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }:IPa
         }}
       >
         Next
-      </Button  >
+      </Button>
     </div>
   );
 }

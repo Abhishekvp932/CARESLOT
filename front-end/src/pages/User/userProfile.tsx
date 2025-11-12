@@ -16,33 +16,34 @@ import { useNavigate } from "react-router-dom";
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user?._id as string;
-  
+
   const {
     data = {},
     error,
     isLoading,
-    refetch: refetchAppoinments
-  } = useGetResendAppoinmentsQuery({patientId:userId});
-   const doctors = data?.doctors;
-   const appoinments = data?.appoinments
-   
-     const [cancelledAppoinment, setCancelledAppoinment] = useState(0);
-     const [pendingAppoinment,setPendingAppoinment] = useState(0);
-useEffect(() => {
-  if (Array.isArray(appoinments)) {
-    const count = appoinments.filter(data => data.status === 'cancelled').length;
-    setCancelledAppoinment(count);
-    const pendingCount = appoinments.filter(data => data.status === 'pending').length;
-    setPendingAppoinment(pendingCount)
-  }
-}, [appoinments]); 
+    refetch: refetchAppoinments,
+  } = useGetResendAppoinmentsQuery({ patientId: userId });
+  const doctors = data?.doctors;
+  const appoinments = data?.appoinments;
 
+  const [cancelledAppoinment, setCancelledAppoinment] = useState(0);
+  const [pendingAppoinment, setPendingAppoinment] = useState(0);
+  useEffect(() => {
+    if (Array.isArray(appoinments)) {
+      const count = appoinments.filter(
+        (data) => data.status === "cancelled"
+      ).length;
+      setCancelledAppoinment(count);
+      const pendingCount = appoinments.filter(
+        (data) => data.status === "pending"
+      ).length;
+      setPendingAppoinment(pendingCount);
+    }
+  }, [appoinments]);
 
-  const { data: users, refetch: refetchUserData } = useGetUserDataQuery(
-    userId
-  );
+  const { data: users, refetch: refetchUserData } = useGetUserDataQuery(userId);
   const [updateUserData] = useUpdateUserDataMutation();
- const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     refetchAppoinments();
     refetchUserData();
@@ -59,17 +60,16 @@ useEffect(() => {
     );
   }
 
-
-type UpadateUser = {
-    name:string;
-    email:string;
-    phone:string;
-    gender:'male' | 'female' | 'others' | string;
-    dob:string;
-    profileImg?:string | File;
+  type UpadateUser = {
+    name: string;
+    email: string;
+    phone: string;
+    gender: "male" | "female" | "others" | string;
+    dob: string;
+    profileImg?: string | File;
   };
 
-  const handleSave = async (upadateUser:UpadateUser) => {
+  const handleSave = async (upadateUser: UpadateUser) => {
     const formData = new FormData();
     formData.append("name", upadateUser?.name);
 
@@ -77,9 +77,9 @@ type UpadateUser = {
     formData.append("phone", upadateUser?.phone);
     formData.append("gender", upadateUser?.gender);
     formData.append("dob", upadateUser?.dob);
-       if (upadateUser?.profileImg) {
-        formData.append("profileImage", upadateUser.profileImg);
-      }
+    if (upadateUser?.profileImg) {
+      formData.append("profileImage", upadateUser.profileImg);
+    }
     try {
       const res = await updateUserData({
         formData,
@@ -97,23 +97,21 @@ type UpadateUser = {
     }
   };
 
-  const handleChangePassword = (userId:string)=>{
-     navigate(`/change-password/${userId}`)
-  }
+  const handleChangePassword = (userId: string) => {
+    navigate(`/change-password/${userId}`);
+  };
 
-
-  const handleDetailsPage = (doctorId:string)=>{
+  const handleDetailsPage = (doctorId: string) => {
     navigate(`/doctor-details/${doctorId}`);
-  }
+  };
 
-type Doctor = {
-  _id:string;
-  name?:string;
-  profile_img?:string;
-  createdAt?: Date | string | undefined;
-  status?:string;
-}
-
+  type Doctor = {
+    _id: string;
+    name?: string;
+    profile_img?: string;
+    createdAt?: Date | string | undefined;
+    status?: string;
+  };
 
   return (
     <div className="space-y-6">
@@ -133,11 +131,13 @@ type Doctor = {
 
         <div className="flex gap-4">
           <Button variant="outline" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              <EditUserModal user={users} onSave={handleSave} />
-            </Button>
-            <Button onClick={()=>handleChangePassword(users?._id)}>Change Password</Button>
-          </div>
+            <Settings className="h-4 w-4" />
+            <EditUserModal user={users} onSave={handleSave} />
+          </Button>
+          <Button onClick={() => handleChangePassword(users?._id)}>
+            Change Password
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -160,9 +160,7 @@ type Doctor = {
             <Clock3 className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {pendingAppoinment}
-            </div>
+            <div className="text-2xl font-bold">{pendingAppoinment}</div>
             <p className="text-xs text-gray-500">Waiting confirmation</p>
           </CardContent>
         </Card>
@@ -173,9 +171,7 @@ type Doctor = {
             <XCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {cancelledAppoinment}
-            </div>
+            <div className="text-2xl font-bold">{cancelledAppoinment}</div>
             <p className="text-xs text-gray-500">Past cancellations</p>
           </CardContent>
         </Card>
@@ -199,9 +195,11 @@ type Doctor = {
                       {apt?.name}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {apt?.createdAt ? new Date(apt.createdAt).toLocaleDateString() : "No date"}
+                      {apt?.createdAt
+                        ? new Date(apt.createdAt).toLocaleDateString()
+                        : "No date"}
                     </p>
-                  </div>  
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span
@@ -215,7 +213,11 @@ type Doctor = {
                   >
                     {apt?.status}
                   </span>
-                  <Button variant="outline" size="sm" onClick={()=>handleDetailsPage(apt?._id)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDetailsPage(apt?._id)}
+                  >
                     View
                   </Button>
                 </div>

@@ -58,12 +58,13 @@ export function DoctorDashboard() {
 
   const [isAuthorized, setIsAuthorized] = useState(false);
 
-
   const { data, isLoading } = useGetDoctorDashboardDataQuery(
     { doctorId, period },
     {
-      
-      selectFromResult: (result: { data?: DashboardData; isLoading: boolean }) => result,
+      selectFromResult: (result: {
+        data?: DashboardData;
+        isLoading: boolean;
+      }) => result,
     }
   );
 
@@ -227,7 +228,13 @@ export function DoctorDashboard() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, value }: { name: string; value: number }) => `${name}: ${value}`}
+                      label={({
+                        name,
+                        value,
+                      }: {
+                        name: string;
+                        value: number;
+                      }) => `${name}: ${value}`}
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"
@@ -286,7 +293,7 @@ export function DoctorDashboard() {
           </Card>
         </div>
       </div>
-         <ToastContainer autoClose={2000} />
+      <ToastContainer autoClose={2000} />
     </div>
   );
 }

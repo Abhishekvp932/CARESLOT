@@ -40,7 +40,7 @@ const userSocketMap = new Map<string, string>();
 
 export const initVideoCallSocket = (io: Server) => {
   io.on('connection', (socket: Socket) => {
-    console.log('User connected:', socket.id);
+  
 
     socket.on('join-room', ({ appointmentId, userId }: JoinRoomPayload) => {
       

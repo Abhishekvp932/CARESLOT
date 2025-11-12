@@ -29,7 +29,7 @@ export interface AppoinmentPopulatedDTO {
   appointment: {
     _id: string;
     doctorId: { _id: string; name: string; specialization: string };
-    status?: keyof typeof statusConfig; 
+    status?: keyof typeof statusConfig;
     transactionId?: string;
     amount?: string;
     patientId: { _id: string; name: string };
@@ -37,15 +37,13 @@ export interface AppoinmentPopulatedDTO {
     createdAt?: Date;
     updatedAt?: Date;
   };
-
 }
 
-export function AppointmentCard({ appointment}:AppoinmentPopulatedDTO) {
-  const statusInfo =
-    statusConfig[appointment?.status ?? "pending"] || {
-      label: "Unknown",
-      className: "bg-gray-200 text-gray-700",
-    };
+export function AppointmentCard({ appointment }: AppoinmentPopulatedDTO) {
+  const statusInfo = statusConfig[appointment?.status ?? "pending"] || {
+    label: "Unknown",
+    className: "bg-gray-200 text-gray-700",
+  };
   return (
     <Card className="w-full max-w-md hover:shadow-lg transition-all duration-200 hover:border-primary/20 group">
       <CardHeader className="pb-3">
@@ -82,12 +80,6 @@ export function AppointmentCard({ appointment}:AppoinmentPopulatedDTO) {
               })}
             </span>
           </div>
-
-          {/* <div className="flex items-center gap-2 text-sm text-card-foreground">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span className="text-balance">{appointment.location}</span>
-          </div> */}
-
           <div className="flex items-center gap-2 text-sm text-card-foreground">
             <User className="h-4 w-4 text-muted-foreground" />
             <span>Patient : {appointment?.patientId?.name}</span>

@@ -14,9 +14,8 @@ const VerifyEmail = () => {
     try {
       const res = await verifyEmailOTP({ email, otp }).unwrap();
       toast.success(res.msg);
-      navigate("/forgot-password",{state :{email}});
+      navigate("/forgot-password", { state: { email } });
     } catch (error: any) {
-       
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {

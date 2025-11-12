@@ -1,4 +1,3 @@
-// components/doctor/PersonalInfoSection.tsx
 import React from "react";
 import { Calendar, Camera, Mail, Phone, User } from "lucide-react";
 

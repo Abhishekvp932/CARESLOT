@@ -15,23 +15,28 @@ import {
   LogOut as LogOutIcon,
   ChevronDown,
 } from "lucide-react";
+import { useGetUserNotificationQuery } from "@/features/users/userApi";
 
 const Header = () => {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-  
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notiCount, setCount] = useState<number>(0);
-
 
   const user = useSelector((state: RootState) => state.auth.user);
-
-  const handleNotificationCount = (count: number) => {
-    setCount(count);
-  };
+  const patientId = user?._id;
+  const { data = [] } = useGetUserNotificationQuery(
+    { patientId },
+    {
+      skip: !patientId,
+    }
+  );
+  const unreadCount = Array.isArray(data)
+    ? data.filter((n) => !n.isRead).length
+    : 0;
   const [LogOut] = useLogOutMutation();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -131,19 +136,17 @@ const Header = () => {
                   }}
                 >
                   <Bell className="w-5 h-5 text-gray-600" />
-                  {notiCount > 0 && (
-                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                      {notiCount}
+
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
                     </span>
                   )}
                 </button>
 
                 {showNotifications && (
                   <div className="absolute right-0 top-14 w-96 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
-                    <NotificationComponent
-                      patientId={user?._id}
-                      onCountChange={handleNotificationCount}
-                    />
+                    <NotificationComponent patientId={user?._id} />
                   </div>
                 )}
 

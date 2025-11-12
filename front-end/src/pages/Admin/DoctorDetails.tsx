@@ -123,28 +123,28 @@ export default function DoctorDetailsPage() {
   const appoinments = data?.appoinments || [];
   const slots = data?.slots || [];
   const ratings = data?.ratings || [];
- 
+
   const navigate = useNavigate();
 
-   const admin = useSelector((state: RootState) => state.admin)
-      const user = useSelector((state: RootState) => state.auth.user)
-      const doctors = useSelector((state: RootState) => state.doctor.doctor)
-    
-      const [isAuthorized, setIsAuthorized] = useState(false)
-    
-      useEffect(() => {
-        if (admin?.role === "admin") {
-          setIsAuthorized(true)
-        } else if (user) {
-          navigate("/")
-        } else if (doctors) {
-          navigate("/doctor")
-        } else {
-          navigate("/login")
-        }
-      }, [admin, user, doctors, navigate])
-    
-      if (!isAuthorized) return null
+  const admin = useSelector((state: RootState) => state.admin);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const doctors = useSelector((state: RootState) => state.doctor.doctor);
+
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (admin?.role === "admin") {
+      setIsAuthorized(true);
+    } else if (user) {
+      navigate("/");
+    } else if (doctors) {
+      navigate("/doctor");
+    } else {
+      navigate("/login");
+    }
+  }, [admin, user, doctors, navigate]);
+
+  if (!isAuthorized) return null;
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -420,63 +420,70 @@ export default function DoctorDetailsPage() {
                       <TableBody>
                         {Array.isArray(slots) &&
                           slots.map((slotDoc: SlotDoc, docIndex: number) =>
-                            slotDoc?.slotTimes.map((slot: SlotTime, slotIndex: number) =>
-                              slot?.breakTime?.map((breakSlot: BreakTime, breakIndex: number) => (
-                                <TableRow key={`${docIndex}-${slotIndex}-${breakIndex}`}>
-                                  <TableCell className="font-medium">
-                                    {slot?.daysOfWeek}
-                                  </TableCell>
-                                  <TableCell>
-                                    {slot?.startTime &&
-                                      new Date(
-                                        slot.startTime
-                                      ).toLocaleTimeString([], {
-                                        hour: "numeric",
-                                        minute: "2-digit",
-                                        hour12: true,
-                                      })}{" "}
-                                    to{" "}
-                                    {slot?.endTime &&
-                                      new Date(slot.endTime).toLocaleTimeString(
-                                        [],
-                                        {
-                                          hour: "numeric",
-                                          minute: "2-digit",
-                                          hour12: true,
-                                        }
-                                      )}
-                                  </TableCell>
-                                  <TableCell>
-                                    {breakSlot?.startTime &&
-                                      new Date(
-                                        breakSlot.startTime
-                                      ).toLocaleTimeString([], {
-                                        hour: "numeric",
-                                        minute: "2-digit",
-                                        hour12: true,
-                                      })}{" "}
-                                    to{" "}
-                                    {breakSlot?.endTime &&
-                                      new Date(
-                                        breakSlot?.endTime
-                                      ).toLocaleTimeString([], {
-                                        hour: "numeric",
-                                        minute: "2-digit",
-                                        hour12: true,
-                                      })}
-                                  </TableCell>
-                                  <TableCell>
-                                    <Badge
-                                      variant="secondary"
-                                      className="bg-green-100 text-green-800"
+                            slotDoc?.slotTimes.map(
+                              (slot: SlotTime, slotIndex: number) =>
+                                slot?.breakTime?.map(
+                                  (
+                                    breakSlot: BreakTime,
+                                    breakIndex: number
+                                  ) => (
+                                    <TableRow
+                                      key={`${docIndex}-${slotIndex}-${breakIndex}`}
                                     >
-                                      {slot?.status
-                                        ? "Available"
-                                        : "Not Available"}
-                                    </Badge>
-                                  </TableCell>
-                                </TableRow>
-                              ))
+                                      <TableCell className="font-medium">
+                                        {slot?.daysOfWeek}
+                                      </TableCell>
+                                      <TableCell>
+                                        {slot?.startTime &&
+                                          new Date(
+                                            slot.startTime
+                                          ).toLocaleTimeString([], {
+                                            hour: "numeric",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                          })}{" "}
+                                        to{" "}
+                                        {slot?.endTime &&
+                                          new Date(
+                                            slot.endTime
+                                          ).toLocaleTimeString([], {
+                                            hour: "numeric",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                          })}
+                                      </TableCell>
+                                      <TableCell>
+                                        {breakSlot?.startTime &&
+                                          new Date(
+                                            breakSlot.startTime
+                                          ).toLocaleTimeString([], {
+                                            hour: "numeric",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                          })}{" "}
+                                        to{" "}
+                                        {breakSlot?.endTime &&
+                                          new Date(
+                                            breakSlot?.endTime
+                                          ).toLocaleTimeString([], {
+                                            hour: "numeric",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                          })}
+                                      </TableCell>
+                                      <TableCell>
+                                        <Badge
+                                          variant="secondary"
+                                          className="bg-green-100 text-green-800"
+                                        >
+                                          {slot?.status
+                                            ? "Available"
+                                            : "Not Available"}
+                                        </Badge>
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                )
                             )
                           )}
                       </TableBody>
@@ -502,49 +509,51 @@ export default function DoctorDetailsPage() {
                       </TableHeader>
                       <TableBody>
                         {Array.isArray(appoinments) &&
-                          appoinments?.map((app: Appointment, index: number) => (
-                            <TableRow key={index}>
-                              <TableCell>
-                                <div>
-                                  <p className="font-medium">
-                                    {app?.patientId?.name}
-                                  </p>
-                                  <p className="text-sm text-gray-500">
-                                    {app?.patientId?.email}
-                                  </p>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <div>
-                                  <p className="font-medium">
-                                    {app?.slot?.date &&
-                                      new Date(
-                                        app?.slot?.date
-                                      ).toLocaleDateString([], {
-                                        month: "long",
-                                        day: "numeric",
-                                      })}
-                                  </p>
-                                  <p className="text-sm text-gray-500">
-                                    {app?.slot?.startTime &&
-                                      new Date(
-                                        `1970-01-01T${app?.slot?.startTime}:00`
-                                      ).toLocaleTimeString([], {
-                                        hour: "numeric",
-                                        minute: "2-digit",
-                                        hour12: true,
-                                      })}
-                                  </p>
-                                </div>
-                              </TableCell>
-                              <TableCell>Consultation</TableCell>
-                              <TableCell>
-                                <Badge className="bg-green-100 text-green-800">
-                                  {app?.status}
-                                </Badge>
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                          appoinments?.map(
+                            (app: Appointment, index: number) => (
+                              <TableRow key={index}>
+                                <TableCell>
+                                  <div>
+                                    <p className="font-medium">
+                                      {app?.patientId?.name}
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                      {app?.patientId?.email}
+                                    </p>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div>
+                                    <p className="font-medium">
+                                      {app?.slot?.date &&
+                                        new Date(
+                                          app?.slot?.date
+                                        ).toLocaleDateString([], {
+                                          month: "long",
+                                          day: "numeric",
+                                        })}
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                      {app?.slot?.startTime &&
+                                        new Date(
+                                          `1970-01-01T${app?.slot?.startTime}:00`
+                                        ).toLocaleTimeString([], {
+                                          hour: "numeric",
+                                          minute: "2-digit",
+                                          hour12: true,
+                                        })}
+                                    </p>
+                                  </div>
+                                </TableCell>
+                                <TableCell>Consultation</TableCell>
+                                <TableCell>
+                                  <Badge className="bg-green-100 text-green-800">
+                                    {app?.status}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          )}
                       </TableBody>
                     </Table>
                   </CardContent>

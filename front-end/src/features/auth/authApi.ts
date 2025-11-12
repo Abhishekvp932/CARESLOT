@@ -58,10 +58,10 @@ export const authApi = api.injectEndpoints({
         body: payload,
       }),
     }),
-    getMe:builder.query({
-      query:()=>({
-        url:API_ROUTES.AUTH.ME,
-        method:"GET",
+    getMe: builder.query({
+      query: () => ({
+        url: API_ROUTES.AUTH.ME,
+        method: "GET",
       }),
     }),
   }),

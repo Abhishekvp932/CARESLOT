@@ -131,13 +131,19 @@ const KYC: React.FC = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
     if (!validation()) return;
 
     // Validate required files
-    if (!form.educationCertificate || !form.experienceCertificate || !form.profileImage) {
+    if (
+      !form.educationCertificate ||
+      !form.experienceCertificate ||
+      !form.profileImage
+    ) {
       toast.error("Please upload all required documents");
       return;
     }
@@ -177,7 +183,10 @@ const KYC: React.FC = () => {
   // Handle file input change
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: keyof Pick<FormType, "profileImage" | "educationCertificate" | "experienceCertificate">
+    field: keyof Pick<
+      FormType,
+      "profileImage" | "educationCertificate" | "experienceCertificate"
+    >
   ): void => {
     setForm({
       ...form,
@@ -209,7 +218,9 @@ const KYC: React.FC = () => {
   };
 
   // Handle select change
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+  const handleSelectChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
     setForm({
       ...form,
       specialization: e.target.value,
@@ -284,7 +295,10 @@ const KYC: React.FC = () => {
                           </div>
                         </div>
                       ) : (
-                        <label htmlFor="profileImage" className="cursor-pointer">
+                        <label
+                          htmlFor="profileImage"
+                          className="cursor-pointer"
+                        >
                           <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 border-4 border-indigo-200 flex items-center justify-center shadow-xl">
                             <Upload className="h-12 w-12 text-indigo-400" />
                           </div>
@@ -419,7 +433,9 @@ const KYC: React.FC = () => {
                         label="Graduation Year"
                         name="graduationYear"
                         type="number"
-                        onChange={(e) => handleNumberChange(e, "graduationYear")}
+                        onChange={(e) =>
+                          handleNumberChange(e, "graduationYear")
+                        }
                         placeholder="e.g. 2020"
                         className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white hover:border-gray-300"
                       />
@@ -502,7 +518,9 @@ const KYC: React.FC = () => {
                         label=""
                         name="educationCertificate"
                         type="file"
-                        onChange={(e) => handleFileChange(e, "educationCertificate")}
+                        onChange={(e) =>
+                          handleFileChange(e, "educationCertificate")
+                        }
                         className="hidden"
                       />
                       {errors.educationCertificate && (
@@ -549,7 +567,9 @@ const KYC: React.FC = () => {
                         label=""
                         name="experienceCertificate"
                         type="file"
-                        onChange={(e) => handleFileChange(e, "experienceCertificate")}
+                        onChange={(e) =>
+                          handleFileChange(e, "experienceCertificate")
+                        }
                         className="hidden"
                       />
                       {errors.experienceCertificate && (

@@ -8,7 +8,7 @@ export default defineConfig({
    strictPort: true,
  },
  plugins:[tailwindcss()],
- resolve:{
+ resolve:{ 
     alias:{
         "@":path.resolve(__dirname,"./src"),
     },

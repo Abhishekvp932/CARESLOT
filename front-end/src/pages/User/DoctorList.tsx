@@ -20,7 +20,6 @@ import {
   Award,
   GraduationCap,
   Stethoscope,
-
   TrendingUp,
   CheckCircle2,
 } from "lucide-react";
@@ -44,15 +43,13 @@ export default function DoctorList() {
 
   const limit = 10;
   const navigate = useNavigate();
-    const patient = useSelector(
-      (state: RootState) => state.auth.user
-    );
-  
-    useEffect(()=>{
-      if(!patient){
-        navigate('/login')
-      }
-    },[patient]);
+  const patient = useSelector((state: RootState) => state.auth.user);
+
+  useEffect(() => {
+    if (!patient) {
+      navigate("/login");
+    }
+  }, [patient]);
 
   useEffect(() => {
     setLoading(true);
@@ -69,27 +66,25 @@ export default function DoctorList() {
     limit,
     search: debouncedSearch,
     specialty: selectedSpecialty,
-    sortBy:sortBy,
+    sortBy: sortBy,
   });
   const { data: specializations = [] } = useGetAllSpecializationsQuery({});
-  
+
   const doctors = data?.data || [];
   const totalPages = data?.totalPages || 1;
 
   const isLoading = loading || isFetching;
 
-  
   const handleDoctorDetailsPage = async (doctorId: string) => {
     navigate(`/doctor-details/${doctorId}`);
   };
-  
+
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
     }
   };
 
-  
   interface DoctorDTO {
     _id?: string;
     email?: string;
@@ -97,15 +92,15 @@ export default function DoctorList() {
     isApproved?: boolean;
     name?: string;
     DOB?: Date;
-    gender?: 'male' | 'female' | 'others';
-    role?: 'doctors';
+    gender?: "male" | "female" | "others";
+    role?: "doctors";
     updatedAt?: Date;
     createdAt?: Date;
     profile_img?: string;
     qualifications?: {
       degree?: string;
       institution?: string;
-      experince?:number;
+      experince?: number;
       educationCertificate?: string;
       experienceCertificate?: string;
       graduationYear?: number;
@@ -115,10 +110,10 @@ export default function DoctorList() {
       fees?: number;
       lisence?: string;
     };
-    totalRating?:number;
-    avgRating?:number;
+    totalRating?: number;
+    avgRating?: number;
   }
-  
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50/50 to-white">
       <Header />
@@ -131,12 +126,13 @@ export default function DoctorList() {
               <Stethoscope className="w-4 h-4" />
               <span>{doctors.length} Expert Doctors Available</span>
             </div>
-            
+
             <h1 className="text-4xl md:text-5xl font-bold">
               Find Your Perfect Doctor
             </h1>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Connect with top-rated healthcare professionals and book your appointment today
+              Connect with top-rated healthcare professionals and book your
+              appointment today
             </p>
           </div>
 
@@ -160,11 +156,16 @@ export default function DoctorList() {
                 <Select value={selectedSpecialty} onValueChange={setSpecialty}>
                   <SelectTrigger className="w-full sm:w-56 h-12 border-gray-200 text-gray-900">
                     <Filter className="w-4 h-4 mr-2" />
-                    <SelectValue placeholder="All Specializations" className="text-gray-900" />
+                    <SelectValue
+                      placeholder="All Specializations"
+                      className="text-gray-900"
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="All Specialties">All Specializations</SelectItem>
-                    {specializations?.map((sp:string) => (
+                    <SelectItem value="All Specialties">
+                      All Specializations
+                    </SelectItem>
+                    {specializations?.map((sp: string) => (
                       <SelectItem key={sp} value={sp}>
                         {sp}
                       </SelectItem>
@@ -195,7 +196,9 @@ export default function DoctorList() {
           <div className="flex justify-center items-center py-20">
             <div className="text-center space-y-4">
               <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
-              <p className="text-gray-600 font-medium">Finding the best doctors for you...</p>
+              <p className="text-gray-600 font-medium">
+                Finding the best doctors for you...
+              </p>
             </div>
           </div>
         ) : (
@@ -203,20 +206,28 @@ export default function DoctorList() {
             {doctors.length === 0 ? (
               <div className="text-center py-20">
                 <Stethoscope className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No doctors found</h3>
-                <p className="text-gray-600">Try adjusting your search or filters</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  No doctors found
+                </h3>
+                <p className="text-gray-600">
+                  Try adjusting your search or filters
+                </p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between mb-8">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Available Doctors</h2>
-                    <p className="text-gray-600 mt-1">Showing {doctors.length} results</p>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Available Doctors
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                      Showing {doctors.length} results
+                    </p>
                   </div>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {doctors.map((doctor:DoctorDTO) => (
+                  {doctors.map((doctor: DoctorDTO) => (
                     <Card
                       key={doctor?._id}
                       className="group hover:shadow-2xl transition-all duration-300 bg-white border-2 hover:border-blue-200 overflow-hidden"
@@ -230,22 +241,26 @@ export default function DoctorList() {
                                 alt={doctor?.name}
                               />
                               <AvatarFallback className="bg-blue-600 text-white text-lg font-semibold">
-                                {doctor?.name?.split(" ").map((n) => n[0]).join("")}
+                                {doctor?.name
+                                  ?.split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
                               </AvatarFallback>
                             </Avatar>
                             <div className="absolute -bottom-1 -right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-white flex items-center justify-center">
                               <CheckCircle2 className="w-3 h-3 text-white" />
                             </div>
                           </div>
-                          
+
                           <div className="flex-1 min-w-0">
                             <h3 className="font-bold text-lg text-gray-900 truncate">
                               Dr. {doctor?.name}
                             </h3>
                             <Badge className="bg-blue-600 hover:bg-blue-700 text-white mt-1">
-                              {doctor?.qualifications?.specialization || "General Physician"}
+                              {doctor?.qualifications?.specialization ||
+                                "General Physician"}
                             </Badge>
-                            
+
                             <div className="flex items-center mt-2 gap-1">
                               <div className="flex">
                                 {[...Array(5)].map((_, i) => (
@@ -276,14 +291,16 @@ export default function DoctorList() {
                             <GraduationCap className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                             <div>
                               <p className="font-medium text-gray-900">
-                                {doctor?.qualifications?.degree || "Medical Degree"}
+                                {doctor?.qualifications?.degree ||
+                                  "Medical Degree"}
                               </p>
                               <p className="text-gray-600 text-xs">
-                                {doctor?.qualifications?.medicalSchool || "Medical School"}
+                                {doctor?.qualifications?.medicalSchool ||
+                                  "Medical School"}
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 text-sm">
                             <Award className="w-5 h-5 text-blue-600 shrink-0" />
                             <span className="text-gray-700">
@@ -312,7 +329,9 @@ export default function DoctorList() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDoctorDetailsPage(doctor?._id as string)}
+                            onClick={() =>
+                              handleDoctorDetailsPage(doctor?._id as string)
+                            }
                             className="border-blue-600 text-blue-600 hover:bg-blue-50"
                           >
                             <Calendar className="w-4 h-4 mr-1" />
@@ -338,7 +357,7 @@ export default function DoctorList() {
       </div>
 
       <Footer />
-         <ToastContainer autoClose={2000} />
+      <ToastContainer autoClose={2000} />
     </div>
   );
 }

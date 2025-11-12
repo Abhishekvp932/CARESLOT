@@ -1,22 +1,33 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Menu, X, Home, User, Stethoscope, CalendarDays, Timer, LogOut, ChevronRight, MessageCircle } from "lucide-react"
-import { Link, useNavigate, useLocation } from "react-router-dom"
-import { useDispatch } from "react-redux"
-import { AdminlogOut as adminLogOut } from "@/features/admin/adminSlice"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import {
+  Menu,
+  X,
+  Home,
+  User,
+  Stethoscope,
+  CalendarDays,
+  Timer,
+  LogOut,
+  ChevronRight,
+  MessageCircle,
+} from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AdminlogOut as adminLogOut } from "@/features/admin/adminSlice";
+import { cn } from "@/lib/utils";
 
 export const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
-    dispatch(adminLogOut())
-    navigate("/login")
-  }
+    dispatch(adminLogOut());
+    navigate("/login");
+  };
 
   const menuItems = [
     {
@@ -49,13 +60,13 @@ export const Sidebar = () => {
       href: "/admin/appoinments",
       active: location.pathname === "/admin/appoinments",
     },
-     {
+    {
       icon: MessageCircle,
       label: "Messages",
       href: "/admin/messages",
       active: location.pathname === "/admin/messages",
     },
-  ]
+  ];
 
   return (
     <>
@@ -72,14 +83,19 @@ export const Sidebar = () => {
       </button>
 
       {/* Overlay for mobile */}
-      {isOpen && <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setIsOpen(false)} />}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
       {/* Sidebar */}
       <aside
         className={cn(
           "fixed top-0 left-0 h-screen w-72 bg-sidebar border-r border-sidebar-border z-40 transform transition-all duration-300 ease-in-out flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full",
-          "md:translate-x-0",
+          "md:translate-x-0"
         )}
       >
         {/* Header */}
@@ -89,8 +105,12 @@ export const Sidebar = () => {
               <Stethoscope size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-sidebar-foreground tracking-tight">CARESLOT</h1>
-              <p className="text-xs text-sidebar-foreground/60 font-medium">Admin Dashboard</p>
+              <h1 className="text-xl font-bold text-sidebar-foreground tracking-tight">
+                CARESLOT
+              </h1>
+              <p className="text-xs text-sidebar-foreground/60 font-medium">
+                Admin Dashboard
+              </p>
             </div>
           </div>
         </div>
@@ -98,7 +118,7 @@ export const Sidebar = () => {
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2">
           {menuItems.map((item) => {
-            const Icon = item.icon
+            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
@@ -108,25 +128,29 @@ export const Sidebar = () => {
                   "group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden",
                   item.active
                     ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-lg"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
               >
                 {/* Active indicator */}
-                {item.active && <div className="absolute left-0 top-0 bottom-0 w-1 bg-white/30 rounded-r-full" />}
+                {item.active && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-white/30 rounded-r-full" />
+                )}
 
                 <Icon
                   size={20}
                   className={cn(
                     "transition-transform duration-200",
-                    item.active ? "scale-110" : "group-hover:scale-105",
+                    item.active ? "scale-110" : "group-hover:scale-105"
                   )}
                 />
                 <span className="font-medium text-sm flex-1">{item.label}</span>
 
                 {/* Arrow indicator for active item */}
-                {item.active && <ChevronRight size={16} className="opacity-60" />}
+                {item.active && (
+                  <ChevronRight size={16} className="opacity-60" />
+                )}
               </Link>
-            )
+            );
           })}
         </nav>
 
@@ -136,12 +160,14 @@ export const Sidebar = () => {
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sidebar-foreground hover:bg-destructive hover:text-destructive-foreground transition-all duration-200 group"
           >
-            <LogOut size={20} className="group-hover:scale-105 transition-transform duration-200" />
+            <LogOut
+              size={20}
+              className="group-hover:scale-105 transition-transform duration-200"
+            />
             <span className="font-medium text-sm">Logout</span>
           </button>
         </div>
       </aside>
     </>
-  )
-}
-  
+  );
+};

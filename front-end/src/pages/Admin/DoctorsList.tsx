@@ -105,7 +105,7 @@ const DoctorsList = () => {
         doctorId,
         isBlocked: !isBlocked,
       };
-      
+
       if (reason) {
         payload.reason = reason;
       }

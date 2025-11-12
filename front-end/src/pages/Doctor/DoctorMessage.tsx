@@ -103,10 +103,14 @@ interface SocketMessagesRead {
 export function DoctorMessagingPage() {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<
+    string | null
+  >(null);
   const [conversationss, setConversation] = useState<IConversation[]>([]);
   const [showEmoji, setShowEmoji] = useState<boolean>(false);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>(undefined);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>(
+    undefined
+  );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<OnlineUsers>({});
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -114,10 +118,8 @@ export function DoctorMessagingPage() {
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
   const doctorId = doctor?._id as string;
 
-  const { data: conversations = [], refetch: chatRefetch } = useGetDoctorChatQuery(
-    { doctorId },
-    { skip: !doctorId }
-  );
+  const { data: conversations = [], refetch: chatRefetch } =
+    useGetDoctorChatQuery({ doctorId }, { skip: !doctorId });
 
   const { data: messagess = [], refetch } = useGetDoctorMessagesQuery(
     selectedConversation,
@@ -388,7 +390,9 @@ export function DoctorMessagingPage() {
   };
 
   // Handle image selection
-  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleImageSelect = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     const file = event.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
       setSelectedImage(file);
@@ -412,7 +416,10 @@ export function DoctorMessagingPage() {
   };
 
   // Handle message deletion
-  const handleMessageDelete = async (messageId: string, chatId: string): Promise<void> => {
+  const handleMessageDelete = async (
+    messageId: string,
+    chatId: string
+  ): Promise<void> => {
     socket.emit("deleteMessage", { messageId, chatId });
     chatRefetch();
     refetch();
@@ -472,7 +479,8 @@ export function DoctorMessagingPage() {
               })
               .map((conversation) => {
                 const isOnline =
-                  onlineUsers[conversation.patiendId?._id || ""]?.role === "patient";
+                  onlineUsers[conversation.patiendId?._id || ""]?.role ===
+                  "patient";
 
                 return (
                   <Card
@@ -577,7 +585,9 @@ export function DoctorMessagingPage() {
           </div>
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">Select a conversation to start messaging</p>
+            <p className="text-muted-foreground">
+              Select a conversation to start messaging
+            </p>
           </div>
         )}
 
@@ -716,7 +726,7 @@ export function DoctorMessagingPage() {
           </div>
         </div>
       </div>
-         <ToastContainer autoClose={2000} />
+      <ToastContainer autoClose={2000} />
     </div>
   );
 }

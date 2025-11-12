@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import {toast,ToastContainer} from 'react-toastify'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 type FormState = {
-  name: string
-  email: string
-  phone: string
-  subject: string
-  message: string
-  consent: boolean
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  consent: boolean;
   // honeypot
-  company: string
-}
+  company: string;
+};
 
 export function ContactForm() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
@@ -30,46 +30,40 @@ export function ContactForm() {
     message: "",
     consent: false,
     company: "",
-  })
+  });
 
-  const onChange = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value
-    setForm((f) => ({ ...f, [key]: value }))
-  }
+  const onChange =
+    (key: keyof FormState) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value =
+        e.target.type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+          : e.target.value;
+      setForm((f) => ({ ...f, [key]: value }));
+    };
 
   async function onSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-      toast(
-      "Please fill in your name, email, and message.",
-      
-      )
-      return
+      toast("Please fill in your name, email, and message.");
+      return;
     }
     if (!form.consent) {
-      toast(
-        
-         "Please agree to be contacted regarding your inquiry.",
-         
-      )
-      return
+      toast("Please agree to be contacted regarding your inquiry.");
+      return;
     }
     // basic email check
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      toast(
-        
-         "Please provide a valid email address.",
-       
-      )
-      return
+      toast("Please provide a valid email address.");
+      return;
     }
     // honeypot check
     if (form.company) {
       // silently ignore bots
-      return
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -81,14 +75,12 @@ export function ContactForm() {
           subject: form.subject.trim(),
           message: form.message.trim(),
         }),
-      })
-      const data = await res.json().catch(() => ({}))
+      });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data?.error || "Failed to send message")
+        throw new Error(data?.error || "Failed to send message");
       }
-      toast(
-     "Thanks for reaching out. We’ll get back to you shortly.",
-      )
+      toast("Thanks for reaching out. We’ll get back to you shortly.");
       // reset form
       setForm({
         name: "",
@@ -98,17 +90,21 @@ export function ContactForm() {
         message: "",
         consent: false,
         company: "",
-      })
+      });
     } catch (err) {
-      toast( "Please try again later.")
+      toast("Please try again later.");
       console.log(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col" aria-describedby="contact-instructions">
+    <form
+      onSubmit={onSubmit}
+      className="flex flex-col"
+      aria-describedby="contact-instructions"
+    >
       <p id="contact-instructions" className="sr-only">
         All fields marked required must be completed before submitting the form.
       </p>
@@ -193,8 +189,12 @@ export function ContactForm() {
                 className="mt-1 h-4 w-4"
                 aria-invalid={!form.consent ? true : undefined}
               />
-              <Label htmlFor="consent" className="font-normal text-muted-foreground">
-                I agree to be contacted about my inquiry. We’ll never share your information.
+              <Label
+                htmlFor="consent"
+                className="font-normal text-muted-foreground"
+              >
+                I agree to be contacted about my inquiry. We’ll never share your
+                information.
               </Label>
             </div>
             {/* Honeypot field for bots (hidden) */}
@@ -218,7 +218,7 @@ export function ContactForm() {
           {loading ? "Sending..." : "Send message"}
         </Button>
       </div>
-      <ToastContainer autoClose = {200}/>
+      <ToastContainer autoClose={200} />
     </form>
-  )
+  );
 }

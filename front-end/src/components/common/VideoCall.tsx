@@ -11,52 +11,71 @@ interface VideoCallProps {
 
 const socket: Socket = io("https://careslot.ddns.net");
 
-type CallStatus = 'idle' | 'calling' | 'incoming' | 'active' | 'rejected' | 'ended';
+type CallStatus =
+  | "idle"
+  | "calling"
+  | "incoming"
+  | "active"
+  | "rejected"
+  | "ended";
 
-const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserId, onCallEnd }) => {
+const VideoCall: React.FC<VideoCallProps> = ({
+  userId,
+  appointmentId,
+  otherUserId,
+  onCallEnd,
+}) => {
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const remoteStreamRef = useRef<MediaStream | null>(null);
-  
+
   // Buffer for ICE candidates that arrive before peer connection is ready
   const iceCandidateBufferRef = useRef<RTCIceCandidateInit[]>([]);
-  
-  const [callStatus, setCallStatus] = useState<CallStatus>('idle');
-  const [incomingCallFrom, setIncomingCallFrom] = useState<string>('');
-  const [remoteSocketId, setRemoteSocketId] = useState<string>('');
+
+  const [callStatus, setCallStatus] = useState<CallStatus>("idle");
+  const [incomingCallFrom, setIncomingCallFrom] = useState<string>("");
+  const [remoteSocketId, setRemoteSocketId] = useState<string>("");
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
 
   useEffect(() => {
-    console.log("Joining room with userId:", userId, "appointmentId:", appointmentId);
+
     socket.emit("join-room", { appointmentId, userId });
 
     socket.on("user-joined", ({ userId: joinedId, socketId }) => {
-      console.log("User joined:", joinedId, "socketId:", socketId);
+    
       if (joinedId !== userId) {
         setRemoteSocketId(socketId);
       }
     });
 
-    socket.on("user-already-in-room", ({ userId: existingUserId, socketId }) => {
-      console.log("User already in room:", existingUserId, "socketId:", socketId);
-      setRemoteSocketId(socketId);
-    });
+    socket.on(
+      "user-already-in-room",
+      ({ userId: existingUserId, socketId }) => {
+        console.log(
+          "User already in room:",
+          existingUserId,
+          "socketId:",
+          socketId
+        );
+        setRemoteSocketId(socketId);
+      }
+    );
 
     socket.on("incoming-call", ({ from, fromUserId, offer }) => {
       console.log("Incoming call from:", fromUserId, "socketId:", from);
       setIncomingCallFrom(from);
       setRemoteSocketId(from);
-      setCallStatus('incoming');
-      sessionStorage.setItem('pendingOffer', JSON.stringify(offer));
+      setCallStatus("incoming");
+      sessionStorage.setItem("pendingOffer", JSON.stringify(offer));
     });
 
     socket.on("call-failed", ({ reason }) => {
       console.error("Call failed:", reason);
       alert(`Call failed: ${reason}`);
-      setCallStatus('idle');
+      setCallStatus("idle");
       cleanup();
     });
 
@@ -64,12 +83,16 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       console.log("Call accepted by:", from);
       if (pcRef.current) {
         try {
-          await pcRef.current.setRemoteDescription(new RTCSessionDescription(answer));
-          setCallStatus('active');
+          await pcRef.current.setRemoteDescription(
+            new RTCSessionDescription(answer)
+          );
+          setCallStatus("active");
           setRemoteSocketId(from);
-          
+
           // Process buffered ICE candidates
-          console.log(`Processing ${iceCandidateBufferRef.current.length} buffered ICE candidates`);
+          console.log(
+            `Processing ${iceCandidateBufferRef.current.length} buffered ICE candidates`
+          );
           for (const candidate of iceCandidateBufferRef.current) {
             await pcRef.current.addIceCandidate(new RTCIceCandidate(candidate));
           }
@@ -82,24 +105,24 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
     socket.on("call-rejected", ({ from }) => {
       console.log("Call rejected by:", from);
-      setCallStatus('rejected');
+      setCallStatus("rejected");
       cleanup();
-      setTimeout(() => setCallStatus('idle'), 3000);
+      setTimeout(() => setCallStatus("idle"), 3000);
     });
 
     socket.on("call-ended", ({ from }) => {
       console.log("Call ended by:", from);
-      setCallStatus('ended');
+      setCallStatus("ended");
       cleanup();
       setTimeout(() => {
-        setCallStatus('idle');
+        setCallStatus("idle");
         onCallEnd?.();
       }, 2000);
     });
 
     socket.on("ice-candidate", async ({ candidate, from }) => {
       console.log("ICE candidate from:", from);
-      
+
       if (pcRef.current && pcRef.current.remoteDescription) {
         try {
           await pcRef.current.addIceCandidate(new RTCIceCandidate(candidate));
@@ -126,14 +149,22 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
   }, [appointmentId, userId, onCallEnd]);
 
   useEffect(() => {
-    if (remoteStreamRef.current && remoteVideoRef.current && callStatus === 'active') {
+    if (
+      remoteStreamRef.current &&
+      remoteVideoRef.current &&
+      callStatus === "active"
+    ) {
       console.log("🔄 Syncing remote stream to video element");
       remoteVideoRef.current.srcObject = remoteStreamRef.current;
     }
   }, [callStatus]);
 
   useEffect(() => {
-    if (localStreamRef.current && localVideoRef.current && (callStatus === 'calling' || callStatus === 'active')) {
+    if (
+      localStreamRef.current &&
+      localVideoRef.current &&
+      (callStatus === "calling" || callStatus === "active")
+    ) {
       console.log("🔄 Syncing local stream to video element");
       localVideoRef.current.srcObject = localStreamRef.current;
     }
@@ -162,7 +193,8 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
             "turns:bn-turn1.xirsys.com:443?transport=tcp",
             "turns:bn-turn1.xirsys.com:5349?transport=tcp",
           ],
-          username: "755lOUxgC038eVVWmighZ6n56l-LnHyx2nTMBm7PTs3H1FZCPYkn8SsJ-KaUlCB6AAAAAGkR0NxBYmhpc2hla3Zw",
+          username:
+            "755lOUxgC038eVVWmighZ6n56l-LnHyx2nTMBm7PTs3H1FZCPYkn8SsJ-KaUlCB6AAAAAGkR0NxBYmhpc2hla3Zw",
           credential: "0fab11e4-be2b-11f0-a1ef-0242ac140004",
         },
       ],
@@ -172,19 +204,21 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     pcRef.current = pc;
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 1280, height: 720 }, 
-        audio: true 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 1280, height: 720 },
+        audio: true,
       });
       localStreamRef.current = stream;
-      
+
       if (localVideoRef.current) {
         console.log("📹 Attaching local stream to video element");
         localVideoRef.current.srcObject = stream;
-        localVideoRef.current.play().catch(err => console.log("Local video play error:", err));
+        localVideoRef.current
+          .play()
+          .catch((err) => console.log("Local video play error:", err));
       }
-      
-      stream.getTracks().forEach(track => {
+
+      stream.getTracks().forEach((track) => {
         console.log("Adding track:", track.kind);
         pc.addTrack(track, stream);
       });
@@ -196,23 +230,32 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
     // Handle incoming tracks
     pc.ontrack = (event) => {
-      console.log("🎥 Received remote track:", event.track.kind, "readyState:", event.track.readyState);
+      console.log(
+        "🎥 Received remote track:",
+        event.track.kind,
+        "readyState:",
+        event.track.readyState
+      );
       const stream = event.streams[0];
-      
+
       if (stream) {
-        console.log("📺 Remote stream received with", stream.getTracks().length, "tracks");
+        console.log(
+          "📺 Remote stream received with",
+          stream.getTracks().length,
+          "tracks"
+        );
         remoteStreamRef.current = stream;
-        
+
         if (remoteVideoRef.current) {
           console.log("✅ Attaching remote stream to video element");
           remoteVideoRef.current.srcObject = stream;
-          
+
           // Ensure the video element is ready
           remoteVideoRef.current.onloadedmetadata = () => {
             console.log("🎬 Remote video metadata loaded");
-            remoteVideoRef.current?.play().catch(err => 
-              console.error("Remote video play error:", err)
-            );
+            remoteVideoRef.current
+              ?.play()
+              .catch((err) => console.error("Remote video play error:", err));
           };
         } else {
           console.warn("⚠️ Remote video ref not available");
@@ -226,10 +269,10 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
         const targetId = targetSocketId || remoteSocketId;
         if (targetId) {
           console.log("📤 Sending ICE candidate to:", targetId);
-          socket.emit("ice-candidate", { 
-            appointmentId, 
+          socket.emit("ice-candidate", {
+            appointmentId,
             candidate: event.candidate.toJSON(),
-            to: targetId
+            to: targetId,
           });
         } else {
           console.warn("⚠️ No target socket ID for ICE candidate");
@@ -241,7 +284,10 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
     pc.onconnectionstatechange = () => {
       console.log("🔗 Connection state:", pc.connectionState);
-      if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+      if (
+        pc.connectionState === "failed" ||
+        pc.connectionState === "disconnected"
+      ) {
         console.error("Connection failed or disconnected");
       }
     };
@@ -259,11 +305,11 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
 
   const startCall = async () => {
     console.log("📞 Starting call to otherUserId:", otherUserId);
-    setCallStatus('calling');
-    
+    setCallStatus("calling");
+
     const pc = await setupPeerConnection();
     if (!pc) {
-      setCallStatus('idle');
+      setCallStatus("idle");
       return;
     }
 
@@ -273,54 +319,56 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
         offerToReceiveVideo: true,
       });
       await pc.setLocalDescription(offer);
-      
+
       console.log("📤 Sending start-call to:", otherUserId);
-      socket.emit("start-call", { 
-        appointmentId, 
-        offer, 
+      socket.emit("start-call", {
+        appointmentId,
+        offer,
         to: otherUserId,
-        from: userId
+        from: userId,
       });
     } catch (err) {
       console.error("Error creating offer:", err);
-      setCallStatus('idle');
+      setCallStatus("idle");
       cleanup();
     }
   };
 
   const acceptCall = async () => {
     console.log("✅ Accepting call from:", incomingCallFrom);
-    
+
     const pc = await setupPeerConnection(incomingCallFrom);
     if (!pc) {
-      setCallStatus('idle');
+      setCallStatus("idle");
       return;
     }
 
     try {
-      const offerStr = sessionStorage.getItem('pendingOffer');
+      const offerStr = sessionStorage.getItem("pendingOffer");
       if (offerStr) {
         const offer = JSON.parse(offerStr);
-        
+
         console.log("📥 Setting remote description (offer)");
         await pc.setRemoteDescription(new RTCSessionDescription(offer));
-        
+
         console.log("📝 Creating answer");
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        
+
         console.log("📤 Sending accept-call to:", incomingCallFrom);
-        socket.emit("accept-call", { 
-          appointmentId, 
-          answer, 
-          to: incomingCallFrom
+        socket.emit("accept-call", {
+          appointmentId,
+          answer,
+          to: incomingCallFrom,
         });
-        
-        setCallStatus('active');
-        sessionStorage.removeItem('pendingOffer');
-        
+
+        setCallStatus("active");
+        sessionStorage.removeItem("pendingOffer");
+
         // Process buffered ICE candidates after setting remote description
-        console.log(`Processing ${iceCandidateBufferRef.current.length} buffered ICE candidates`);
+        console.log(
+          `Processing ${iceCandidateBufferRef.current.length} buffered ICE candidates`
+        );
         for (const candidate of iceCandidateBufferRef.current) {
           await pc.addIceCandidate(new RTCIceCandidate(candidate));
         }
@@ -328,38 +376,38 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
       }
     } catch (err) {
       console.error("Error accepting call:", err);
-      setCallStatus('idle');
+      setCallStatus("idle");
       cleanup();
     }
   };
 
   const rejectCall = () => {
     console.log("❌ Rejecting call from:", incomingCallFrom);
-    socket.emit("reject-call", { 
-      appointmentId, 
-      to: incomingCallFrom 
+    socket.emit("reject-call", {
+      appointmentId,
+      to: incomingCallFrom,
     });
-    setCallStatus('idle');
-    sessionStorage.removeItem('pendingOffer');
+    setCallStatus("idle");
+    sessionStorage.removeItem("pendingOffer");
   };
 
   const endCall = () => {
     console.log("📴 Ending call with:", remoteSocketId);
-    socket.emit("end-call", { 
-      appointmentId, 
-      to: remoteSocketId
+    socket.emit("end-call", {
+      appointmentId,
+      to: remoteSocketId,
     });
-    setCallStatus('ended');
+    setCallStatus("ended");
     cleanup();
     setTimeout(() => {
-      setCallStatus('idle');
+      setCallStatus("idle");
       onCallEnd?.();
     }, 2000);
   };
 
   const cleanup = () => {
     if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(track => track.stop());
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
     }
     if (remoteStreamRef.current) {
@@ -398,7 +446,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     }
   };
 
-  if (callStatus === 'idle') {
+  if (callStatus === "idle") {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-8 rounded-2xl shadow-lg">
@@ -415,7 +463,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     );
   }
 
-  if (callStatus === 'calling') {
+  if (callStatus === "calling") {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-12 rounded-2xl shadow-lg text-center max-w-md">
@@ -438,12 +486,14 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
               <Phone size={48} className="text-blue-500" />
             </div>
             <h2 className="text-2xl font-bold mb-2">Calling...</h2>
-            <p className="text-gray-600">Waiting for the other person to answer</p>
+            <p className="text-gray-600">
+              Waiting for the other person to answer
+            </p>
           </div>
           <button
             onClick={() => {
               cleanup();
-              setCallStatus('idle');
+              setCallStatus("idle");
             }}
             className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
           >
@@ -454,7 +504,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     );
   }
 
-  if (callStatus === 'incoming') {
+  if (callStatus === "incoming") {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-12 rounded-2xl shadow-lg text-center">
@@ -486,21 +536,23 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
     );
   }
 
-  if (callStatus === 'rejected') {
+  if (callStatus === "rejected") {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-12 rounded-2xl shadow-lg text-center">
           <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <PhoneOff size={48} className="text-red-500" />
           </div>
-          <h2 className="text-2xl font-bold mb-2 text-red-600">Call Rejected</h2>
+          <h2 className="text-2xl font-bold mb-2 text-red-600">
+            Call Rejected
+          </h2>
           <p className="text-gray-600">The call was declined</p>
         </div>
       </div>
     );
   }
 
-  if (callStatus === 'ended') {
+  if (callStatus === "ended") {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-12 rounded-2xl shadow-lg text-center">
@@ -552,9 +604,9 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
         <button
           onClick={toggleAudio}
           className={`p-4 rounded-full transition-colors ${
-            isAudioEnabled 
-              ? 'bg-gray-700 hover:bg-gray-600' 
-              : 'bg-red-500 hover:bg-red-600'
+            isAudioEnabled
+              ? "bg-gray-700 hover:bg-gray-600"
+              : "bg-red-500 hover:bg-red-600"
           }`}
         >
           {isAudioEnabled ? (
@@ -563,13 +615,13 @@ const VideoCall: React.FC<VideoCallProps> = ({ userId, appointmentId, otherUserI
             <PhoneOff size={24} className="text-white" />
           )}
         </button>
-        
+
         <button
           onClick={toggleVideo}
           className={`p-4 rounded-full transition-colors ${
-            isVideoEnabled 
-              ? 'bg-gray-700 hover:bg-gray-600' 
-              : 'bg-red-500 hover:bg-red-600'
+            isVideoEnabled
+              ? "bg-gray-700 hover:bg-gray-600"
+              : "bg-red-500 hover:bg-red-600"
           }`}
         >
           {isVideoEnabled ? (

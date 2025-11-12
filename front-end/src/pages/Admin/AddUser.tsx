@@ -55,9 +55,10 @@ const AddUserModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent   className="max-w-md w-full"
-  style={{ maxHeight: "80vh", overflowY: "auto" }}>
-    
+      <DialogContent
+        className="max-w-md w-full"
+        style={{ maxHeight: "80vh", overflowY: "auto" }}
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Add New User</DialogTitle>
@@ -67,7 +68,7 @@ const AddUserModal = ({
             {/* Profile pic */}
             <InputField
               type="file"
-              name = "profileImg"
+              name="profileImg"
               label="Profile photo"
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -85,35 +86,51 @@ const AddUserModal = ({
             {/* Name, Email, Phone */}
             <label htmlFor="">Name</label>
             <Input placeholder="Enter name" {...register("name")} />
-            {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-             <label htmlFor="">Email</label>
+            {errors.name && (
+              <p className="text-red-500">{errors.name.message}</p>
+            )}
+            <label htmlFor="">Email</label>
             <Input placeholder="Enter email" {...register("email")} />
-            {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-             <label htmlFor="">Phone</label>
+            {errors.email && (
+              <p className="text-red-500">{errors.email.message}</p>
+            )}
+            <label htmlFor="">Phone</label>
             <Input placeholder="Enter phone" {...register("phone")} />
-            {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
+            {errors.phone && (
+              <p className="text-red-500">{errors.phone.message}</p>
+            )}
 
             {/* Gender */}
-             <label htmlFor="">Select Gender</label>
-            <select {...register("gender")} className="border p-2 rounded w-full">
+            <label htmlFor="">Select Gender</label>
+            <select
+              {...register("gender")}
+              className="border p-2 rounded w-full"
+            >
               <option value="">Select gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="others">Other</option>
             </select>
-            {errors.gender && <p className="text-red-500">{errors.gender.message}</p>}
+            {errors.gender && (
+              <p className="text-red-500">{errors.gender.message}</p>
+            )}
 
             {/* DOB */}
-             <label htmlFor="">Date of birth</label>
+            <label htmlFor="">Date of birth</label>
             <Input type="date" {...register("DOB")} />
             {errors.DOB && <p className="text-red-500">{errors.DOB.message}</p>}
 
             {/* Password */}
-             <label htmlFor="">Password</label>
+            <label htmlFor="">Password</label>
             <Input placeholder="Enter Password" {...register("password")} />
-            {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-               <label htmlFor="">confirm Password</label>
-            <Input placeholder="Confirm Password" {...register("confirmPassword")} />
+            {errors.password && (
+              <p className="text-red-500">{errors.password.message}</p>
+            )}
+            <label htmlFor="">confirm Password</label>
+            <Input
+              placeholder="Confirm Password"
+              {...register("confirmPassword")}
+            />
             {errors.confirmPassword && (
               <p className="text-red-500">{errors.confirmPassword.message}</p>
             )}
@@ -121,7 +138,9 @@ const AddUserModal = ({
 
           <DialogFooter>
             <DialogClose asChild>
-           <Button type="button" variant="outline">Cancel</Button>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
             </DialogClose>
             <Button type="submit">Save</Button>
           </DialogFooter>
@@ -130,6 +149,5 @@ const AddUserModal = ({
     </Dialog>
   );
 };
-
 
 export default AddUserModal;

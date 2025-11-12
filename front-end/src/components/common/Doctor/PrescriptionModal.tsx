@@ -10,14 +10,14 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { ClipboardPlus, Save } from "lucide-react";
 interface PrescriptionData {
-    diagnosis:string;
-    medicines:string;
-    advice:string;
+  diagnosis: string;
+  medicines: string;
+  advice: string;
 }
 interface PrescriptionModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data:PrescriptionData) => void;
+  onSubmit: (data: PrescriptionData) => void;
   patientName: string | null;
 }
 
@@ -46,17 +46,17 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({
       advice: "",
     };
 
-    if(!form.diagnosis){
-        newError.diagnosis = 'diagnsis is required'
-        isValid = false;
+    if (!form.diagnosis) {
+      newError.diagnosis = "diagnsis is required";
+      isValid = false;
     }
-    if(!form.medicines){
-        newError.medicines = 'medicines is required'
-        isValid = false;
+    if (!form.medicines) {
+      newError.medicines = "medicines is required";
+      isValid = false;
     }
-    if(!form.advice){
-        newError.advice = 'advice is required'
-        isValid = false;
+    if (!form.advice) {
+      newError.advice = "advice is required";
+      isValid = false;
     }
     setError(newError);
     return isValid;
@@ -68,16 +68,15 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({
   };
 
   const handleSubmit = () => {
-    if(validate()){
-        onSubmit(form);
-         onClose();
-         setForm({
-             diagnosis: "",
-           medicines: "",
-            advice: "",
-         })
+    if (validate()) {
+      onSubmit(form);
+      onClose();
+      setForm({
+        diagnosis: "",
+        medicines: "",
+        advice: "",
+      });
     }
-   
   };
 
   return (
@@ -101,7 +100,7 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({
               placeholder="Enter diagnosis or symptoms..."
               className="mt-1"
             />
-            {error && <p style={{color:'red'}}>{error.diagnosis}</p>}
+            {error && <p style={{ color: "red" }}>{error.diagnosis}</p>}
           </div>
 
           <div>
@@ -115,7 +114,7 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({
               placeholder="e.g. Paracetamol 500mg - twice a day after food"
               className="mt-1"
             />
-                 {error && <p style={{color:'red'}}>{error.medicines}</p>}
+            {error && <p style={{ color: "red" }}>{error.medicines}</p>}
           </div>
 
           <div>
@@ -127,7 +126,7 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({
               placeholder="e.g. Take rest, drink plenty of water..."
               className="mt-1"
             />
-            {error && <p style={{color:'red'}}>{error.advice}</p>}
+            {error && <p style={{ color: "red" }}>{error.advice}</p>}
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t">
             <Button variant="outline" onClick={onClose}>

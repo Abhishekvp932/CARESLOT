@@ -27,30 +27,33 @@ interface StarRatingProps {
   interactive?: boolean;
 }
 
-
-const AddRatingModal = ({ doctorId, doctorName, onSubmit }: AddRatingModalProps) => {
+const AddRatingModal = ({
+  doctorId,
+  doctorName,
+  onSubmit,
+}: AddRatingModalProps) => {
+  console.log(doctorId);
   const [isOpen, setIsOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [review, setReview] = useState("");
 
   const handleSubmitRating = () => {
-    
-    console.log("Doctor ID:", doctorId);
-    console.log("Rating:", rating, "Review:", review);
-    
-
     if (onSubmit) {
       onSubmit(rating, review);
     }
-    
-   
+
     setRating(0);
     setReview("");
     setIsOpen(false);
   };
 
-  const StarRating = ({ value, onRate, onHover, interactive = false }: StarRatingProps) => {
+  const StarRating = ({
+    value,
+    onRate,
+    onHover,
+    interactive = false,
+  }: StarRatingProps) => {
     return (
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -59,7 +62,7 @@ const AddRatingModal = ({ doctorId, doctorName, onSubmit }: AddRatingModalProps)
             className={`w-6 h-6 ${
               interactive ? "cursor-pointer" : ""
             } transition-colors ${
-              star <= (interactive ? (hoverRating || value) : value)
+              star <= (interactive ? hoverRating || value : value)
                 ? "fill-amber-400 text-amber-400"
                 : "text-gray-300"
             }`}
@@ -110,10 +113,7 @@ const AddRatingModal = ({ doctorId, doctorName, onSubmit }: AddRatingModalProps)
           </div>
         </div>
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => setIsOpen(false)}
-          >
+          <Button variant="outline" onClick={() => setIsOpen(false)}>
             Cancel
           </Button>
           <Button

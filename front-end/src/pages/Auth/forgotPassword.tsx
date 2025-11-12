@@ -3,15 +3,15 @@ import Login_img from "../../assets/illustration.png";
 import { InputField } from "@/components/common/InputField";
 import { SubmitButton } from "@/components/common/SubmitButton";
 import { useState } from "react";
-import { useLocation , useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useForgotPasswordMutation } from "@/features/auth/authApi";
 import { toast } from "react-toastify";
 const ForgotPassword = () => {
-    const [forgotPassword,{isLoading}] = useForgotPasswordMutation();
-    const loaction = useLocation()
-    const navigate = useNavigate()
-    const email = loaction?.state?.email
-    //  
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
+  const loaction = useLocation();
+  const navigate = useNavigate();
+  const email = loaction?.state?.email;
+  //
   const [form, setForm] = useState({
     newPassword: "",
     confirmPassword: "",
@@ -43,16 +43,18 @@ const ForgotPassword = () => {
     return isValid;
   };
 
-  const handleSubmit = async(e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return 
+    if (!validate()) return;
 
     try {
-        const res = await forgotPassword({email,newPassword:form.newPassword}).unwrap()
-        toast.success(res.msg)   
-         navigate('/login');
-    } catch (error:any) {
-        
+      const res = await forgotPassword({
+        email,
+        newPassword: form.newPassword,
+      }).unwrap();
+      toast.success(res.msg);
+      navigate("/login");
+    } catch (error: any) {
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {
@@ -116,7 +118,7 @@ const ForgotPassword = () => {
                   )}
                 </div>
 
-                <SubmitButton label="Reset Password" isLoading = {isLoading}/>
+                <SubmitButton label="Reset Password" isLoading={isLoading} />
               </form>
             </div>
           </div>

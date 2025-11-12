@@ -66,7 +66,7 @@ const VerificationList = () => {
     refetch,
     isFetching,
   } = useFindUnApprovedDoctorsQuery({ page, limit, search: debouncedSearch });
-  
+
   const doctors = data?.data || [];
   const totalpages = data?.totalPages || 1;
   const isLoading = loading || isFetching;
@@ -97,7 +97,10 @@ const VerificationList = () => {
   };
 
   // Handle reject doctor
-  const handleReject = async (doctorId: string, reason: string): Promise<void> => {
+  const handleReject = async (
+    doctorId: string,
+    reason: string
+  ): Promise<void> => {
     try {
       const res = await doctorReject({ doctorId, reason }).unwrap();
       toast.success(res?.msg);

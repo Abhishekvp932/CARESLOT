@@ -1,4 +1,3 @@
-// components/doctor/EditDoctorTabs.tsx
 import { User, Award } from "lucide-react";
 
 interface Props {
@@ -6,7 +5,10 @@ interface Props {
   setActiveSection: (value: string) => void;
 }
 
-export default function EditDoctorTabs({ activeSection, setActiveSection }: Props) {
+export default function EditDoctorTabs({
+  activeSection,
+  setActiveSection,
+}: Props) {
   return (
     <div className="flex justify-center mb-8">
       <div className="bg-white rounded-full p-1 shadow-lg border">

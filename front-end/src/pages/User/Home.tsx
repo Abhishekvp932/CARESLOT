@@ -47,7 +47,6 @@ const Index = () => {
         );
 
         const { user } = res.data;
-        console.log("userssss", user);
         dispatch(
           setCredentials({
             user: user,
@@ -256,7 +255,7 @@ const Index = () => {
       </section>
 
       <Footer />
-         <ToastContainer autoClose={2000} />
+      <ToastContainer autoClose={2000} />
     </main>
   );
 };

@@ -40,30 +40,29 @@ const DoctorDetails = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const { data: doctor } = useGetDoctorDataQuery(doctorId);
-  console.log("doctors", doctor);
+
   const [doctorApprove] = useDoctorApproveMutation();
   const [doctorReject] = useDoctorRejectMutation();
- 
-  
-    const admin = useSelector((state: RootState) => state.admin)
-    const user = useSelector((state: RootState) => state.auth.user)
-    const doctors = useSelector((state: RootState) => state.doctor.doctor)
-  
-    const [isAuthorized, setIsAuthorized] = useState(false)
-  
-    useEffect(() => {
-      if (admin?.role === "admin") {
-        setIsAuthorized(true)
-      } else if (user) {
-        navigate("/")
-      } else if (doctors) {
-        navigate("/doctor")
-      } else {
-        navigate("/login")
-      }
-    }, [admin, user, doctors, navigate])
-  
-    if (!isAuthorized) return null
+
+  const admin = useSelector((state: RootState) => state.admin);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const doctors = useSelector((state: RootState) => state.doctor.doctor);
+
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (admin?.role === "admin") {
+      setIsAuthorized(true);
+    } else if (user) {
+      navigate("/");
+    } else if (doctors) {
+      navigate("/doctor");
+    } else {
+      navigate("/login");
+    }
+  }, [admin, user, doctors, navigate]);
+
+  if (!isAuthorized) return null;
 
   const handleApprove = async (doctorId: string) => {
     try {
@@ -84,7 +83,7 @@ const DoctorDetails = () => {
   const handleReject = async (doctorId: string, reason: string) => {
     try {
       const res = await doctorReject({ doctorId, reason }).unwrap();
-      console.log("res", res);
+
       toast.success(res?.msg);
       setTimeout(() => {
         navigate("/admin/pending-verification");

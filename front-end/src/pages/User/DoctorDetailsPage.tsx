@@ -87,12 +87,12 @@ const UserDoctorDetailsPage = () => {
     (state: RootState) => state.auth.user
   );
 
-  useEffect(()=>{
-    if(!patient){
-      navigate('/login')
+  useEffect(() => {
+    if (!patient) {
+      navigate("/login");
     }
-  },[patient]);
-  
+  }, [patient]);
+
   const patientId = patient?._id as string;
   const { data: doctor } = useGetDoctorDetailPageQuery(doctorId);
 
@@ -382,7 +382,8 @@ const UserDoctorDetailsPage = () => {
                     size="lg"
                   >
                     Book Appointment -{" "}
-                    {selectedSlot?.startTime && formatTime(selectedSlot.startTime)}{" "}
+                    {selectedSlot?.startTime &&
+                      formatTime(selectedSlot.startTime)}{" "}
                     to{" "}
                     {selectedSlot?.endTime && formatTime(selectedSlot.endTime)}
                   </Button>
@@ -403,9 +404,8 @@ const UserDoctorDetailsPage = () => {
                   </h2>
                 </div>
 
-            
                 <AddRatingModal
-                  doctorId={doctorId as string ?? 'unknown'}
+                  doctorId={(doctorId as string) ?? "unknown"}
                   doctorName={doctor?.name}
                   onSubmit={handleRatingSubmit}
                 />

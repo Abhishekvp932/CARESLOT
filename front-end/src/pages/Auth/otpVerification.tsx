@@ -3,45 +3,44 @@ import VerificationOTP from "@/components/common/OTPVerification";
 
 import { useVerifyOtpMutation } from "@/features/auth/authApi";
 import { toast, ToastContainer } from "react-toastify";
-import { useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { setCredentialsDoctor } from "@/features/docotr/doctorSlice";
 import { useEffect } from "react";
-import type { AppDispatch} from "@/app/store";
+import type { AppDispatch } from "@/app/store";
 
 const OTPVerification = () => {
   const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
   const loaction = useLocation();
   const navigate = useNavigate();
   const email = loaction?.state?.email;
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
 
-useEffect(()=>{
-  if(!email){
-    navigate('/signup')
-  }
-},[])
+  useEffect(() => {
+    if (!email) {
+      navigate("/signup");
+    }
+  }, []);
 
   const handleSubmit = async (otp: string) => {
     try {
       const res = await verifyOtp({ email, otp }).unwrap();
       // toast.success('response');
-      console.log('response',res.user)
-       const role = res.role
-      if(role === 'patients'){
-          navigate("/login");
-      }else if(role === 'doctors'){
-               dispatch(
-               setCredentialsDoctor({
-                 doctor: res?.user,
-                 role: res?.role,
-                 token : res?.token,
-               })
-              );
-       navigate('/kyc-submit')
-      }      
+
+      const role = res.role;
+      if (role === "patients") {
+        navigate("/login");
+      } else if (role === "doctors") {
+        dispatch(
+          setCredentialsDoctor({
+            doctor: res?.user,
+            role: res?.role,
+            token: res?.token,
+          })
+        );
+        navigate("/kyc-submit");
+      }
     } catch (error: any) {
-       
       if (error?.data?.msg) {
         toast.error(error.data.msg);
       } else {

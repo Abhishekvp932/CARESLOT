@@ -97,10 +97,14 @@ export function UserMessagingPage() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversationss, setConversation] = useState<IConversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<
+    string | null
+  >(null);
   const [showEmoji, setShowEmoji] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<OnlineUsers>({});
-  const [selectedDoctor, setSelectedDoctor] = useState<DoctorInfo | undefined>(undefined);
+  const [selectedDoctor, setSelectedDoctor] = useState<DoctorInfo | undefined>(
+    undefined
+  );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -109,9 +113,10 @@ export function UserMessagingPage() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: conversations = [], refetch: chatRefetch } = useGetUserChatQuery({
-    patientId,
-  });
+  const { data: conversations = [], refetch: chatRefetch } =
+    useGetUserChatQuery({
+      patientId,
+    });
 
   useEffect(() => {
     if (!Array.isArray(conversations)) return;
@@ -137,7 +142,9 @@ export function UserMessagingPage() {
   const [sendMessage] = useSendMessageMutation();
 
   useEffect(() => {
-    conversations.forEach((chat: IConversation) => socket.emit("joinRoom", chat._id));
+    conversations.forEach((chat: IConversation) =>
+      socket.emit("joinRoom", chat._id)
+    );
   }, [conversations]);
 
   useEffect(() => {
@@ -424,7 +431,8 @@ export function UserMessagingPage() {
               })
               .map((conversation) => {
                 const isOnline =
-                  onlineUsers[conversation.doctorId?._id || ""]?.role === "doctor";
+                  onlineUsers[conversation.doctorId?._id || ""]?.role ===
+                  "doctor";
 
                 return (
                   <Card
@@ -547,10 +555,18 @@ export function UserMessagingPage() {
                   <Button variant="outline" size="sm" className="h-8 w-8 p-0">
                     <Video className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0 hidden sm:flex">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 hidden sm:flex"
+                  >
                     <Calendar className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0 hidden sm:flex">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 hidden sm:flex"
+                  >
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </div>
@@ -601,7 +617,9 @@ export function UserMessagingPage() {
                       )}
 
                       {msg.type === "text" ? (
-                        <p className="text-xs sm:text-sm break-words">{msg.content}</p>
+                        <p className="text-xs sm:text-sm break-words">
+                          {msg.content}
+                        </p>
                       ) : (
                         msg.image && (
                           <img
@@ -612,7 +630,9 @@ export function UserMessagingPage() {
                         )
                       )}
                       <div className="flex items-center gap-1 mt-1 sm:mt-2">
-                        <span className="text-xs opacity-70">{msg?.timestamp}</span>
+                        <span className="text-xs opacity-70">
+                          {msg?.timestamp}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -729,7 +749,7 @@ export function UserMessagingPage() {
           </div>
         )}
       </div>
-         <ToastContainer autoClose={2000} />
+      <ToastContainer autoClose={2000} />
     </div>
   );
 }

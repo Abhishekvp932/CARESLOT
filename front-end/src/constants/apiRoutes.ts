@@ -15,8 +15,8 @@ export const API_ROUTES = {
     USERS: (page?: number, limit?: number, search?: string) =>
       `/admin/users?page=${page}&limit=${limit}&search=${search || ""}`,
     USER_BY_ID: (patientId: string) => `/admin/users/${patientId}`,
-    ADD_USER:'/admin/users',
-    ADD_DOCTOR:'/admin/doctors',
+    ADD_USER: "/admin/users",
+    ADD_DOCTOR: "/admin/doctors",
     DOCTORS: (page?: number, limit?: number, search?: string) =>
       `/admin/doctors?page=${page}&limit=${limit}&search=${search || ""}`,
     DOCTOR_BY_ID: (doctorId: string) => `/admin/doctors/${doctorId}`,
@@ -27,10 +27,10 @@ export const API_ROUTES = {
     DOCTOR_APPROVE: (doctorId: string) => `/admin/doctor/${doctorId}`,
     DOCTOR_REJECT: (doctorId: string) => `/admin/doctor/${doctorId}`,
     DOCTOR_DETAILS: (doctorId: string) => `/admin/doctor-details/${doctorId}`,
-    ADMIN_APPOINTMENTS: (status:string,page:number,limit:number) =>
+    ADMIN_APPOINTMENTS: (status: string, page: number, limit: number) =>
       `/admin/appoinments?status=${status || ""}&page=${page}&limit=${limit}`,
     GET_DOCTOR_SLOTS: (doctorId: string) => `/admin/getSlots/${doctorId}`,
-     GET_DASHBOARD_DATA:(filter:string) => `/admin/dashboard?filter=${filter}`,
+    GET_DASHBOARD_DATA: (filter: string) => `/admin/dashboard?filter=${filter}`,
   },
 
   DOCTOR: {
@@ -44,7 +44,8 @@ export const API_ROUTES = {
       status: string
     ) =>
       `/doctor/appoinments/${doctorId}?page=${page}&limit=${limit}&status=${status}`,
-      GET_DASHBOARD_DATA:(doctorId:string,filter:string)=>`/doctor/dashboard/${doctorId}?filter=${filter}`,
+    GET_DASHBOARD_DATA: (doctorId: string, filter: string) =>
+      `/doctor/dashboard/${doctorId}?filter=${filter}`,
   },
 
   SLOT: {
@@ -94,7 +95,8 @@ export const API_ROUTES = {
     CHANGE_PASSWORD: (userId: string) => `/patient/change-password/${userId}`,
     APPOINTMENTS: (patientId: string, page: number, limit: number) =>
       `/patient/appoinment/${patientId}?page=${page}&limit=${limit}`,
-    GET_SLOTS:((doctorId:string,date:Date) => `/patient/slots/${doctorId}?date=${date}`),
+    GET_SLOTS: (doctorId: string, date: Date) =>
+      `/patient/slots/${doctorId}?date=${date}`,
   },
 
   NOTIFICATION: {
@@ -127,14 +129,17 @@ export const API_ROUTES = {
   APPOINTMENT: {
     CREATE: "/appoinment/appoinment",
     CANCEL: (appoinmentId: string) => `/appoinment/appoinment/${appoinmentId}`,
-    CHANGE_STATUS:(appoinmentId:string)=>`/appoinment/change-status/${appoinmentId}`
+    CHANGE_STATUS: (appoinmentId: string) =>
+      `/appoinment/change-status/${appoinmentId}`,
   },
 
-  PRESCRIPTION : {
-    CREATE:'/prescription/prescription',
+  PRESCRIPTION: {
+    CREATE: "/prescription/prescription",
   },
-  CONTACT:{
-      CREATE:(name:string,email:string,phone:string,message:string)=> `/contact/contact?name=${name}&email=${email}&phone=${phone}&message=${message}`,
-      GETCONTACTDATA:(search?:string,page?:number,limit?:string)=> `/contact/getContacts?search=${search}&page=${page}&limit=${limit}`
-  }
+  CONTACT: {
+    CREATE: (name: string, email: string, phone: string, message: string) =>
+      `/contact/contact?name=${name}&email=${email}&phone=${phone}&message=${message}`,
+    GETCONTACTDATA: (search?: string, page?: number, limit?: string) =>
+      `/contact/getContacts?search=${search}&page=${page}&limit=${limit}`,
+  },
 };

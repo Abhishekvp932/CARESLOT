@@ -5,6 +5,7 @@ import { useNotificationUnreadMutation } from "@/features/users/userApi";
 import { useNotificationDeleteMutation } from "@/features/users/userApi";
 import { useDeleteAllNotificationMutation } from "@/features/users/userApi";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 interface Notification {
   _id: string;
@@ -14,15 +15,13 @@ interface Notification {
   createdAt: string;
 }
 interface Props {
-  patientId:string
-  onCountChange?: (count: number) => void; 
+  patientId: string;
 }
-export default function NotificationComponent({ patientId,onCountChange}:Props) {
+export default function NotificationComponent({ patientId }: Props) {
   const { data, isLoading, isError, refetch } = useGetUserNotificationQuery({
     patientId,
   });
- 
-  
+
   useEffect(() => {
     if (patientId) {
       refetch();
@@ -52,11 +51,6 @@ export default function NotificationComponent({ patientId,onCountChange}:Props) 
   const unreadNotifications = notifications.filter((n) => !n.isRead);
   const readNotifications = notifications.filter((n) => n.isRead);
 
-useEffect(()=>{
-    if(onCountChange){
-      onCountChange(unreadNotifications.length);
-    }
-  },[unreadNotifications.length]);
   if (isLoading) {
     return (
       <div className="p-8 text-center">
@@ -77,7 +71,7 @@ useEffect(()=>{
   const handleMarkAsRead = async (notificationId: string) => {
     try {
       const res = await notificationUnread(notificationId).unwrap();
-      console.log(res);
+      toast.success(res?.msg);
       refetch();
     } catch (error) {
       console.log(error);
@@ -87,7 +81,7 @@ useEffect(()=>{
   const handleDelete = async (notificationId: string) => {
     try {
       const res = await notificationDelete(notificationId).unwrap();
-      console.log(res);
+      toast.success(res?.msg);
       refetch();
     } catch (error) {
       console.log(error);
@@ -97,7 +91,7 @@ useEffect(()=>{
   const handleDeleteAll = async () => {
     try {
       const res = await deleteAllNotification(patientId).unwrap();
-      console.log(res);
+      toast.success(res?.msg);
       refetch();
     } catch (error) {
       console.log(error);
@@ -108,7 +102,7 @@ useEffect(()=>{
     try {
       console.log("readll all function is working?");
       const res = await readAllNotification(patientId).unwrap();
-      console.log(res);
+      toast.success(res?.msg);
       refetch();
     } catch (error) {
       console.log(error);

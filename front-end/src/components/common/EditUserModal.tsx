@@ -16,22 +16,19 @@ import { InputField } from "./InputField";
 import { userEdit } from "@/validation/userEdit.schema";
 import { z } from "zod";
 type User = {
-    name:string;
-    email:string;
-    phone:string;
-    gender:'male' | 'female' | 'others' | string;
-    dob:string;
-    profileImg?:string | File;
-  };
+  name: string;
+  email: string;
+  phone: string;
+  gender: "male" | "female" | "others" | string;
+  dob: string;
+  profileImg?: string | File;
+};
 interface EditUserModalProps {
   user: User;
   onSave: (updatedUser: User) => Promise<void>;
 }
 
-const EditUserModal:React.FC<EditUserModalProps> = ({
-  user,
-  onSave,
-}) => {
+const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave }) => {
   const [formData, setFormData] = useState<User>({ ...user });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -50,13 +47,12 @@ const EditUserModal:React.FC<EditUserModalProps> = ({
     }
   };
 
-
   type UserEditData = z.infer<typeof userEdit>;
   const handleSaveClick = () => {
     try {
-      const parsedData : UserEditData = userEdit.parse({
+      const parsedData: UserEditData = userEdit.parse({
         ...formData,
-        dob:formData.dob,
+        dob: formData.dob,
       });
 
       setErrors({});

@@ -11,26 +11,24 @@ export interface AuthState {
   role: string | null;
 }
 const initialState: AuthState = {
-    user : null,
-    role : null,
-
+  user: null,
+  role: null,
 };
 const authSlice = createSlice({
-    name : 'auth',
-    initialState,
-    reducers:{
-        setCredentials:(state,action)=>{
-            state.user = action.payload.user;
-            state.role = action.payload.role;
-        },
-        logOut:(state)=>{
-            state.user = null;
-            state.role = null
-        }
-    }
-})
+  name: "auth",
+  initialState,
+  reducers: {
+    setCredentials: (state, action) => {
+      state.user = action.payload.user;
+      state.role = action.payload.role;
+    },
+    logOut: (state) => {
+      state.user = null;
+      state.role = null;
+    },
+  },
+});
 
+export const { setCredentials, logOut } = authSlice.actions;
 
-export const {setCredentials,logOut} = authSlice.actions;
-
-export default authSlice.reducer
+export default authSlice.reducer;
