@@ -31,7 +31,7 @@ export const CommonTableView = <T,>({
       <div className="p-4 border-b bg-gray-100 text-xl font-semibold text-gray-700">
         {title && (
           <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
-            {title}
+            {title} suttu
           </h2>
         )}
       </div>
