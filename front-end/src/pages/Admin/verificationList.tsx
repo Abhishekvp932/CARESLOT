@@ -218,7 +218,7 @@ const VerificationList = () => {
       ) : (
         <div>
           <CommonTableView
-            title="Verification-List"
+            title="Verification Lists"
             data={doctors}
             columns={columns}
             withPagination={true}
@@ -233,7 +233,11 @@ const VerificationList = () => {
 
           <CommonCardView
             data={doctors}
-            title="Verification-List"
+            title="Verification Lists"
+            withPagination={true}
+            currentPage={page}
+            totalPages={totalpages}
+            onPageChange={(newPage: number) => setPage(newPage)}
             renderItem={(doctor: Doctor) => (
               <div className="flex justify-between items-start flex-wrap gap-4">
                 <div>

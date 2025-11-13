@@ -4,8 +4,6 @@ interface CommonCardViewProps<T> {
   data: T[];
   renderItem: (item: T) => React.ReactNode;
   title?: string;
-
-  // OPTIONAL PAGINATION PROPS
   withPagination?: boolean;
   currentPage?: number;
   totalPages?: number;
