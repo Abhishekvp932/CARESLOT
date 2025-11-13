@@ -27,11 +27,11 @@ export const CommonTableView = <T,>({
   onPageChange,
 }: CommonTableProps<T>) => {
   return (
-    <div className="md:hidden space-y-4 pb-20">
+    <div className="hidden md:block overflow-x-auto rounded-lg shadow">
       <div className="p-4 border-b bg-gray-100 text-xl font-semibold text-gray-700">
         {title && (
           <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
-            {title} suttu
+            {title}
           </h2>
         )}
       </div>
@@ -83,25 +83,36 @@ export const CommonTableView = <T,>({
       </table>
 
       {withPagination && (
-        <div className="flex justify-center items-center gap-3 mt-4">
+        <div className="flex justify-end items-center gap-3 mt-4 text-sm">
           <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className={`px-4 py-2 rounded-lg border border-gray-300 transition 
+                  ${
+                    currentPage === 1
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-white hover:bg-gray-100 text-gray-700"
+                  }`}
             disabled={currentPage === 1}
             onClick={() => onPageChange && onPageChange(currentPage - 1)}
           >
-            Prev
+            ◀ Previous
           </button>
 
-          <span className="text-sm font-medium">
-            Page {currentPage} of {totalPages}
+          <span className="px-3 py-2 bg-gray-100 rounded-lg">
+            Page <span className="font-medium">{currentPage}</span> of{" "}
+            {totalPages}
           </span>
 
           <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className={`px-4 py-2 rounded-lg border border-gray-300 transition 
+                  ${
+                    currentPage === totalPages
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-white hover:bg-gray-100 text-gray-700"
+                  }`}
             disabled={currentPage === totalPages}
             onClick={() => onPageChange && onPageChange(currentPage + 1)}
           >
-            Next
+            Next ▶
           </button>
         </div>
       )}

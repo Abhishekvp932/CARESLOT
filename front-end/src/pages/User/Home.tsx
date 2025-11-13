@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import Header from "@/layout/Header";
-// import Footer from "@/layout/Footer";
+import Footer from "@/layout/Footer";
 import Chatbot from "@/components/common/user/Chatboat";
 
 import { useEffect } from "react";
@@ -254,7 +254,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* <Footer /> */}
+      <Footer />
       <ToastContainer autoClose={2000} />
     </main>
   );
