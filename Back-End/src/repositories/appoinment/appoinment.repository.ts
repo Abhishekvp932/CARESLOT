@@ -28,10 +28,12 @@ export class AppoinmentRepository implements IAppoinmentRepository {
 
   async findByIdAndUpdate(
     appoinmentId: string | Types.ObjectId,
-    update: Partial<IAppoinment>
+    update: Partial<IAppoinment>,
+    session?:ClientSession
   ): Promise<IAppoinment | null> {
     return await Appoinment.findByIdAndUpdate(appoinmentId, update, {
       new: true,
+      session
     });
   }
 

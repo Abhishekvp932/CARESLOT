@@ -2,7 +2,7 @@ import { IWalletRepository } from '../../interface/wallet/IWalletRepository';
 import { BaseRepository } from '../base.repository';
 import Wallet from '../../models/implementation/wallet.model';
 import { IWallet } from '../../models/interface/IWallet';
-import { UpdateQuery } from 'mongoose';
+import { ClientSession, UpdateQuery } from 'mongoose';
 export class WalletRepository
   extends BaseRepository<IWallet>
   implements IWalletRepository
@@ -16,8 +16,9 @@ export class WalletRepository
 
   async findByIdAndUpdate(
     walletId: string,
-    update: UpdateQuery<IWallet>
+    update: UpdateQuery<IWallet>,
+    session?:ClientSession
   ): Promise<IWallet | null> {
-    return await Wallet.findByIdAndUpdate(walletId, update, { new: true });
+    return await Wallet.findByIdAndUpdate(walletId, update, { new: true ,session});
   }
 }

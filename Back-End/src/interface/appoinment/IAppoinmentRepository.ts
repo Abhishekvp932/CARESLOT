@@ -10,7 +10,7 @@ export interface IAppoinmentRepository{
     findById(id:string):Promise<IAppoinment | null>;
     findByDoctorId(doctorId:string):Promise<IAppoinment[]>;
     findByPatientId(patientId:string):Promise<IAppoinment[]>;
-    findByIdAndUpdate(appoinmentId:string | Types.ObjectId,update:Partial<IAppoinment>):Promise<IAppoinment | null>;
+    findByIdAndUpdate(appoinmentId:string | Types.ObjectId,update:Partial<IAppoinment>,session?:ClientSession):Promise<IAppoinment | null>;
     findAppoinmentsByDoctor(doctorId:string,skip:number,limit:number,filter?:FilterQuery<IAppoinment>):Promise<(IAppoinment & {patientId:IPatientPopulated})[]>;
     findAppoinmentsByPatient(patientId:string,skip:number,limit:number):Promise<(IAppoinment & {doctorId:IDoctorPopulated})[]>;
     findAll(filter:FilterQuery<IAppoinment>,skip:number,limit:number):Promise<AppoinmentPopulatedDTO[]>;

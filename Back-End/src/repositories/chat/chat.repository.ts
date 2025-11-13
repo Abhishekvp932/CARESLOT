@@ -8,7 +8,7 @@ import {
   IChatPopulated,
   IPatientChatPopulated,
 } from '../../types/ChatAndDoctorPopulatedDTO';
-import { FilterQuery } from 'mongoose';
+import { ClientSession, FilterQuery } from 'mongoose';
 
 export class ChatRepository
   extends BaseRepository<IChat>
@@ -45,7 +45,7 @@ export class ChatRepository
 
     return chats as unknown as IPatientChatPopulated[];
   }
-  async findByPatientIdAndUpdate(patientId: string,doctorId:string,filter?:FilterQuery<IChat>): Promise<IChat | null> {
-    return await Chat.findOneAndUpdate({patiendId:patientId,doctorId:doctorId},filter,{new:true});
+  async findByPatientIdAndUpdate(patientId: string,doctorId:string,filter?:FilterQuery<IChat>,session?:ClientSession): Promise<IChat | null> {
+    return await Chat.findOneAndUpdate({patiendId:patientId,doctorId:doctorId},filter,{new:true,session});
   }
 }

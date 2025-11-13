@@ -134,12 +134,13 @@ export class PaymentService implements IPaymentService {
         razorpaySignature: signature,
         paymentMethod: paymentMethod,
       };
-      const payment = await this._paymentRepository.create(newPayment);
+      const payment = await this._paymentRepository.create(newPayment,session);
       logger.info('Payment created:');
       logger.debug(payment);
       await this._appoinmentRepository.findByIdAndUpdate(
         appoinment?._id as string,
-        { transactionId: new Types.ObjectId(payment?._id as string) }
+        { transactionId: new Types.ObjectId(payment?._id as string) },
+        session
       );
 
       const scheduledStart = new Date(
@@ -163,7 +164,7 @@ export class PaymentService implements IPaymentService {
       logger.info('Creating call log:');
       logger.debug(newCallLogs);
       
-      await this._callLogRepository.create(newCallLogs);
+      await this._callLogRepository.create(newCallLogs,session);
 
       const userChat = await this._chatRepository.findPatientChat(
         patient?._id as string
@@ -184,12 +185,13 @@ export class PaymentService implements IPaymentService {
           createdAt: new Date(),
           updatedAt: new Date(),
         };
-        await this._chatRepository.create(newChat);
+        await this._chatRepository.create(newChat,session);
       } else {
         await this._chatRepository.findByPatientIdAndUpdate(
           patientId,
           doctorId,
-          { isActive: true }
+          { isActive: true },
+          session
         );
       }
 
@@ -203,7 +205,7 @@ export class PaymentService implements IPaymentService {
           role: 'doctor',
           balance: Number(amount),
         };
-        const wallet = await this._walletRepository.create(newWallet);
+        const wallet = await this._walletRepository.create(newWallet,session);
 
         const newWalletHistory: Partial<IWalletHistory> = {
           walletId: new Types.ObjectId(wallet?._id as string),
@@ -214,7 +216,7 @@ export class PaymentService implements IPaymentService {
           source: 'consultation',
           status: 'success',
         };
-        await this._walletHistoryRepository.create(newWalletHistory);
+        await this._walletHistoryRepository.create(newWalletHistory,session);
       } else {
         const newWalletHistory: Partial<IWalletHistory> = {
           walletId: new Types.ObjectId(doctorWallet?._id as string),
@@ -225,13 +227,14 @@ export class PaymentService implements IPaymentService {
           source: 'consultation',
           status: 'success',
         };
-        await this._walletHistoryRepository.create(newWalletHistory);
+        await this._walletHistoryRepository.create(newWalletHistory,session);
 
         await this._walletRepository.findByIdAndUpdate(
           doctorWallet?._id as string,
           {
             $inc: { balance: Number(amount) },
-          }
+          },
+          session
         );
       }
 
@@ -368,7 +371,7 @@ export class PaymentService implements IPaymentService {
 
       await this._walletRepository.findByIdAndUpdate(wallet?._id as string, {
         $inc: { balance: -fees },
-      });
+      },session);
 
       const newWalletHistory: Partial<IWalletHistory> = {
         walletId: new Types.ObjectId(wallet?._id as string),
@@ -378,7 +381,7 @@ export class PaymentService implements IPaymentService {
         source: 'consultation',
         status: 'success',
       };
-      await this._walletHistoryRepository.create(newWalletHistory);
+      await this._walletHistoryRepository.create(newWalletHistory,session);
 
       const patientNotif = await this._notificationRepository.create({
         userId: patientId,
@@ -421,14 +424,15 @@ export class PaymentService implements IPaymentService {
           ],
         };
 
-        await this._chatRepository.create(newChat);
+        await this._chatRepository.create(newChat,session);
       } else {
         await this._chatRepository.findByPatientIdAndUpdate(
           patientId,
           doctorId,
           {
             isActive: true,
-          }
+          },
+          session
         );
       }
 
@@ -453,7 +457,7 @@ export class PaymentService implements IPaymentService {
           source: 'consultation',
           status: 'success',
         };
-        await this._walletHistoryRepository.create(newWalletHistory);
+        await this._walletHistoryRepository.create(newWalletHistory,session);
       } else {
         const newWalletHistory: Partial<IWalletHistory> = {
           walletId: new Types.ObjectId(doctorWallet?._id as string),
@@ -464,11 +468,12 @@ export class PaymentService implements IPaymentService {
           status: 'success',
         };
 
-        await this._walletHistoryRepository.create(newWalletHistory);
+        await this._walletHistoryRepository.create(newWalletHistory,session);
 
         await this._walletRepository.findByIdAndUpdate(
           doctorWallet?._id as string,
-          { $inc: { balance: Number(amount) } }
+          { $inc: { balance: Number(amount) } },
+          session
         );
       }
 

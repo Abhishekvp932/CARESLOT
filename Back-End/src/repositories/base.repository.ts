@@ -1,4 +1,4 @@
-import { FilterQuery, Model } from 'mongoose';
+import { ClientSession, FilterQuery, Model } from 'mongoose';
 import { IBaseRepository } from '../interface/IBaseRepository';
 export class BaseRepository<T> implements IBaseRepository<T> {
   protected model: Model<T>;
@@ -11,9 +11,9 @@ export class BaseRepository<T> implements IBaseRepository<T> {
   async findById(id: string): Promise<T | null> {
     return this.model.findById(id);
   }
-  async create(Data: Partial<T>): Promise<T> {
+  async create(Data: Partial<T>,session?:ClientSession): Promise<T> {
     const newItem = new this.model(Data);
-    return (await newItem.save()) as T;
+    return (await newItem.save({session})) as T;
   }
 
   async findAllWithFilter(filter: FilterQuery<T>): Promise<T[]> {
