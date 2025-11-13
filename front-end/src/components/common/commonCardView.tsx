@@ -15,52 +15,29 @@ interface CommonCardViewProps<T> {
 export const CommonCardView = <T,>({
   data,
   renderItem,
-  title,
-  withPagination = false,
-  currentPage = 1,
-  totalPages = 1,
+  withPagination,
+  currentPage,
+  totalPages,
   onPageChange,
 }: CommonCardViewProps<T>) => {
-  return (
-    <div className="space-y-4">
-      {/* Title */}
-      {title && (
-        <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
-          {title}
-        </h2>
-      )}
 
-      {/* Cards */}
+  console.log("CardView:", { withPagination, currentPage, totalPages, data });
+
+  return (
+    <div className="border border-blue-500 p-4 mt-10">
+      <h1 className="text-red-500 text-lg">CARD VIEW TEST</h1>
+
       {data?.map((item, index) => (
-        <div key={index} className="border rounded-xl p-4 shadow-sm bg-white">
+        <div key={index} className="p-4 border bg-gray-100 my-2">
           {renderItem(item)}
         </div>
       ))}
 
-      {/* Pagination */}
-      {withPagination && totalPages > 1 && (
-        <div className="flex justify-center items-center gap-3 mt-4">
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
-            disabled={currentPage === 1}
-            onClick={() => onPageChange && onPageChange(currentPage - 1)}
-          >
-            Prev
-          </button>
-
-          <span className="text-sm font-medium">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
-            disabled={currentPage === totalPages}
-            onClick={() => onPageChange && onPageChange(currentPage + 1)}
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <div className="flex gap-4 mt-4">
+        <button onClick={() => onPageChange?.(currentPage! - 1)}>Prev</button>
+        <span>{currentPage} / {totalPages}</span>
+        <button onClick={() => onPageChange?.(currentPage! + 1)}>Next</button>
+      </div>
     </div>
   );
 };

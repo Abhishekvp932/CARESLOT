@@ -253,7 +253,7 @@ const DoctorsList = () => {
             withPagination={true}
             currentPage={page}
             totalPages={totalPages}
-            onPageChange={(p)=>setPage(p)}
+            onPageChange={(newPage: number) => setPage(newPage)}
             title="Doctors"
             renderItem={(user: Doctor) => (
               <div className="flex justify-between items-start">
