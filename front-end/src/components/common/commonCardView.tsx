@@ -5,7 +5,7 @@ interface CommonCardViewProps<T> {
   renderItem: (item: T) => React.ReactNode;
   title?: string;
 
-  // NEW OPTIONAL PAGINATION PROPS
+  // OPTIONAL PAGINATION PROPS
   withPagination?: boolean;
   currentPage?: number;
   totalPages?: number;
@@ -22,7 +22,7 @@ export const CommonCardView = <T,>({
   onPageChange,
 }: CommonCardViewProps<T>) => {
   return (
-    <div className="md:hidden space-y-4">
+    <div className="space-y-4">
       {/* Title */}
       {title && (
         <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
