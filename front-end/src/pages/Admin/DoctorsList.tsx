@@ -250,6 +250,10 @@ const DoctorsList = () => {
 
           <CommonCardView
             data={doctors}
+            withPagination={true}
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={(p)=>setPage(p)}
             title="Doctors"
             renderItem={(user: Doctor) => (
               <div className="flex justify-between items-start">
