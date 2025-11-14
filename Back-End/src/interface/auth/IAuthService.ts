@@ -5,11 +5,12 @@ import { IPatient } from '../../models/interface/IPatient';
 import { LogoutRequest} from '../../types/auth';
 import { UserDTO } from '../../types/user.dto';
 import { Request, Response } from 'express';
+import { LoginUserType } from '../../types/loginUserType';
 
 export interface IAuthService{
      login(email:string,password:string) :Promise<{msg:string,user:IBaseUser,accessToken:string,refreshToken:string}>;
      signup(name:string,email:string,password:string,phone:string,dob:Date,gender:string,role:string):Promise<{msg:string}>;
-     verifyOtp(email:string,otp:string):Promise<{msg:string,role:string,user:string}>;
+     verifyOtp(email:string,otp:string):Promise<{msg:string,role:string,user:LoginUserType}>;
      findOrCreateGoogleUser(profile:Profile):Promise<IPatient>;
      findUserById(patientId: string):Promise<{users:UserDTO}>
     logOut({sessionId}:LogoutRequest):Promise<{msg:string}>

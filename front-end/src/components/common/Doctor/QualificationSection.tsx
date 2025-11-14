@@ -1,20 +1,38 @@
-// components/doctor/QualificationSection.tsx
 import React from "react";
 import { Award, FileText, DollarSign, Shield } from "lucide-react";
 
-interface Props {
-  formData: any;
-  onChange: (field: string, value: any, isQualification?: boolean) => void;
+interface Qualifications {
+  degree: string;
+  institution: string;
+  specialization: string;
+  medicalSchool: string;
+  experince: number;
+  graduationYear: number;
+  fees: number;
+  license: string;
+  about: string;
+  educationCertificate: File | null;
+  experienceCertificate: File | null;
 }
 
-const getFileLabel = (file: any) => {
-  if (!file) return "";
-  return typeof file === "string" ? file.split("/").pop() : file.name;
-};
+interface FormData {
+  qualifications: Qualifications;
+}
+
+interface Props {
+  formData: FormData;
+  onChange: (field: keyof Qualifications, value: string | number | File | null, isQualification?: boolean) => void;
+}
 
 const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
+
+  const getFileLabel = (file: File | string | null) => {
+    if (!file) return "";
+    return typeof file === "string" ? file.split("/").pop() : file.name;
+  };
+
   return (
-    <div className="p-8">
+     <div className="p-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
         <Award className="mr-3 text-blue-500" />
         Professional Qualifications
@@ -45,8 +63,8 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
             </label>
             <input
               type="text"
-              value={formData?.qualifications?.[field] || ""}
-              onChange={(e) => onChange(field, e.target.value, true)}
+              value={(formData?.qualifications?.[field as keyof Qualifications] as string) || ""}
+              onChange={(e) => onChange(field as keyof Qualifications, e.target.value, true)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder={placeholder}
             />
@@ -61,7 +79,7 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
             type="number"
             value={formData?.qualifications?.experince || ""}
             onChange={(e) =>
-              onChange("experince", parseInt(e.target.value), true)
+              onChange("experince", parseInt(e.target.value) || 0, true)
             }
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="Years of experience"
@@ -76,7 +94,7 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
             type="number"
             value={formData?.qualifications?.graduationYear || ""}
             onChange={(e) =>
-              onChange("graduationYear", parseInt(e.target.value), true)
+              onChange("graduationYear", parseInt(e.target.value) || 0, true)
             }
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="Graduation year"
@@ -104,7 +122,7 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
           </label>
           <input
             type="text"
-            value={formData?.qualifications?.lisence || ""}
+            value={formData?.qualifications?.license || ""}
             onChange={(e) => onChange("license", e.target.value, true)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="License number"
@@ -133,7 +151,7 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
             onChange={(e) =>
-              onChange("educationCertificate", e.target.files?.[0], true)
+              onChange("educationCertificate", e.target.files?.[0] ?? null, true)
             }
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
               file:rounded-full file:border-0 file:text-sm file:font-semibold
@@ -155,7 +173,7 @@ const QualificationSection: React.FC<Props> = ({ formData, onChange }) => {
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
             onChange={(e) =>
-              onChange("experienceCertificate", e.target.files?.[0], true)
+              onChange("experienceCertificate", e.target.files?.[0] ?? null, true)
             }
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
               file:rounded-full file:border-0 file:text-sm file:font-semibold

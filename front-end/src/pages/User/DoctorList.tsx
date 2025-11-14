@@ -49,7 +49,7 @@ export default function DoctorList() {
     if (!patient) {
       navigate("/login");
     }
-  }, [patient]);
+  }, [patient,navigate]);
 
   useEffect(() => {
     setLoading(true);

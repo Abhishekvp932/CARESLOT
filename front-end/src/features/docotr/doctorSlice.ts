@@ -1,7 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-const initialState = {
-  doctor: null as any,
+
+
+export interface Doctor {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  profile_img:string;
+  role:string;
+  qualifications?:{
+    specialization:string
+  };
+}
+export interface AuthState {
+  doctor: Doctor | null ;
+  role: string | null;
+  isKycSubmited:boolean | null;
+}
+const initialState : AuthState = {
+  doctor: null,
   isKycSubmited: false,
   role: null,
 };
@@ -14,7 +32,7 @@ const doctorSlice = createSlice({
       state.doctor = action.payload.doctor;
       state.role = action.payload.role;
     },
-    updateDoctorInfo: (state, action: PayloadAction<any>) => {
+    updateDoctorInfo: (state, action: PayloadAction<Doctor>) => {
       state.doctor = {
         ...state.doctor,
         ...action.payload,

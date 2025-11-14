@@ -1,12 +1,39 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Calendar, Camera, Mail, Phone, User } from "lucide-react";
 
+interface FormData {
+  name?: string;
+  email?: string;
+  phone?: string;
+  DOB?: string;
+  gender?: string;
+  profileImage?: File | null;
+  profile_img?: string;
+}
+
 interface Props {
-  formData: any;
-  onChange: (field: string, value: any) => void;
+  formData: FormData;
+  onChange: (field: string, value: string | File) => void;
 }
 
 const PersonalInfoSection: React.FC<Props> = ({ formData, onChange }) => {
+  // Memoize the profile image URL to avoid memory leaks
+  const profileImageUrl = useMemo(() => {
+    if (formData?.profileImage instanceof File) {
+      return URL.createObjectURL(formData.profileImage);
+    }
+    return null;
+  }, [formData?.profileImage]);
+
+  // Cleanup URL when component unmounts or image changes
+  React.useEffect(() => {
+    return () => {
+      if (profileImageUrl) {
+        URL.revokeObjectURL(profileImageUrl);
+      }
+    };
+  }, [profileImageUrl]);
+
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
@@ -17,9 +44,9 @@ const PersonalInfoSection: React.FC<Props> = ({ formData, onChange }) => {
       <div className="flex justify-center mb-8">
         <div className="relative">
           <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg overflow-hidden">
-            {formData?.profileImage instanceof File ? (
+            {profileImageUrl ? (
               <img
-                src={URL.createObjectURL(formData.profileImage)}
+                src={profileImageUrl}
                 alt="Preview"
                 className="w-full h-full rounded-full object-cover"
               />

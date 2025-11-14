@@ -7,31 +7,34 @@ import SaveCancelButtons from "@/components/common/Doctor/SaveCancelButtons";
 import QualificationSection from "@/components/common/Doctor/QualificationSection";
 import PersonalInfoSection from "@/components/common/Doctor/PersonalInfoSection";
 
+interface Qualifications {
+  degree: string;
+  institution: string;
+  specialization: string;
+  medicalSchool: string;
+  experince: number;
+  graduationYear: number;
+  fees: number;
+  license: string;
+  about: string;
+  educationCertificate: File | null;
+  experienceCertificate: File | null;
+}
+
+interface DoctorFormData {
+  name: string;
+  email: string;
+  phone: string;
+  DOB: string;
+  gender: string;
+  profileImage: File | null;
+  qualifications: Qualifications;
+}
+
 const AddDoctorPage = () => {
   const [activeSection, setActiveSection] = useState("personal");
   const [addDoctor] = useAddDoctorMutation();
   const navigate = useNavigate();
-  type DoctorFormData = {
-    name: string;
-    email: string;
-    phone: string;
-    DOB: string;
-    gender: string;
-    profileImage: File | null;
-    qualifications: {
-      degree: string;
-      institution: string;
-      specialization: string;
-      medicalSchool: string;
-      experince: number;
-      graduationYear: number;
-      fees: number;
-      license: string;
-      about: string;
-      educationCertificate: File | null;
-      experienceCertificate: File | null;
-    };
-  };
 
   const [formData, setFormData] = useState<DoctorFormData>({
     name: "",
@@ -88,7 +91,7 @@ const AddDoctorPage = () => {
         fd.append("profileImage", formData.profileImage);
       }
 
-      const q = formData.qualifications || {};
+      const q = formData.qualifications;
       fd.append("degree", q.degree || "");
       fd.append("institution", q.institution || "");
       fd.append("specialization", q.specialization || "");
@@ -110,9 +113,10 @@ const AddDoctorPage = () => {
       const res = await addDoctor({ formData: fd }).unwrap();
       toast.success(res?.msg);
       setTimeout(() => navigate("/admin/doctors"), 1000);
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      toast.error(error?.data?.msg);
+      const err = error as { data?: { msg?: string } };
+      toast.error(err?.data?.msg || "An error occurred");
     }
   };
 
@@ -123,7 +127,7 @@ const AddDoctorPage = () => {
           Add Doctor Profile
         </h1>
         <p className="text-gray-600 text-center mb-8">
-          Enter new doctor’s information
+          Enter new doctor's information
         </p>
 
         <EditDoctorTabs

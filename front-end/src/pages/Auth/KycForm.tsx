@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useKycSubmitMutation } from "@/features/docotr/doctorApi";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
-import { updateDoctorInfo, setKycStatus } from "@/features/docotr/doctorSlice";
+import { updateDoctorInfo, setKycStatus, type Doctor } from "@/features/docotr/doctorSlice";
 import { useNavigate } from "react-router-dom";
 import { SubmitButton } from "@/components/common/SubmitButton";
 import {
@@ -70,7 +70,7 @@ interface KycSubmitPayload {
 
 // API Response type
 interface KycResponse {
-  doctor: unknown;
+  doctor: Doctor;
   msg: string;
 }
 
@@ -94,7 +94,8 @@ const KYC: React.FC = () => {
     {}
   );
 
-  const { doctor } = useSelector((state: RootState) => state.doctor);
+  const doctor  = useSelector((state: RootState) => state.doctor.doctor);
+  console.log('kyc doctor ',doctor);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -130,6 +131,7 @@ const KYC: React.FC = () => {
     }
   };
 
+   
   // Handle form submission
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -153,9 +155,10 @@ const KYC: React.FC = () => {
       return;
     }
 
+
     try {
       const payload: KycSubmitPayload = {
-        doctorId: doctor,
+        doctorId: doctor?._id,
         degree: form.degree,
         institution: form.institution,
         experience: form.experience,
@@ -177,6 +180,7 @@ const KYC: React.FC = () => {
       navigate("/kyc-success");
     } catch (error) {
       toast.error("Document upload error");
+      console.log(error);
     }
   };
 

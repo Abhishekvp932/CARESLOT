@@ -43,7 +43,7 @@ const VerificationOTP: React.FC<OTPVerificationProps> = ({
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [resendDisabled, setTimeLeft]);
+  }, [resendDisabled, setTimeLeft,timeLeft]);
   const handleChange = (value: string, index: number) => {
     if (!/^[0-9]?$/.test(value)) return;
     const newOtp = [...otp];

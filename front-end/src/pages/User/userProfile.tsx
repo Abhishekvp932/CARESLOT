@@ -47,7 +47,7 @@ const UserProfile = () => {
   useEffect(() => {
     refetchAppoinments();
     refetchUserData();
-  }, []);
+  }, [refetchAppoinments,refetchUserData]);
   if (isLoading) {
     return <div className="text-center mt-6 text-gray-600">Loading...</div>;
   }

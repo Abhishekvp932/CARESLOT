@@ -26,7 +26,7 @@ export default function NotificationComponent({ patientId }: Props) {
     if (patientId) {
       refetch();
     }
-  }, [patientId]);
+  }, [patientId,refetch]);
 
   const [notificationUnread] = useNotificationUnreadMutation();
   const [notificationDelete] = useNotificationDeleteMutation();

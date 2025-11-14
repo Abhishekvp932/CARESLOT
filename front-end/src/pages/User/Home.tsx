@@ -58,7 +58,7 @@ const Index = () => {
       }
     };
     getUserData();
-  }, []);
+  }, [dispatch]);
 
   return (
     <main className="flex flex-col min-h-screen">

@@ -26,7 +26,7 @@ const SideBar = () => {
     if (!user) {
       navigate("/login");
     }
-  }, [user]);
+  }, [user,navigate]);
 
   const { data: users } = useGetUserDataQuery(user?._id);
 

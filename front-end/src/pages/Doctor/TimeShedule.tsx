@@ -65,9 +65,9 @@ export default function TimeShedule() {
   const updateDaySchedule = (
     day: string,
     field: keyof DaySchedule,
-    value: any
+    value: string | { id: string; start: string; end: string }[]
   ) => {
-    if (!isEditing) return; // Prevent updates when not in edit mode
+    if (!isEditing) return;
 
     setWeekSchedule((prev) =>
       prev.map((d) => (d.day === day ? { ...d, [field]: value } : d))
@@ -431,55 +431,6 @@ export default function TimeShedule() {
                 </div>
               ))}
             </div>
-
-            {/* Scheduled Slots */}
-            {/* <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  <Clock className="h-5 w-5 text-gray-700" />
-                  <div>
-                    <h2 className="font-semibold text-gray-900">Scheduled Slots</h2>
-                    <p className="text-sm text-gray-500">Your upcoming time slots</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6">
-                {slots.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Timer className="h-8 w-8 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 font-medium">No slots scheduled yet</p>
-                    <p className="text-gray-400 text-sm">Create your weekly schedule above to get started</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {slots.map((slot) => (
-                      <div
-                        key={slot._id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-2 h-8 bg-gray-400 rounded-full"></div>
-                          <div>
-                            <div className="font-medium text-gray-900">{slot.day}</div>
-                            <div className="flex items-center gap-1 text-sm text-gray-500">
-                              <Clock className="h-3 w-3" />
-                              {slot.startTime} - {slot.endTime}
-                            </div>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handleSlotDelete(slot._id)}
-                          className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div> */}
           </div>
         </div>
       </div>

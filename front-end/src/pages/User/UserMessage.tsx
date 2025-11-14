@@ -93,30 +93,44 @@ interface UpdateConversationData {
   unreadIncrement: number;
 }
 
+// API Response types
+interface MessageResponse {
+  _id: string;
+  chatId: string;
+  content: string;
+  sender: string;
+  createdAt: string;
+  type?: "text" | "image";
+  image?: string;
+  read: boolean;
+}
+
+interface SendMessageResponse {
+  chatId: string;
+  content?: string;
+  image?: string;
+}
+
 export function UserMessagingPage() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversationss, setConversation] = useState<IConversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<
-    string | null
-  >(null);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [showEmoji, setShowEmoji] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<OnlineUsers>({});
-  const [selectedDoctor, setSelectedDoctor] = useState<DoctorInfo | undefined>(
-    undefined
-  );
+  const [selectedDoctor, setSelectedDoctor] = useState<DoctorInfo | undefined>(undefined);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  
   const patient = useSelector((state: RootState) => state.auth.user);
   const patientId = patient?._id as string;
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: conversations = [], refetch: chatRefetch } =
-    useGetUserChatQuery({
-      patientId,
-    });
+  const { data: conversations = [], refetch: chatRefetch } = useGetUserChatQuery({
+    patientId,
+  });
 
   useEffect(() => {
     if (!Array.isArray(conversations)) return;
@@ -158,7 +172,7 @@ export function UserMessagingPage() {
     if (!selectedConversation || !Array.isArray(messagess)) return;
 
     setMessages((prev) => {
-      const newMessages = messagess.map((m: any) => ({
+      const newMessages = (messagess as MessageResponse[]).map((m) => ({
         id: m._id,
         chatId: m.chatId,
         content: m.content,
@@ -171,7 +185,7 @@ export function UserMessagingPage() {
           : "",
         type: m.type ?? "text",
         image: m.image,
-        createdAt: m.createdAt,
+        createdAt: new Date(m.createdAt),
         read: m.read,
       }));
 
@@ -246,7 +260,7 @@ export function UserMessagingPage() {
 
     try {
       chatRefetch();
-      const res = await sendMessage(formData).unwrap();
+      const res = await sendMessage(formData).unwrap() as SendMessageResponse;
       socket.emit("sendMessage", res);
 
       setConversation((prev) =>

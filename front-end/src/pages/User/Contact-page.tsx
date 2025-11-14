@@ -80,7 +80,7 @@ export default function ContactPage() {
       }).unwrap();
       toast.success(res?.msg);
       setFormData({ name: "", email: "", phone: "", message: "" });
-    } catch (error: any) {
+    } catch (error:any) {
       console.log(error);
     }
   };

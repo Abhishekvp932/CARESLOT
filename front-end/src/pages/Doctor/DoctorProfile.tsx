@@ -56,7 +56,7 @@ interface DoctorData {
 export default function DoctorProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const doctorId = useSelector((state: RootState) => state.doctor.doctor);
-  const { data: doctor, refetch } = useGetDoctorDataQuery(doctorId?._id);
+  const { data: doctor, refetch } = useGetDoctorDataQuery(doctorId?._id as string);
   const [formData, setFormData] = useState<DoctorData | null>(null);
   const [originalData, setOriginalData] = useState<DoctorData | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});

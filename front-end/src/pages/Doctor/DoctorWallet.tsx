@@ -33,7 +33,7 @@ export default function DoctorWalletPage() {
 
   useEffect(() => {
     refetch();
-  }, []);
+  }, [refetch]);
   const transactions = data?.history || [];
   const balance = data?.balance ?? 0;
 

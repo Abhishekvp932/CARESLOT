@@ -27,6 +27,7 @@ import { UserDTO } from '../../types/user.dto';
 import { Request, Response } from 'express';
 import logger from '../../utils/logger';
 import dotenv from 'dotenv';
+import { LoginUserType } from '../../types/loginUserType';
 dotenv.config();
 export class AuthService implements IAuthService{
   constructor(
@@ -178,7 +179,7 @@ export class AuthService implements IAuthService{
   async verifyOtp(
     email: string,
     otp: string
-  ): Promise<{ msg: string; role: string; user: string }> {
+  ): Promise<{ msg: string; role: string; user:LoginUserType }> {
     let user = null;
     user = await this._patientRepository.findByEmail(email);
     let role = 'patients';
@@ -197,10 +198,20 @@ export class AuthService implements IAuthService{
       await this._doctorRepository.verifyOtp(email, otp);
     }
 
+    const users:LoginUserType ={
+      _id:user._id as string,
+      name:user.name,
+      email:user.email,
+      profile_img:user.profile_img,
+      phone:user.phone,
+      role:user.role, 
+
+    };
+
     return {
       msg: SERVICE_MESSAGE.OTP_VERIFIED_SUCCESS,
       role,
-      user: user._id as string,
+      user: users,
     };
   }
 

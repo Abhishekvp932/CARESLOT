@@ -1,11 +1,18 @@
 import { MoreVertical } from "lucide-react";
 import { useState } from "react";
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  isBlocked: boolean;
+}
+
 const ActionMenu = ({
   user,
   onBlockToggle,
 }: {
-  user: any;
+  user: User;
   onBlockToggle: () => void;
 }) => {
   const [open, setOpen] = useState(false);

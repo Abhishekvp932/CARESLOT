@@ -51,7 +51,7 @@ export function DoctorSidebar() {
     if (!doctor) {
       navigate("/login");
     }
-  }, [doctor]);
+  }, [doctor,navigate]);
 
   const [showNotification, setNotification] = useState(false);
 
@@ -93,11 +93,11 @@ export function DoctorSidebar() {
             )}
           </button>
 
-          <LiveNotifications userId={doctor?._id} />
+          <LiveNotifications userId={doctor?._id as string} />
 
           {showNotification && (
             <div className="fixed top-14 right-6 w-96 bg-white border rounded-lg shadow-lg z-50">
-              <NotificationComponent patientId={doctor?._id} />
+              <NotificationComponent patientId={doctor?._id as string} />
             </div>
           )}
         </div>

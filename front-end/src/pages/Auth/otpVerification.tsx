@@ -20,13 +20,13 @@ const OTPVerification = () => {
     if (!email) {
       navigate("/signup");
     }
-  }, []);
+  }, [email,navigate]);
 
   const handleSubmit = async (otp: string) => {
     try {
       const res = await verifyOtp({ email, otp }).unwrap();
       // toast.success('response');
-
+      console.log('response from back end',res);
       const role = res.role;
       if (role === "patients") {
         navigate("/login");
@@ -35,7 +35,6 @@ const OTPVerification = () => {
           setCredentialsDoctor({
             doctor: res?.user,
             role: res?.role,
-            token: res?.token,
           })
         );
         navigate("/kyc-submit");

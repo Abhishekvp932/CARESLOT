@@ -1,6 +1,7 @@
 import { api } from "@/app/api";
 
 import { API_ROUTES } from "@/constants/apiRoutes";
+import type { EditDoctorRequest, EditDoctorResponse } from "@/types/editeDoctorType";
 
 export const adminApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -70,7 +71,7 @@ export const adminApi = api.injectEndpoints({
       }),
       transformResponse: (response) => response.doctor,
     }),
-    editDoctorData: builder.mutation<any, { formData: any; doctorId: string }>({
+    editDoctorData: builder.mutation<EditDoctorResponse,EditDoctorRequest>({
       query: ({ formData, doctorId }) => ({
         url: API_ROUTES.ADMIN.DOCTOR_BY_ID(doctorId),
         method: "PUT",

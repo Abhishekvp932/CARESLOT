@@ -63,6 +63,16 @@ interface StarRatingProps {
   value: string | number;
 }
 
+interface RelatedDoctorInfo {
+  _id:string;
+  profile_img:string;
+  name:string;
+  qualifications:{
+    specialization:string;
+  }
+
+}
+
 const StarRating: React.FC<StarRatingProps> = ({ value }) => {
   return (
     <div className="flex gap-1">
@@ -91,7 +101,7 @@ const UserDoctorDetailsPage = () => {
     if (!patient) {
       navigate("/login");
     }
-  }, [patient]);
+  }, [patient,navigate]);
 
   const patientId = patient?._id as string;
   const { data: doctor } = useGetDoctorDetailPageQuery(doctorId);
@@ -168,6 +178,7 @@ const UserDoctorDetailsPage = () => {
         ...prev,
       ]);
     } catch (error) {
+      console.log(error);
       toast.error("Failed to submit rating");
     }
   };
@@ -514,7 +525,7 @@ const UserDoctorDetailsPage = () => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {relatedDoctor?.map((doctor: any) => (
+                {relatedDoctor?.map((doctor:RelatedDoctorInfo) => (
                   <Card
                     key={doctor._id}
                     className="border border-gray-200 hover:shadow-md transition-shadow rounded-xl"
