@@ -9,10 +9,15 @@ export interface IPatientPopulated {
   gender?: string;
   DOB?: Date;
 }
+
+export interface ITransactionPopulated {
+  _id:string | Types.ObjectId;
+  paymentMethod?:string;
+}
 export interface AppointmentPatientDTO {
   _id: string;
   doctorId: string;
-  transactionId?: string;
+  transactionId: ITransactionPopulated;
   amount?: string;
   status?: string;
   patientId:IPatientPopulated;

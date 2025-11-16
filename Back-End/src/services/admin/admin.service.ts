@@ -17,8 +17,10 @@ import { MailService } from '../mail.service';
 import redisClient from '../../config/redisClient';
 import { verifyAccessToken } from '../../utils/jwt';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
-import { AppoinmentPaginationDTO, AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
-import { AppointmentPatientDTO } from '../../types/AppointsAndPatientsDto';
+import {
+  AppoinmentPaginationDTO,
+  AppoinmentPopulatedDTO,
+} from '../../types/AppoinmentDTO';
 import { ISlotRepository } from '../../interface/Slots/ISlotRepository';
 import { ISlotDto } from '../../types/ISlotDTO';
 import {
@@ -30,6 +32,7 @@ import { IRatingRepository } from '../../interface/ratings/IRatingRepository';
 import { IRatingDTO } from '../../types/ratingPatientDTO';
 import { FilteredDate } from '../../utils/FilteringWithDate';
 import logger from '../../utils/logger';
+import { TopTenAppointmentsDTO } from '../../types/TopTenAppoinmentsDTO';
 const mailService = new MailService();
 export class AdminService implements IAdminService {
   constructor(
@@ -195,61 +198,57 @@ export class AdminService implements IAdminService {
         : 'Doctor unblocked successfully',
     };
 
-
-      const iter = await redisClient.keys('refresh:*');
-      if (isBlocked) {
-        setImmediate(async () => {
-          try {
-            await mailService.sendBlockDoctorMail(
-              doctor?.email,
-              doctor?.name,
-              reason
-            );
-          } catch (err) {
-            logger.error(err);
-          }
-        });
-        for await (const refreshKey of iter) {
-          const key = refreshKey.toString();
-
-          const sessionId = key.replace('refresh:', '');
-          const accessKey = `access:${sessionId}`;
-
-          const accessToken = await redisClient.get(accessKey);
-          const refreshToken = await redisClient.get(key);
-
-          if (!accessToken || !refreshToken) continue;
-
-          const decode = verifyAccessToken(accessToken);
-
-          if (decode?.id === doctorId) {
-            await redisClient.set(`bl_access:${accessToken}`, 'true', {
-              EX: 15 * 60,
-            });
-            await redisClient.set(`bl_refresh:${refreshToken}`, 'true', {
-              EX: 7 * 24 * 60 * 60,
-            });
-
-            await redisClient.del(accessKey);
-            await redisClient.del(key);
-          }
+    const iter = await redisClient.keys('refresh:*');
+    if (isBlocked) {
+      setImmediate(async () => {
+        try {
+          await mailService.sendBlockDoctorMail(
+            doctor?.email,
+            doctor?.name,
+            reason
+          );
+        } catch (err) {
+          logger.error(err);
         }
-      } else {
-        await this._doctorAuthRepository.updateById(doctorId, {
-          $unset: { blockReason: '' },
-          $set: { isBlocked: false },
-        });
-        setImmediate(async () => {
-          try {
-            await mailService.sendDoctorUnBlockEmail(
-              doctor?.email,
-              doctor.name
-            );
-          } catch (err) {
-           logger.error(err);
-          }
-        });
+      });
+      for await (const refreshKey of iter) {
+        const key = refreshKey.toString();
+
+        const sessionId = key.replace('refresh:', '');
+        const accessKey = `access:${sessionId}`;
+
+        const accessToken = await redisClient.get(accessKey);
+        const refreshToken = await redisClient.get(key);
+
+        if (!accessToken || !refreshToken) continue;
+
+        const decode = verifyAccessToken(accessToken);
+
+        if (decode?.id === doctorId) {
+          await redisClient.set(`bl_access:${accessToken}`, 'true', {
+            EX: 15 * 60,
+          });
+          await redisClient.set(`bl_refresh:${refreshToken}`, 'true', {
+            EX: 7 * 24 * 60 * 60,
+          });
+
+          await redisClient.del(accessKey);
+          await redisClient.del(key);
+        }
       }
+    } else {
+      await this._doctorAuthRepository.updateById(doctorId, {
+        $unset: { blockReason: '' },
+        $set: { isBlocked: false },
+      });
+      setImmediate(async () => {
+        try {
+          await mailService.sendDoctorUnBlockEmail(doctor?.email, doctor.name);
+        } catch (err) {
+          logger.error(err);
+        }
+      });
+    }
 
     return response;
   }
@@ -547,8 +546,12 @@ export class AdminService implements IAdminService {
     await this._doctorAuthRepository.create(doctorData);
     return { msg: 'New doctor added successfully' };
   }
-  async getAllAppoinments(status: string,page:number,limit:number): Promise<AppoinmentPaginationDTO> {
-    const skip = (page -1) * limit;
+  async getAllAppoinments(
+    status: string,
+    page: number,
+    limit: number
+  ): Promise<AppoinmentPaginationDTO> {
+    const skip = (page - 1) * limit;
     let filter = {};
 
     if (status === 'upcoming') {
@@ -559,8 +562,12 @@ export class AdminService implements IAdminService {
       filter = { status: 'cancelled' };
     }
 
-    const appoinmentsList = await this._appoinmentRepository.findAll(filter,skip,limit);
-   const total = await this._appoinmentRepository.countAll(filter);
+    const appoinmentsList = await this._appoinmentRepository.findAll(
+      filter,
+      skip,
+      limit
+    );
+    const total = await this._appoinmentRepository.countAll(filter);
     if (!appoinmentsList) {
       throw new Error('No Appoinments');
     }
@@ -596,19 +603,17 @@ export class AdminService implements IAdminService {
       };
     });
 
-    return {appoinments,total};
+    return { appoinments, total };
   }
 
   async getDoctorSlotAndAppoinment(doctorId: string): Promise<{
     slots: ISlotDto[];
-    appoinments: AppointmentPatientDTO[];
+    appoinments: TopTenAppointmentsDTO[];
     ratings: IRatingDTO[];
   }> {
     if (!doctorId) {
       throw new Error('Doctor id not found');
     }
-    const limit = 0;
-    const skip = 0;
     const doctor = await this._doctorAuthRepository.findById(doctorId);
     if (!doctor) {
       throw new Error('Doctor Not found');
@@ -620,36 +625,25 @@ export class AdminService implements IAdminService {
     if (!slots) {
       throw new Error('No slot found');
     }
-    const appoinmentList =
-      await this._appoinmentRepository.findAppoinmentsByDoctor(
-        doctor?._id as string,
-        skip,
-        limit
-      );
-
-    const appoinments: AppointmentPatientDTO[] = appoinmentList.map((app) => ({
-      _id: app._id as string,
-      doctorId: app.doctorId.toString(),
-      transactionId: app.transactionId?.toString(),
-      amount: app.amount,
+    const appoinmentList = await this._appoinmentRepository.findTopAppoinments(
+      doctorId
+    );
+    logger.info('appoinment list');
+    logger.debug(appoinmentList);
+    const appointments: TopTenAppointmentsDTO[] = appoinmentList.map((app) => ({
+      patientId: app.patientId.toString(),
+      name: app.name,
+      email: app.email,
+      count: app.count,
       status: app.status,
-      slot: {
-        date: app.slot.date,
-        startTime: app.slot.startTime,
-        endTime: app.slot.endTime,
-      },
-      patientId: {
-        _id: app.patientId._id.toString(),
-        name: app.patientId.name,
-        email: app.patientId.email,
-        phone: app.patientId.phone,
-        profile_img: app.patientId.profile_img,
-      },
-      createdAt: app.createdAt,
-      updatedAt: app.updatedAt,
+      lastAppointmentDate: app.lastAppointmentDate,
+      startTime: app.startTime,
+      endTime: app.endTime,
     }));
 
-    const ratingsList = await this._ratingRepository.findByDoctorId(doctorId);
+    const ratingsList = await this._ratingRepository.findTopRatingByDoctorId(
+      doctorId
+    );
 
     const ratings: IRatingDTO[] = ratingsList.map((rating) => ({
       comment: rating?.comment,
@@ -659,7 +653,7 @@ export class AdminService implements IAdminService {
         name: rating?.patientId?.name,
       },
     }));
-    return { slots: slots, appoinments: appoinments, ratings };
+    return { slots: slots, appoinments: appointments, ratings };
   }
 
   async getAdminDashboardData(filter: string): Promise<DashboardData> {

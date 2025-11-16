@@ -135,6 +135,8 @@ export const API_ROUTES = {
 
   PRESCRIPTION: {
     CREATE: "/prescription/prescription",
+    GETAPPOINMENTPRESCRIPTION:(appoinmentId:string)=> `/prescription/prescription/${appoinmentId}`,
+    UPDATEPRESCRIPTION:(appoinmentId:string)=> `/prescription/update-prescription/${appoinmentId}`
   },
   CONTACT: {
     CREATE: (name: string, email: string, phone: string, message: string) =>

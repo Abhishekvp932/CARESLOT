@@ -87,16 +87,8 @@ interface PatientInfo {
   email: string;
 }
 
-interface AppointmentSlot {
-  date: string;
-  startTime: string;
-}
 
-interface Appointment {
-  patientId: PatientInfo;
-  slot: AppointmentSlot;
-  status: string;
-}
+
 
 interface Rating {
   patientId: PatientInfo;
@@ -105,11 +97,25 @@ interface Rating {
   createdAt: string;
 }
 
+ interface TopTenAppointmentsDTO {
+  patientId: string;
+  name: string;
+  email: string;
+  count: number;
+  status: string;
+  lastAppointmentDate: string;
+  startTime: string;
+  endTime: string;
+}
+
+
 interface DoctorData {
-  appoinments: Appointment[];
+  appoinments: TopTenAppointmentsDTO[];
   slots: SlotDoc[];
   ratings: Rating[];
 }
+
+
 
 export default function DoctorDetailsPage() {
   const { doctorId } = useParams<{ doctorId: string }>();
@@ -121,6 +127,7 @@ export default function DoctorDetailsPage() {
   ) as { data: DoctorData | undefined };
 
   const appoinments = data?.appoinments || [];
+
   const slots = data?.slots || [];
   const ratings = data?.ratings || [];
 
@@ -495,7 +502,7 @@ export default function DoctorDetailsPage() {
               <TabsContent value="appointments" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Recent Appointments</CardTitle>
+                    <CardTitle>Top 10 Appointments</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Table>
@@ -510,33 +517,33 @@ export default function DoctorDetailsPage() {
                       <TableBody>
                         {Array.isArray(appoinments) &&
                           appoinments?.map(
-                            (app: Appointment, index: number) => (
+                            (app: TopTenAppointmentsDTO, index: number) => (
                               <TableRow key={index}>
                                 <TableCell>
                                   <div>
                                     <p className="font-medium">
-                                      {app?.patientId?.name}
+                                      {app?.name}
                                     </p>
                                     <p className="text-sm text-gray-500">
-                                      {app?.patientId?.email}
+                                      {app?.email}
                                     </p>
                                   </div>
                                 </TableCell>
                                 <TableCell>
                                   <div>
                                     <p className="font-medium">
-                                      {app?.slot?.date &&
+                                      {app?.lastAppointmentDate &&
                                         new Date(
-                                          app?.slot?.date
+                                          app?.lastAppointmentDate
                                         ).toLocaleDateString([], {
                                           month: "long",
                                           day: "numeric",
                                         })}
                                     </p>
                                     <p className="text-sm text-gray-500">
-                                      {app?.slot?.startTime &&
+                                      {app?.startTime &&
                                         new Date(
-                                          `1970-01-01T${app?.slot?.startTime}:00`
+                                          `1970-01-01T${app?.startTime}:00`
                                         ).toLocaleTimeString([], {
                                           hour: "numeric",
                                           minute: "2-digit",
@@ -563,7 +570,7 @@ export default function DoctorDetailsPage() {
               <TabsContent value="reviews" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Patient Reviews</CardTitle>
+                    <CardTitle>Top 10 Patient Reviews</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-4">

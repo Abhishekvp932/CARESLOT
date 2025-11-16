@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MoreHorizontal,
+  BanknoteArrowUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -33,7 +34,7 @@ import { useCancelAppoinmentMutation } from "@/features/users/userApi";
 import { toast, ToastContainer } from "react-toastify";
 import PrescriptionModal from "@/components/common/Doctor/PrescriptionModal";
 import { handleApiError } from "@/utils/handleApiError";
-
+import { useUpdatePrescriptionDataMutation } from "@/features/docotr/doctorApi";
 // 🩺 Helper to get color by status
 const getStatusColor = (status: string): string => {
   switch (status) {
@@ -61,10 +62,15 @@ interface IPatientPopulated {
   DOB?: Date;
 }
 
+interface ITransactionPopulated {
+  _id: string;
+  paymentMethod: string;
+}
+
 interface AppointmentPatientDTO {
   _id: string;
   doctorId: string;
-  transactionId?: string;
+  transactionId: ITransactionPopulated;
   amount?: string;
   status: "pending" | "cancelled" | "completed" | "confirmed";
   patientId: IPatientPopulated;
@@ -107,6 +113,7 @@ const AppointmentsListDoctor: React.FC = () => {
 
   const [cancelAppoinment] = useCancelAppoinmentMutation();
   const [createPrescription] = useCreatePrescriptionMutation();
+  const [updatePrescriptionData] = useUpdatePrescriptionDataMutation();
   const [changeAppoinmentStatus] = useChangeAppoinmentStatusMutation();
 
   // ✅ Extract backend data
@@ -156,10 +163,10 @@ const AppointmentsListDoctor: React.FC = () => {
     [cancelAppoinment, refetch]
   );
 
-  const handlePrescriptionSave = useCallback(
-    async (data: PrescriptionData) => {
+  const handlePrescriptionSave = useCallback(async (data: PrescriptionData,isEdit:boolean) => {
       try {
-        const prescriptionData = {
+        if(!isEdit){
+          const prescriptionData = {
           ...data,
           appoinmentId: selectedAppoinment,
           patientId: selectedPatient,
@@ -167,12 +174,19 @@ const AppointmentsListDoctor: React.FC = () => {
         };
         const res = await createPrescription(prescriptionData).unwrap();
         toast.success(res.msg);
+        }else{
+          const prescriptionData = {
+            ...data
+          }
+          const res = await updatePrescriptionData({appoinmentId:selectedAppoinment,data:prescriptionData}).unwrap();
+          toast.success(res?.msg);
+        }
       } catch (error) {
         console.error(error);
         toast.error("Error saving prescription");
       }
     },
-    [createPrescription, doctorId, selectedAppoinment, selectedPatient]
+    [createPrescription, doctorId, selectedAppoinment, selectedPatient,updatePrescriptionData]
   );
 
   const handleChangeStatus = useCallback(
@@ -182,7 +196,7 @@ const AppointmentsListDoctor: React.FC = () => {
         toast.success(res.msg);
         refetch();
       } catch (error) {
-         toast.error(handleApiError(error));
+        toast.error(handleApiError(error));
       }
     },
     [changeAppoinmentStatus, refetch]
@@ -313,7 +327,24 @@ const AppointmentsListDoctor: React.FC = () => {
                         <div className="flex items-center space-x-2 text-sm">
                           <Clock className="h-4 w-4 text-muted-foreground" />
                           <span className="font-medium">
-                            {appointment.slot.date}
+                            Appoinment Taken-
+                            {appointment?.createdAt
+                              ? new Date(
+                                  appointment.createdAt
+                                ).toLocaleDateString("en-IN")
+                              : "N/A"}
+                          </span>
+                          <span className="text-muted-foreground">
+                            ({appointment.slot.startTime})
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2 text-sm">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">
+                            Appoinment Date-{appointment.slot.date}
                           </span>
                           <span className="text-muted-foreground">
                             ({appointment.slot.startTime})
@@ -326,11 +357,21 @@ const AppointmentsListDoctor: React.FC = () => {
 
                       <div className="flex items-center space-x-2 text-sm">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">
-                          Consultation
+                        <span className="font-medium">Type - Consultation</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <BanknoteArrowUp className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">
+                          Payment Method -{" "}
+                          {appointment?.transactionId?.paymentMethod}
                         </span>
                       </div>
-
+                      <div className="flex items-center space-x-2 text-sm">
+                        <BanknoteArrowUp className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">
+                          paid Amount - ₹{appointment?.amount}
+                        </span>
+                      </div>
                       <div className="flex space-x-2 pt-2">
                         {appointment.status !== "cancelled" ? (
                           <Button
@@ -351,21 +392,13 @@ const AppointmentsListDoctor: React.FC = () => {
                               size="sm"
                               className="flex-1"
                               onClick={() => {
-                                setSelectedAppoinment(appointment._id);
-                                setSelectedPatient(appointment.patientId._id);
+                                setSelectedAppoinment(appointment?._id);
+                                setSelectedPatient(appointment?.patientId?.name as string);
                                 setOpen(true);
                               }}
                             >
                               Add Prescription
                             </Button>
-                            <PrescriptionModal
-                              open={open}
-                              onClose={() => setOpen(false)}
-                              onSubmit={handlePrescriptionSave}
-                              patientName={
-                                appointment?.patientId.name ?? "Unknown"
-                              }
-                            />
                           </div>
                         ) : null}
                       </div>
@@ -440,6 +473,14 @@ const AppointmentsListDoctor: React.FC = () => {
           </div>
         </main>
       </div>
+
+      <PrescriptionModal
+        open={open}
+        onClose={() => setOpen(false)}
+        onSubmit={handlePrescriptionSave}
+        patientName={selectedPatient ?? "Unknown"}
+        appoinmentId={selectedAppoinment}
+      />
       <ToastContainer autoClose={200} />
     </div>
   );

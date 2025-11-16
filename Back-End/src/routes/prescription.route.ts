@@ -37,4 +37,11 @@ router
   .get(
     prescriptionController.downloadPrescription.bind(prescriptionController)
   );
+
+  router.route(Routers.prescriptionRouters.getAppoinmentPrescription)
+  .get(authMiddleware.isBlockedOrNot,authMiddleware.protect,authMiddleware.authorizeRole('doctors'),prescriptionController.getAppoinmentPrescription.bind(prescriptionController));
+
+  router.route(Routers.prescriptionRouters.updatePrescription)
+  .put(authMiddleware.protect,authMiddleware.authorizeRole('doctors'),authMiddleware.isBlockedOrNot,prescriptionController.updatePrescription.bind(prescriptionController));
+  
 export default router;

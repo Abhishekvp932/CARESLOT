@@ -112,6 +112,19 @@ export const doctorApi = api.injectEndpoints({
         method: "PATCH",
       }),
     }),
+    getAppoinmentPrescription:builder.query({
+      query:(appoinmentId:string)=>({
+        url:API_ROUTES.PRESCRIPTION.GETAPPOINMENTPRESCRIPTION(appoinmentId),
+        method:'GET',
+      }),
+    }),
+    updatePrescriptionData:builder.mutation({
+      query:({appoinmentId,data})=>({
+        url:API_ROUTES.PRESCRIPTION.UPDATEPRESCRIPTION(appoinmentId),
+        method:'PUT',
+        body:data
+      })
+    })
   }),
 });
 
@@ -128,4 +141,6 @@ export const {
   useGetDoctorDashboardDataQuery,
   useCreatePrescriptionMutation,
   useChangeAppoinmentStatusMutation,
+  useGetAppoinmentPrescriptionQuery,
+  useUpdatePrescriptionDataMutation,
 } = doctorApi;

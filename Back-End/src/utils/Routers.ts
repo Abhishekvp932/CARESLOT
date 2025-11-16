@@ -90,7 +90,9 @@ export const Routers = {
     },
     prescriptionRouters:{
         create:'/prescription',
-        download:'/download/:appoinmentId'
+        download:'/download/:appoinmentId',
+        getAppoinmentPrescription:'/prescription/:appoinmentId',
+        updatePrescription:'/update-prescription/:appoinmentId',
     },
     contactRouters:{
         create:'/contact',

@@ -315,7 +315,10 @@ The CareSlot Team`
       (app) => ({
         _id: app._id as string,
         doctorId: app.doctorId.toString(),
-        transactionId: app.transactionId?.toString(),
+        transactionId:{
+          _id:app.transactionId?._id.toString(),
+          paymentMethod:app.transactionId?.paymentMethod,
+        },
         amount: app.amount,
         status: app.status,
         slot: {

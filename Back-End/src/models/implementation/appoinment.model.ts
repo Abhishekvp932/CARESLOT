@@ -20,7 +20,7 @@ const appoinmentSchema = new Schema<(IAppoinment)>({
     },
     transactionId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Transaction',
+        ref:'Payment',
         required:false
     },
     amount:{

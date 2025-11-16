@@ -6,6 +6,7 @@ import { IPrecriptionRepository } from '../../interface/prescription/IPrescripti
 import { Types } from 'mongoose';
 import logger from '../../utils/logger';
 import { generatePrescriptionPDF } from '../../utils/genaratePDF';
+import { PrescriptionResult } from '../../types/PrescriptionResult';
 
 export class PrescriptionService implements IPrescriptionService {
   constructor(
@@ -64,5 +65,39 @@ export class PrescriptionService implements IPrescriptionService {
     const pdfBuffer = await generatePrescriptionPDF(prescriptonData);
     logger.debug(pdfBuffer);
     return pdfBuffer;
+  }
+  async getAppoinmentPrescription(appoinmentId: string): Promise<PrescriptionResult | null> {
+    const prescriptionData = await this._prescriptionRepository.findOneAppoinmentId(appoinmentId);
+    
+     if (!prescriptionData) {
+    return null;
+  }
+
+  const prescription: PrescriptionResult = {
+    _id: prescriptionData._id as string,
+    diagnosis: prescriptionData.diagnosis,
+    medicines: prescriptionData.medicines,
+    advice: prescriptionData.advice,
+    appoinmentId: prescriptionData.appoinmentId?.toString(),
+    doctorId: prescriptionData.doctorId?.toString(),
+    patientId: prescriptionData.patientId?.toString(),
+  };
+
+  return prescription;
+  }
+
+  async updatePrescription(appoinmentId:string,diagnosis:string,medicines:string,advice:string): Promise<{ msg: string; }> {
+    const prescription = await this._prescriptionRepository.findOneAppoinmentId(appoinmentId);
+  
+    if(!prescription){
+      throw new Error('Prescription not found');
+    }
+    const updatedData = {
+      diagnosis,
+      medicines,
+      advice
+    };
+    await this._prescriptionRepository.findByAppoinmentIdAndUpdate(appoinmentId,updatedData);
+    return {msg: 'prescription updated'};
   }
 }

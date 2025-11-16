@@ -19,4 +19,14 @@ export class RatingRepository
 
     return ratings as unknown as (IRatingDTO & { patientId: IRatingPatient })[];
   }
+
+  async findTopRatingByDoctorId(doctorId: string): Promise<(IRatingDTO & { patientId: IRatingPatient; })[]> {
+     const ratings = await Rating.find({ doctorId: doctorId })
+      .populate<{ patientId: IRatingPatient }>('patientId', 'name')
+      .sort({rating:-1})
+      .limit(10)
+      .exec();
+
+    return ratings as unknown as (IRatingDTO & { patientId: IRatingPatient })[];
+  }
 }

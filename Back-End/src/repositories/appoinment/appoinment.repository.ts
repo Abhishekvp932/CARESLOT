@@ -3,11 +3,13 @@ import Appoinment from '../../models/implementation/appoinment.model';
 import { IAppoinmentRepository } from '../../interface/appoinment/IAppoinmentRepository';
 import { ClientSession, FilterQuery, Types } from 'mongoose';
 
-import { IPatientPopulated } from '../../types/AppointsAndPatientsDto';
+import { IPatientPopulated, ITransactionPopulated } from '../../types/AppointsAndPatientsDto';
 import { IDoctorPopulated } from '../../types/AppoinmentsAndDoctorDto';
 import { AppoinmentPopulatedDTO } from '../../types/AppoinmentDTO';
 import { DashboardData } from '../../types/IAdminDashboardDataLookup';
 import { DoctorDashboardData } from '../../types/IDoctorDashboardDto';
+import { TopTenAppointmentsDTO } from '../../types/TopTenAppoinmentsDTO';
+
 
 export class AppoinmentRepository implements IAppoinmentRepository {
 
@@ -29,11 +31,11 @@ export class AppoinmentRepository implements IAppoinmentRepository {
   async findByIdAndUpdate(
     appoinmentId: string | Types.ObjectId,
     update: Partial<IAppoinment>,
-    session?:ClientSession
+    session?:ClientSession  
   ): Promise<IAppoinment | null> {
     return await Appoinment.findByIdAndUpdate(appoinmentId, update, {
       new: true,
-      session
+      ...(session && {session})
     });
   }
 
@@ -42,9 +44,10 @@ export class AppoinmentRepository implements IAppoinmentRepository {
     skip: number,
     limit: number,
     filter?: FilterQuery<IAppoinment>
-  ): Promise<(IAppoinment & { patientId: IPatientPopulated })[]> {
+  ): Promise<(IAppoinment & { patientId: IPatientPopulated;transactionId: ITransactionPopulated })[]> {
     const appointments = await Appoinment.find({ doctorId, ...filter })
       .populate('patientId', '_id name email phone profile_img')
+      .populate('transactionId','_id paymentMethod')
       .sort({ createdAt: 1 })
       .skip(skip)
       .limit(limit)
@@ -52,6 +55,7 @@ export class AppoinmentRepository implements IAppoinmentRepository {
       .exec();
     return appointments as unknown as (IAppoinment & {
       patientId: IPatientPopulated;
+      transactionId: ITransactionPopulated
     })[];
   }
   async findAppoinmentsByPatient(
@@ -304,4 +308,58 @@ const result = await Appoinment.aggregate([
     return await Appoinment.countDocuments(filter);
   }
 
+async findTopAppoinments(doctorId: string): Promise<TopTenAppointmentsDTO[]> {
+  const result = await Appoinment.aggregate([
+    {
+      $match: {
+        doctorId: new Types.ObjectId(doctorId),
+        status: 'completed' 
+      }
+    },
+
+    // IMPORTANT: Sort before grouping (so $last works correctly)
+    { 
+      $sort: { createdAt: -1 } 
+    },
+
+    {
+      $group: {
+        _id: '$patientId',
+        count: { $sum: 1 },
+        latestAppointment: { $first: '$slot' }  // latest slot
+      }
+    },
+
+    {
+      $lookup: {
+        from: 'patients',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'patient'
+      }
+    },
+
+    { $unwind: '$patient' },
+
+    {
+      $project: {
+        _id: 0,
+        patientId: '$_id',
+        name: '$patient.name',
+        email: '$patient.email',
+        count: 1,
+        status: 'completed',
+        lastAppointmentDate: '$latestAppointment.date',
+        startTime: '$latestAppointment.startTime',
+        endTime: '$latestAppointment.endTime'
+      }
+    },
+
+    { $sort: { count: -1 } },
+
+    { $limit: 10 }
+  ]);
+
+  return result;
+}
 }

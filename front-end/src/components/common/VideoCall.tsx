@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { Phone, PhoneOff, Video, VideoOff } from "lucide-react";
+import { Phone, PhoneOff, Video, VideoOff,Mic, MicOff } from "lucide-react";
 
 interface VideoCallProps {
   userId: string;
@@ -610,9 +610,9 @@ const VideoCall: React.FC<VideoCallProps> = ({
           }`}
         >
           {isAudioEnabled ? (
-            <Phone size={24} className="text-white" />
+            <Mic size={24} className="text-white" />
           ) : (
-            <PhoneOff size={24} className="text-white" />
+            <MicOff size={24} className="text-white" />
           )}
         </button>
 

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAddUserMutation } from "@/features/admin/adminApi";
 import AddUserModal from "./AddUser";
+import ConfirmationModal from "@/components/common/ConfirmationModal";
 
 // User interface
 interface User {
@@ -56,6 +57,8 @@ const UsersList = () => {
   const [page, setPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [debounceSearch, setDebounce] = useState<string>("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const limit = 10;
@@ -167,7 +170,10 @@ const UsersList = () => {
       render: (item: User) => (
         <div className="flex gap-2">
           <button
-            onClick={() => handleBlockAndUnblock(item._id, item.isBlocked)}
+            onClick={() => {
+              setSelectedUser(item);
+              setConfirmOpen(true);
+            }}
             className={`px-3 py-1 rounded text-white hover:opacity-90 ${
               item.isBlocked ? "bg-green-600" : "bg-red-600"
             }`}
@@ -271,15 +277,38 @@ const UsersList = () => {
                 <div className="md:hidden">
                   <ActionMenu
                     user={user}
-                    onBlockToggle={() =>
-                      handleBlockAndUnblock(user._id, user.isBlocked)
-                    }
+                    onBlockToggle={() => {
+                      setSelectedUser(user);
+                      setConfirmOpen(true);
+                    }}
                   />
                 </div>
               </div>
             )}
           />
         </div>
+      )}
+      {selectedUser && (
+        <ConfirmationModal
+          open={confirmOpen}
+          title={selectedUser.isBlocked ? "Unblock User?" : "Block User?"}
+          description={
+            selectedUser.isBlocked
+              ? `Are you sure you want to unblock ${selectedUser.name}?`
+              : `Are you sure you want to block ${selectedUser.name}?`
+          }
+          confirmText={selectedUser.isBlocked ? "Yes, Unblock" : "Yes, Block"}
+          cancelText="Cancel"
+          onConfirm={() => {
+            handleBlockAndUnblock(selectedUser._id, selectedUser.isBlocked);
+            setConfirmOpen(false);
+            setSelectedUser(null);
+          }}
+          onCancel={() => {
+            setConfirmOpen(false);
+            setSelectedUser(null);
+          }}
+        />
       )}
 
       <ToastContainer autoClose={2000} />

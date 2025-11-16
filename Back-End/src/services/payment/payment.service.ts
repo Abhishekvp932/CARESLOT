@@ -135,13 +135,13 @@ export class PaymentService implements IPaymentService {
         paymentMethod: paymentMethod,
       };
       const payment = await this._paymentRepository.create(newPayment,session);
-      logger.info('Payment created:');
-      logger.debug(payment);
+      
       await this._appoinmentRepository.findByIdAndUpdate(
         appoinment?._id as string,
         { transactionId: new Types.ObjectId(payment?._id as string) },
         session
       );
+
 
       const scheduledStart = new Date(
         `${appoinment.slot.date}T${appoinment.slot.startTime}`

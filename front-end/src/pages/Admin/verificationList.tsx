@@ -10,6 +10,7 @@ import { Check, X, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RejectionReasonModal from "@/components/common/admin/rejectionReasonModal";
+import ConfirmationModal from "@/components/common/ConfirmationModal";
 
 // Doctor interface
 interface Doctor {
@@ -48,6 +49,10 @@ const VerificationList = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [approveModalOpen, setApproveModalOpen] = useState(false);
+  const [selectedApproveDoctorId, setSelectedApproveDoctorId] = useState<
+    string | null
+  >(null);
 
   // Debounce search term
   useEffect(() => {
@@ -134,7 +139,10 @@ const VerificationList = () => {
           {!item?.isRejected ? (
             <div className="flex gap-2">
               <button
-                onClick={() => handleApproveDoctor(item._id)}
+                onClick={() => {
+                  setSelectedApproveDoctorId(item._id);
+                  setApproveModalOpen(true);
+                }}
                 className="bg-green-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
                 type="button"
               >
@@ -260,7 +268,10 @@ const VerificationList = () => {
                   <div className="flex flex-col gap-2 items-end">
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleApproveDoctor(doctor._id)}
+                        onClick={() => {
+                          setSelectedApproveDoctorId(doctor?._id);
+                          setApproveModalOpen(true);
+                        }}
                         className="bg-green-500 text-white px-3 py-1 rounded hover:bg-gray-900 flex items-center gap-1"
                         type="button"
                       >
@@ -310,6 +321,20 @@ const VerificationList = () => {
             handleReject(selectedDoctorId, reason);
           }
         }}
+      />
+
+      <ConfirmationModal
+        open={approveModalOpen}
+        title="Approve Doctor?"
+        description="Doctor will immediately get dashboard access."
+        confirmText="Approve"
+        cancelText="Cancel"
+        onConfirm={() => {
+          if (selectedApproveDoctorId)
+            handleApproveDoctor(selectedApproveDoctorId);
+          setApproveModalOpen(false);
+        }}
+        onCancel={() => setApproveModalOpen(false)}
       />
 
       <ToastContainer autoClose={2000} />
