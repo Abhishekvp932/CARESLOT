@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForgotPasswordMutation } from "@/features/auth/authApi";
 import { toast } from "react-toastify";
+import { handleApiError } from "@/utils/handleApiError";
 const ForgotPassword = () => {
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
   const loaction = useLocation();
@@ -54,12 +55,8 @@ const ForgotPassword = () => {
       }).unwrap();
       toast.success(res.msg);
       navigate("/login");
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
-      } else {
-        toast.error("OTP verification error");
-      }
+    } catch (error) {
+       toast.error(handleApiError(error));
     }
   };
 

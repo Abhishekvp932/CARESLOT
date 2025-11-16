@@ -29,6 +29,7 @@ import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { handleApiError } from "@/utils/handleApiError";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -76,8 +77,8 @@ export function SessionCard() {
       const res = await cancelAppoinment(appoinmentId).unwrap();
       toast.success(res.msg);
       refetch();
-    } catch (error: any) {
-      toast.error(error?.data?.msg);
+    } catch (error) {
+      toast.error(handleApiError(error));
     }
   };
 
@@ -113,10 +114,8 @@ export function SessionCard() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (error: any) {
-      console.error(
-        error.response?.data?.msg || "Failed to download prescription"
-      );
+    } catch (error) {
+       toast.error(handleApiError(error));
     }
   };
 

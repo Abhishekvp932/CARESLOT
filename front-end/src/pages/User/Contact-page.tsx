@@ -10,6 +10,7 @@ import Header from "@/layout/Header";
 import Footer from "@/layout/Footer";
 import { useCreateContactInformationMutation } from "@/features/users/userApi";
 import { toast, ToastContainer } from "react-toastify";
+import { handleApiError } from "@/utils/handleApiError";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -80,8 +81,8 @@ export default function ContactPage() {
       }).unwrap();
       toast.success(res?.msg);
       setFormData({ name: "", email: "", phone: "", message: "" });
-    } catch (error:any) {
-      console.log(error);
+    } catch (error) {
+      toast.error(handleApiError(error));
     }
   };
 

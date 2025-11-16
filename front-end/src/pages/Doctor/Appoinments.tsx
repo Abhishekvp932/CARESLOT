@@ -32,6 +32,7 @@ import { useNavigate } from "react-router-dom";
 import { useCancelAppoinmentMutation } from "@/features/users/userApi";
 import { toast, ToastContainer } from "react-toastify";
 import PrescriptionModal from "@/components/common/Doctor/PrescriptionModal";
+import { handleApiError } from "@/utils/handleApiError";
 
 // 🩺 Helper to get color by status
 const getStatusColor = (status: string): string => {
@@ -148,8 +149,8 @@ const AppointmentsListDoctor: React.FC = () => {
         const res = await cancelAppoinment(appoinmentId).unwrap();
         toast.success(res.msg);
         refetch();
-      } catch (error: any) {
-        toast.error(error?.data?.msg);
+      } catch (error) {
+        toast.error(handleApiError(error));
       }
     },
     [cancelAppoinment, refetch]
@@ -180,8 +181,8 @@ const AppointmentsListDoctor: React.FC = () => {
         const res = await changeAppoinmentStatus(appoinmentId).unwrap();
         toast.success(res.msg);
         refetch();
-      } catch (error: any) {
-        toast.error(error?.data?.msg);
+      } catch (error) {
+         toast.error(handleApiError(error));
       }
     },
     [changeAppoinmentStatus, refetch]

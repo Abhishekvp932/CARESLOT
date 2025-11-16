@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { setCredentialsDoctor } from "@/features/docotr/doctorSlice";
 import { useEffect } from "react";
 import type { AppDispatch } from "@/app/store";
+import { handleApiError } from "@/utils/handleApiError";
 
 const OTPVerification = () => {
   const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
@@ -39,12 +40,8 @@ const OTPVerification = () => {
         );
         navigate("/kyc-submit");
       }
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
-      } else {
-        toast.error("OTP verification error");
-      }
+    } catch (error) {
+       toast.error(handleApiError(error));
     }
   };
 

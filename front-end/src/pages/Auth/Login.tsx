@@ -20,6 +20,7 @@ import { z } from "zod";
 import LoginForm from "@/components/common/LoginForm";
 
 import { useGoogleAuth } from "@/customHooks/googleAuth";
+import { handleApiError } from "@/utils/handleApiError";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -114,17 +115,8 @@ const Login = () => {
         );
         navigate("/admin");
       }
-    } catch (error: any) {
-      console.error("Login error:", error);
-
-      const errorMessage =
-        error?.data?.msg ||
-        error?.data?.error ||
-        error.message ||
-        "An error occurred during login";
-
-      toast.error(errorMessage);
-      setErrors((prev) => ({ ...prev, general: errorMessage }));
+    } catch (error) {
+      toast.error(handleApiError(error));
     }
   };
 

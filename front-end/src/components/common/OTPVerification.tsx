@@ -4,6 +4,7 @@ import { SubmitButton } from "@/components/common/SubmitButton";
 import { toast, ToastContainer } from "react-toastify";
 import { useResendOTPMutation } from "@/features/auth/authApi";
 import { useNavigate } from "react-router-dom";
+import { handleApiError } from "@/utils/handleApiError";
 interface OTPVerificationProps {
   email: string;
   onVerify: (otp: string) => Promise<void>;
@@ -78,10 +79,8 @@ const VerificationOTP: React.FC<OTPVerificationProps> = ({
       const res = await resendOTP({ email }).unwrap();
 
       toast.success(res.msg);
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
-      }
+    } catch (error) {
+      toast.error(handleApiError(error));
     }
   };
 

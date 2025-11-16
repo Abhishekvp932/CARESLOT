@@ -21,7 +21,6 @@ import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
 
-// Type definitions
 interface RazorpayResponse {
   razorpay_order_id: string;
   razorpay_payment_id: string;

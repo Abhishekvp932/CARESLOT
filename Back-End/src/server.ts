@@ -75,7 +75,7 @@ io.on('connection', (socket) => {
 });
 
 const corsOperation = {
-  origin: 'https://careslot.ddns.net',
+  origin: 'http://localhost:2025',
   credentials: true,
 };
 app.use(cookieParser());

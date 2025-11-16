@@ -20,6 +20,7 @@ import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { handleApiError } from "@/utils/handleApiError";
 export default function ChangePasswordPage() {
   type ChangePassoword = {
     oldPassword: string;
@@ -83,7 +84,7 @@ export default function ChangePasswordPage() {
         navigate("/profile");
       }, 1000);
     } catch (error) {
-      toast.error((error as any)?.data?.msg);
+       toast.error(handleApiError(error));
     }
   };
 

@@ -34,6 +34,7 @@ import { useEffect, useState } from "react";
 import RejectionReasonModal from "@/components/common/admin/rejectionReasonModal";
 import type { RootState } from "@/app/store";
 import { useSelector } from "react-redux";
+import { handleApiError } from "@/utils/handleApiError";
 const DoctorDetails = () => {
   const navigate = useNavigate();
   const { doctorId } = useParams<{ doctorId: string }>();
@@ -71,12 +72,8 @@ const DoctorDetails = () => {
       setTimeout(() => {
         navigate("/admin/doctors");
       }, 1000);
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
-      } else {
-        toast.error("Doctor approve error");
-      }
+    } catch (error) {
+      toast.error(handleApiError(error));
     }
   };
 
@@ -88,12 +85,8 @@ const DoctorDetails = () => {
       setTimeout(() => {
         navigate("/admin/pending-verification");
       }, 1000);
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
-      } else {
-        toast.error("Doctor rejection error");
-      }
+    } catch (error) {
+       toast.error(handleApiError(error));
     }
   };
 

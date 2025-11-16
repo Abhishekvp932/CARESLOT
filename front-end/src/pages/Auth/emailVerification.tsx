@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { useVerifyEmailMutation } from "@/features/auth/authApi";
+import { handleApiError } from "@/utils/handleApiError";
 const SendOTPPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -25,13 +26,8 @@ const SendOTPPage = () => {
       setTimeout(() => {
         navigate("/verify-email", { state: { email } });
       }, 2000);
-    } catch (error: any) {
-    
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
-      } else {
-        toast.error("Something went wrong. Please try again.");
-      }
+    } catch (error) {
+       toast.error(handleApiError(error));
     }
   };
 

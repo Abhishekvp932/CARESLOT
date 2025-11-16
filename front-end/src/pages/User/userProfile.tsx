@@ -13,6 +13,7 @@ import { useUpdateUserDataMutation } from "@/features/users/userApi";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { handleApiError } from "@/utils/handleApiError";
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user?._id as string;
@@ -88,12 +89,8 @@ const UserProfile = () => {
 
       toast.success(res.msg);
       refetchUserData();
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
-      } else {
-        toast.error("OTP verification error");
-      }
+    } catch (error) {
+      toast.error(handleApiError(error));
     }
   };
 

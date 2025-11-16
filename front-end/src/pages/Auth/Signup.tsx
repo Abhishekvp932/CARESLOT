@@ -16,6 +16,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { useGoogleAuth } from "@/customHooks/googleAuth";
+import { handleApiError } from "@/utils/handleApiError";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -104,16 +105,8 @@ const Signup = () => {
           state: { email: form.email, role: form.role },
         });
       }, 3000);
-    } catch (error: any) {
-      console.error("Signup error:", error);
-      const errorMessage =
-        error?.data?.msg ||
-        error?.data?.error ||
-        error.message ||
-        "An error occurred during signup";
-
-      toast.error(errorMessage);
-      setErrors((prev) => ({ ...prev, general: errorMessage }));
+    } catch (error) {
+       toast.error(handleApiError(error));
     }
   };
   return (

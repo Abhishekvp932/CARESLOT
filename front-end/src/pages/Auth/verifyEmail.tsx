@@ -3,6 +3,7 @@ import VerificationOTP from "@/components/common/OTPVerification";
 
 import { useVerifyEmailOTPMutation } from "@/features/auth/authApi";
 import { toast, ToastContainer } from "react-toastify";
+import { handleApiError } from "@/utils/handleApiError";
 
 const VerifyEmail = () => {
   const [verifyEmailOTP, { isLoading }] = useVerifyEmailOTPMutation();
@@ -15,12 +16,8 @@ const VerifyEmail = () => {
       const res = await verifyEmailOTP({ email, otp }).unwrap();
       toast.success(res.msg);
       navigate("/forgot-password", { state: { email } });
-    } catch (error: any) {
-      if (error?.data?.msg) {
-        toast.error(error.data.msg);
-      } else {
-        toast.error("OTP verification error");
-      }
+    } catch (error) {
+      toast.error(handleApiError(error));
     }
   };
 
