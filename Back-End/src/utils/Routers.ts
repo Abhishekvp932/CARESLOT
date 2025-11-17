@@ -97,5 +97,10 @@ export const Routers = {
     contactRouters:{
         create:'/contact',
         getContacts:'/getContacts'
+    },
+    subscriptionRouters:{
+        create:'/subscription',
+        getAllSubscription:'/subscription',
+        deleteSubscription:'/subscription/:subscriptionId'
     }
 };

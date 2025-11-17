@@ -66,6 +66,12 @@ export const Sidebar = () => {
       href: "/admin/messages",
       active: location.pathname === "/admin/messages",
     },
+    {
+      icon: MessageCircle,
+      label: "Messages",
+      href: "/admin/subscription",
+      active: location.pathname === "/admin/subscription",
+    },
   ];
 
   return (

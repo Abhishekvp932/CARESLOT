@@ -117,6 +117,25 @@ export const adminApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    createSubscription:builder.mutation({
+      query:(data)=>({
+        url:API_ROUTES.SUBSCRIPTION.CREATE,
+        method:'POST',
+        body:data,
+      }),
+    }),
+    getAllSubscriptions:builder.query({
+      query:()=>({
+        url:API_ROUTES.SUBSCRIPTION.GETAllSUBSCRIPTIONS,
+        method:'GET'
+      }),
+    }),
+    deleteSubscription:builder.mutation({
+      query:(subscriptionId)=>({
+        url:API_ROUTES.SUBSCRIPTION.DELETESUBSCRIPTION(subscriptionId),
+        method:'DELETE',
+      }),
+    }),
   }),
 });
 
@@ -138,4 +157,7 @@ export const {
   useGetAllDoctorSlotsAndAppoinmentsQuery,
   useGetAdminDashboardDataQuery,
   useGetContactsDataQuery,
+  useCreateSubscriptionMutation,
+  useGetAllSubscriptionsQuery,
+  useDeleteSubscriptionMutation
 } = adminApi;

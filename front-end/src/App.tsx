@@ -40,7 +40,7 @@ import ContactPage from "./pages/User/Contact-page"
 import ServicePage from "./pages/User/servicePage"
 import { DoctorDashboard } from "./pages/Doctor/Dashboard"
 import MessagesPage from "./pages/Admin/Messages"
-
+import Subscriptions from "./pages/Admin/Subscription"
 function App() {
 
   return (
@@ -82,6 +82,7 @@ function App() {
            <Route path="/admin/doctor-details/:doctorId" element = {<DoctorDetailsPage/>}/>
            <Route path="/admin/appoinments" element = {<AdminLayout><AppointmentHistory/></AdminLayout>}/>
            <Route path="/admin/messages" element = {<AdminLayout><MessagesPage/></AdminLayout>}/>
+           <Route path="/admin/subscription" element={<AdminLayout><Subscriptions/></AdminLayout>}/>
 
            {/* doctor */}
 

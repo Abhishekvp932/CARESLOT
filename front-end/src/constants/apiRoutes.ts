@@ -144,4 +144,9 @@ export const API_ROUTES = {
     GETCONTACTDATA: (search?: string, page?: number, limit?: string) =>
       `/contact/getContacts?search=${search}&page=${page}&limit=${limit}`,
   },
+  SUBSCRIPTION:{
+    CREATE:'/subscription/subscription', 
+    GETAllSUBSCRIPTIONS:'/subscription/subscription',
+    DELETESUBSCRIPTION:(subscriptionId:string)=> `/subscription/subscription/${subscriptionId}`
+  }
 };

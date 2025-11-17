@@ -26,6 +26,7 @@ import chatRoute from './routes/chat.route';
 import callLogRoute from './routes/callLog.route';
 import ratingRoute from './routes/rating.route';
 import prescriptionRoute from './routes/prescription.route';
+import subscriptionRoute from './routes/subscription.route';
 import contactRoute from './routes/contact.route';
 import { initChatSocket } from './utils/scoket/chat.scoket';
 import logger from './utils/logger';
@@ -113,6 +114,7 @@ app.use('/api/call', callLogRoute);
 app.use('/api/rating', ratingRoute);
 app.use('/api/prescription',prescriptionRoute);
 app.use('/api/contact',contactRoute);
+app.use('/api/subscription',subscriptionRoute);
 app.use(errorHandler);
 const PORT = process.env.PORT;
 
