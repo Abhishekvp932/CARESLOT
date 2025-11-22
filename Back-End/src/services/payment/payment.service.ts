@@ -28,6 +28,9 @@ import { ICallLog } from '../../models/interface/ICallLog';
 import { INotificationDto } from '../../types/INotificationDTO';
 import mongoose from 'mongoose';
 import { acquireLock, releaseLock } from '../../utils/redisLock';
+import { ISubscriptionRepository } from '../../interface/subscription/ISubscriptionRepository';
+import { IUserSubscriptionRepository } from '../../interface/userSubscription/IUserSubscriptionRepository';
+
 dotenv.config();
 const mailService = new MailService();
 export class PaymentService implements IPaymentService {
@@ -40,7 +43,9 @@ export class PaymentService implements IPaymentService {
     private _walletRepository: IWalletRepository,
     private _walletHistoryRepository: IWalletHistoryRepository,
     private _chatRepository: IChatRepository,
-    private _callLogRepository: ICallLogRepository
+    private _callLogRepository: ICallLogRepository,
+    private _subscriptionRepository:ISubscriptionRepository,
+    private _userSubscriptionRepository:IUserSubscriptionRepository,
   ) {}
 
   async createOrder(amount: number): Promise<RazorpayOrder> {
@@ -79,6 +84,29 @@ export class PaymentService implements IPaymentService {
       if (!getLock) {
         throw new Error('Slot already booked. Please choose another slot.');
       }
+
+      const userSubscription = await this._userSubscriptionRepository.findByActiveUserId(patientId);
+      let finalAmount = Number(amount);
+      let subscriptionDiscount:number = 0;
+
+      if(userSubscription){
+        const now = new Date();
+
+        if(now > userSubscription.endDate){
+          await this._userSubscriptionRepository.updateById(userSubscription?._id as string,{isActive:false});
+        }else{
+          let planId = String(userSubscription.planId);
+          const plan = await this._subscriptionRepository.findById(planId);
+
+          subscriptionDiscount = plan?.discountAmount ?? 0;
+
+          finalAmount = finalAmount - subscriptionDiscount;
+
+          if(finalAmount < 0) finalAmount = 0;
+        }
+      }
+
+      amount=String(finalAmount);
 
       const doctor = await this._doctorRepository.findById(doctorId);
       if (!doctor) throw new Error(SERVICE_MESSAGE.DOCTOR_NOT_FOUND);
@@ -322,6 +350,29 @@ export class PaymentService implements IPaymentService {
         throw new Error('Slot already booked. Please choose another slot.');
       }
 
+       const userSubscription = await this._userSubscriptionRepository.findByActiveUserId(patientId);
+      let finalAmount = Number(amount);
+      let subscriptionDiscount:number = 0;
+
+      if(userSubscription){
+        const now = new Date();
+
+        if(now > userSubscription.endDate){
+          await this._userSubscriptionRepository.updateById(userSubscription?._id as string,{isActive:false});
+        }else{
+          let planId = String(userSubscription.planId);
+          const plan = await this._subscriptionRepository.findById(planId);
+
+          subscriptionDiscount = plan?.discountAmount ?? 0;
+
+          finalAmount = finalAmount - subscriptionDiscount;
+
+          if(finalAmount < 0) finalAmount = 0;
+        }
+      }
+
+      amount=String(finalAmount);
+
       const fees = Number(amount);
       const doctor = await this._doctorRepository.findById(doctorId);
       if (!doctor) {
@@ -514,5 +565,62 @@ export class PaymentService implements IPaymentService {
       session.endSession();
       await releaseLock(slotKey);
     }
+  }
+  async verifyPlanPayment(orderId: string, paymentId: string, signature: string, planId: string, patientId: string, amount: string, paymentMethod: string): Promise<{ msg: string; }> {
+    const patient = await this._patientRepository.findById(patientId);
+      
+    if(!patient){
+      throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+    }
+    const plan = await this._subscriptionRepository.findById(planId);
+    if(!plan){
+      throw new Error('Subscription plan not found');
+    };
+
+    const isActivePlan = await this._userSubscriptionRepository.findByActiveUserId(patientId);
+
+    if(isActivePlan){
+      throw new Error('You Have Already a Valid Plan');
+    }
+
+    const body = orderId + '|' + paymentId;
+    const expectedSignature = crypto
+    .createHmac('sha256', process.env.RAZORPAY_SECRET as string)
+        .update(body.toString())
+        .digest('hex');
+
+        const isValid = expectedSignature === signature;
+          
+          if (!isValid) {
+           throw new Error('Payment Failed');
+           }
+        const newPayment = {
+          patientId:new Types.ObjectId(patientId as string),
+          planId:new Types.ObjectId(planId as string),
+          amount:Number(amount),
+          currency:'INR',
+          razorpayOrderId: orderId,
+        razorpayPaymentId: paymentId,
+        razorpaySignature: signature,
+        paymentMethod: paymentMethod,
+        };
+
+        const payment = await this._paymentRepository.create(newPayment);
+        logger.info('payment data');
+        logger.debug(payment);
+        const startDate = new Date();
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + plan.durationInDays);
+        const newUserSubscription = {
+          patientId:new Types.ObjectId(patientId as string),
+          planId:new Types.ObjectId(planId as string),
+          transactionId:new Types.ObjectId(payment._id as string),
+          startDate,
+          endDate,
+          isActive:true,
+        };
+
+        await this._userSubscriptionRepository.create(newUserSubscription);
+        return {msg:'Subscription Addedd'};
   }
 }

@@ -28,7 +28,7 @@ export class PaymentController implements IPaymentController {
 
     try {
       const amount = parseInt(req.body.amount);
-
+      logger.debug(amount);
       const result = await this._paymentService.createOrder(amount);
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
@@ -117,6 +117,35 @@ export class PaymentController implements IPaymentController {
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
       next(error as Error);
+    }
+  }
+  async planPayment(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      logger.info('plan payment is comming');
+       const {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        planId,
+        patientId,
+        amount,
+        paymentMethod,
+      } = req.body;
+      logger.debug(req.body);
+
+      const result = await this._paymentService.verifyPlanPayment(
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        planId,
+        patientId,
+        amount,
+        paymentMethod,
+      );
+
+      res.status(HttpStatus.CREATED).json(result);
+    } catch (error) {
+      next(error);
     }
   }
 }

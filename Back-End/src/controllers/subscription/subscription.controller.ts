@@ -35,4 +35,13 @@ export class SubscriptionController implements ISubscriptionController{
             next(error);
         }
     }
+    async getAllActiveSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            logger.info('acitve subscription request is comming');
+            const result = await this._subscriptionService.getAllActiveSubscription();
+            res.status(HttpStatus.OK).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

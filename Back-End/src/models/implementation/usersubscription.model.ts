@@ -12,6 +12,11 @@ const userSubscriptionSchema = new Schema <IUserSubscription>({
         ref:'Subscription',
         required:true,
     },
+    transactionId:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:'Payment',
+      required:true,
+    },
     startDate:{
         type:Date,
         required:true,

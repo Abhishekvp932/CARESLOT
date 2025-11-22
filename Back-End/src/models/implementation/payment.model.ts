@@ -5,17 +5,19 @@ const paymentSchema = new Schema<IPayment>({
   appoinmentId : {
     type:mongoose.Schema.Types.ObjectId,
     ref:'Appoinment',
-    required:true,
   },
   patientId : {
     type:mongoose.Schema.Types.ObjectId,
     ref:'Patient',
     required:true,
   },
+  planId:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'Subscription',
+  },
   doctorId:{
     type:mongoose.Schema.Types.ObjectId,
     ref:'Doctor',
-    required:true,
   },
   amount:{
     type:Number

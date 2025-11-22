@@ -10,7 +10,7 @@ import type { RootState } from "./store";
 const baseQuery = fetchBaseQuery({
   baseUrl:
     process.env.NODE_ENV === "production"
-      ? "https://careslot.ddns.net/api"
+      ? "https://www.careslot.site/api"
       : "http://localhost:3000/api",
   credentials: "include",
 });

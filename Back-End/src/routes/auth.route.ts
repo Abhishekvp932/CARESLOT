@@ -62,7 +62,7 @@ router.get(
     logger.info('google auth user info');
     logger.debug(user);
     if (!user) {
-      return res.redirect('https://careslot.ddns.net/login');
+      return res.redirect('https://www.careslot.site/login');
     }
 
     const payload = {

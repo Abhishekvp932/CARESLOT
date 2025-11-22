@@ -63,7 +63,8 @@ export const Routers = {
     paymentRouters:{
         order:'/order',
         verifyOrder:'/verifyOrder',
-        walletPayment:'/wallet-payment'
+        walletPayment:'/wallet-payment',
+        planPayment:'/plan-payment',
     },
     slotRouters:{
         slots:'/slots',
@@ -101,6 +102,10 @@ export const Routers = {
     subscriptionRouters:{
         create:'/subscription',
         getAllSubscription:'/subscription',
-        deleteSubscription:'/subscription/:subscriptionId'
+        deleteSubscription:'/subscription/:subscriptionId', 
+        getAllActiveSubscription:'/active-subscriptions'
+    },
+    userSubscriptionRouters:{
+        findAllUserSubscription:'/findAll',
     }
 };

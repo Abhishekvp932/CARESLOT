@@ -157,6 +157,12 @@ export const userApi = api.injectEndpoints({
         method: "POST",
       }),
     }),
+    getAllActiveSubscription:builder.query({
+      query:()=>({
+        url:API_ROUTES.SUBSCRIPTION.GETACTIVESUBSCRIPTION,
+        method:'GET'
+      }),
+    }),
   }),
 });
 
@@ -185,4 +191,5 @@ export const {
   useAddRatingMutation,
   useFindDoctorRatingsQuery,
   useCreateContactInformationMutation,
+  useGetAllActiveSubscriptionQuery
 } = userApi;

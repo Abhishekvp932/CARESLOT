@@ -46,6 +46,30 @@ export const paymentApi = api.injectEndpoints({
         body: paymentData,
       }),
     }),
+
+    verifySubscriptionPlanPayment:builder.mutation({
+      query:({
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        planId,
+        patientId,
+        amount,
+        paymentMethod,
+      })=>({
+        url:API_ROUTES.PAYMENT.VERIFY_PLAN_PAYMENT,
+        method:'POST',
+        body:{
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        planId,
+        patientId,
+        amount,
+        paymentMethod,
+        },
+      }),
+    }),
   }),
 });
 
@@ -53,4 +77,5 @@ export const {
   useCreateOrderMutation,
   useVerifyOrderMutation,
   useWalletPaymentMutation,
+  useVerifySubscriptionPlanPaymentMutation
 } = paymentApi;

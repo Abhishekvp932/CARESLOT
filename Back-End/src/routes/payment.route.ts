@@ -12,6 +12,8 @@ import { WalletRepository } from '../repositories/wallet/wallet.repository';
 import { ChatRepository } from '../repositories/chat/chat.repository';
 import { CallLogRepository } from '../repositories/callLogs/callLog.repository';
 import { Routers } from '../utils/Routers';
+import { SubscriptionRepository } from '../repositories/subscription/subscription.repository';
+import { UserSubscriptionRepository } from '../repositories/userSubscription/userSubscription.repository';
 const router = express.Router();
 const paymentRepository = new PaymentRepository();
 const appoinmentRepository = new AppoinmentRepository();
@@ -22,6 +24,8 @@ const walletRepository = new WalletRepository();
 const walletHistoryRepository = new WalletHistoryRepository();
 const chatRepository = new ChatRepository();
 const callLogRepository = new CallLogRepository();
+const subscriptionRepository = new SubscriptionRepository();
+const userSubscriptionRepository = new UserSubscriptionRepository();
 const paymentService = new PaymentService(
   paymentRepository,
   appoinmentRepository,
@@ -31,7 +35,9 @@ const paymentService = new PaymentService(
   walletRepository,
   walletHistoryRepository,
   chatRepository,
-  callLogRepository
+  callLogRepository,
+  subscriptionRepository,
+  userSubscriptionRepository,
 );
 const paymentController = new PaymentController(paymentService);
 
@@ -45,5 +51,8 @@ router
 router
   .route(Routers.paymentRouters.walletPayment)
   .post(paymentController.walletPayment.bind(paymentController));
+
+  router.route(Routers.paymentRouters.planPayment)
+  .post(paymentController.planPayment.bind(paymentController));
 
 export default router;

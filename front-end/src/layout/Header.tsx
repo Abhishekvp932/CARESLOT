@@ -121,6 +121,12 @@ const Header = () => {
             >
               Contact
             </Link>
+            <Link
+              to="/subscription"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+            >
+              Subscriptions
+            </Link>
           </nav>
 
           <div className="hidden md:flex items-center gap-4" ref={dropdownRef}>

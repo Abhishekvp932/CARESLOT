@@ -12,6 +12,7 @@ import {
   LogOut,
   ChevronRight,
   MessageCircle,
+  Crown 
 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -67,10 +68,16 @@ export const Sidebar = () => {
       active: location.pathname === "/admin/messages",
     },
     {
-      icon: MessageCircle,
-      label: "Messages",
+      icon: Crown,
+      label: "Subscriptions",
       href: "/admin/subscription",
       active: location.pathname === "/admin/subscription",
+    },
+    {
+      icon: Crown,
+      label: "Subscriptions Lists",
+      href: "/admin/subscription-list",
+      active: location.pathname === "/admin/subscription-list",
     },
   ];
 

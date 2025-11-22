@@ -53,4 +53,21 @@ async deleteSubscription(subscriptionId: string): Promise<{ msg: string; }> {
     return {msg:'Plan Removed'};
 }
 
+async getAllActiveSubscription(): Promise<SubscriptionResult[]> {
+  const subscriptionList = await this._subscriptionRepository.findAll();
+   logger.debug(subscriptionList);
+  const subscriptions: SubscriptionResult[] = subscriptionList.map((sub) => {
+    return {
+      _id:sub._id,
+      name: sub.name,
+      price: sub.price,
+      discountAmount: sub.discountAmount,
+      durationInDays: sub.durationInDays,
+      createdAt: sub.createdAt,
+    };
+  });
+
+  return subscriptions;
+}
+
 }

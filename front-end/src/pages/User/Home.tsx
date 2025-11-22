@@ -40,7 +40,7 @@ const Index = () => {
     const getUserData = async () => {
       try {
         const res = await axios.get<userInfo>(
-          "http://localhost:3000/api/auth/me",
+          "https://www.careslot.site/api/auth/me",
           {
             withCredentials: true,
           }

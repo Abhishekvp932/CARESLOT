@@ -136,6 +136,12 @@ export const adminApi = api.injectEndpoints({
         method:'DELETE',
       }),
     }),
+    findAllUserSubscription:builder.query({
+      query:({page,limit})=>({
+        url:API_ROUTES.USERSUBSCRIPTION.findAllSubscriptionList(page,limit),
+        method:'GET',
+      }),
+    }),
   }),
 });
 
@@ -159,5 +165,6 @@ export const {
   useGetContactsDataQuery,
   useCreateSubscriptionMutation,
   useGetAllSubscriptionsQuery,
-  useDeleteSubscriptionMutation
+  useDeleteSubscriptionMutation,
+  useFindAllUserSubscriptionQuery
 } = adminApi;

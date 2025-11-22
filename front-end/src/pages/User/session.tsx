@@ -103,7 +103,7 @@ export function SessionCard() {
   const downloadPrescription = async (appointmentId: string) => {
     try {
       const response = await axios.get<Blob>(
-        `https://careslot.ddns.net/api/prescription/download/${appointmentId}`,
+        `https://www.careslot.site/api/prescription/download/${appointmentId}`,
         { responseType: "blob" }
       );
 

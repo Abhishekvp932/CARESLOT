@@ -58,6 +58,7 @@ export const API_ROUTES = {
     CREATE_ORDER: "/payment/order",
     VERIFY_ORDER: "/payment/verifyOrder",
     WALLET_PAYMENT: "/payment/wallet-payment",
+    VERIFY_PLAN_PAYMENT:'/payment/plan-payment',
   },
 
   CHAT: {
@@ -147,6 +148,10 @@ export const API_ROUTES = {
   SUBSCRIPTION:{
     CREATE:'/subscription/subscription', 
     GETAllSUBSCRIPTIONS:'/subscription/subscription',
-    DELETESUBSCRIPTION:(subscriptionId:string)=> `/subscription/subscription/${subscriptionId}`
+    DELETESUBSCRIPTION:(subscriptionId:string)=> `/subscription/subscription/${subscriptionId}`,
+    GETACTIVESUBSCRIPTION:'/subscription/active-subscriptions'
+  },
+  USERSUBSCRIPTION:{
+    findAllSubscriptionList:(page:number,limit:number)=>`/userSubscription/findAll?page=${page}&limit=${limit}`,
   }
 };

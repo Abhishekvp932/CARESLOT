@@ -9,7 +9,7 @@ interface VideoCallProps {
   onCallEnd?: () => void;
 }
 
-const socket: Socket = io("https://careslot.ddns.net");
+const socket: Socket = io("https://www.careslot.site");
 
 type CallStatus =
   | "idle"

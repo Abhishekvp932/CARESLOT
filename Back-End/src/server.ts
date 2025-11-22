@@ -27,6 +27,7 @@ import callLogRoute from './routes/callLog.route';
 import ratingRoute from './routes/rating.route';
 import prescriptionRoute from './routes/prescription.route';
 import subscriptionRoute from './routes/subscription.route';
+import userSubscriptionRoute from './routes/userSubscription.route';
 import contactRoute from './routes/contact.route';
 import { initChatSocket } from './utils/scoket/chat.scoket';
 import logger from './utils/logger';
@@ -55,7 +56,7 @@ const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: 'https://careslot.ddns.net',
+    origin: 'https://www.careslot.site',
     credentials: true,
   },
 });
@@ -76,7 +77,7 @@ io.on('connection', (socket) => {
 });
 
 const corsOperation = {
-  origin: 'http://localhost:2025',
+  origin: 'https://www.careslot.site',
   credentials: true,
 };
 app.use(cookieParser());
@@ -115,6 +116,7 @@ app.use('/api/rating', ratingRoute);
 app.use('/api/prescription',prescriptionRoute);
 app.use('/api/contact',contactRoute);
 app.use('/api/subscription',subscriptionRoute);
+app.use('/api/userSubscription',userSubscriptionRoute);
 app.use(errorHandler);
 const PORT = process.env.PORT;
 

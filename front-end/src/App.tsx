@@ -41,6 +41,8 @@ import ServicePage from "./pages/User/servicePage"
 import { DoctorDashboard } from "./pages/Doctor/Dashboard"
 import MessagesPage from "./pages/Admin/Messages"
 import Subscriptions from "./pages/Admin/Subscription"
+import SubscriptionPage from "./pages/User/SubscriptionPage"
+import SubscriptionListPage from "./pages/Admin/UserSubscriptions"
 function App() {
 
   return (
@@ -66,7 +68,7 @@ function App() {
         <Route path="/video-call/:appoinmentId" element = {<UserVideoCall/>}/>
         <Route path="/contact" element = {<ContactPage/>}/>
         <Route path="/service" element={<ServicePage/>}/>
-
+        <Route path="/subscription" element={<SubscriptionPage/>}/>
         <Route path="/kyc-submit" element ={
           <KYC/>
           }
@@ -83,6 +85,7 @@ function App() {
            <Route path="/admin/appoinments" element = {<AdminLayout><AppointmentHistory/></AdminLayout>}/>
            <Route path="/admin/messages" element = {<AdminLayout><MessagesPage/></AdminLayout>}/>
            <Route path="/admin/subscription" element={<AdminLayout><Subscriptions/></AdminLayout>}/>
+           <Route path="/admin/subscription-list" element = {<AdminLayout><SubscriptionListPage/></AdminLayout>}/>
 
            {/* doctor */}
 

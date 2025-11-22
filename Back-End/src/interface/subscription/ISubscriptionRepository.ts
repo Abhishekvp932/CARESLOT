@@ -5,4 +5,5 @@ export interface ISubscriptionRepository {
     findAll():Promise<ISubscription[]>;
     findByName(name:string):Promise<ISubscription | null>;
     findByIdAndDelete(subscriptionId:string):Promise<ISubscription | null>
+    findById(subscriptionId:string):Promise<ISubscription | null>;
 }
