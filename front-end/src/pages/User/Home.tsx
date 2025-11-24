@@ -76,7 +76,7 @@ const Index = () => {
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
                 Your Health
-                <span className="block text-blue-200">Our Priority</span>
+                <span className="block text-blue-200">Our-Priority</span>
               </h1>
 
               <p className="text-lg md:text-xl text-blue-100 leading-relaxed max-w-xl">
