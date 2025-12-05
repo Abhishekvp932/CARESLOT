@@ -10,38 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout your repository
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Docker Buildx (needed for multi-platform builds)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # 3️⃣ Login to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 4️⃣ Build & push backend image
       - name: Build & push backend image
         uses: docker/build-push-action@v5
         with:
           context: ./Back-End
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/app:latest
+          no-cache: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/app:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/app:latest
 
-      # 5️⃣ Build & push frontend image
       - name: Build & push frontend image
         uses: docker/build-push-action@v5
         with:
           context: ./front-end
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+          no-cache: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/frontend:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/frontend:latest
 
-      # 6️⃣ Deploy to server
       - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.6
         with:
