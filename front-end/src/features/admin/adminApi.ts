@@ -142,6 +142,13 @@ export const adminApi = api.injectEndpoints({
         method:'GET',
       }),
     }),
+    editSubscription:builder.mutation({
+      query:(updatePlan)=>({
+        url:API_ROUTES.SUBSCRIPTION.EDITSUBSCRIPTION,
+        method:'PUT',
+        body:updatePlan,
+      })
+    })
   }),
 });
 
@@ -166,5 +173,6 @@ export const {
   useCreateSubscriptionMutation,
   useGetAllSubscriptionsQuery,
   useDeleteSubscriptionMutation,
-  useFindAllUserSubscriptionQuery
+  useFindAllUserSubscriptionQuery,
+  useEditSubscriptionMutation,
 } = adminApi;

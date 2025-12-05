@@ -76,8 +76,13 @@ io.on('connection', (socket) => {
   });
 });
 
+// const corsOperation = {
+//   origin: 'https://www.careslot.site',
+//   credentials: true,
+// };
+
 const corsOperation = {
-  origin: 'https://www.careslot.site',
+  origin: 'http://localhost:2025',
   credentials: true,
 };
 app.use(cookieParser());

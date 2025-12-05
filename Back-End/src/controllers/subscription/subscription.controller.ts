@@ -44,4 +44,15 @@ export class SubscriptionController implements ISubscriptionController{
             next(error);
         }
     }
+    async editSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            logger.info('edit subscription request is comming');
+            logger.debug(req.body);
+            const subscriptionData = req.body;
+            const result = await this._subscriptionService.editSubscription(subscriptionData);
+            res.status(HttpStatus.OK).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

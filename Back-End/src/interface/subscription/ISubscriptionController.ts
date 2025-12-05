@@ -5,4 +5,5 @@ export interface ISubscriptionController {
     getAllSubscription(req:Request,res:Response,next:NextFunction):Promise<void>;
     deleteSubscription(req:Request,res:Response,next:NextFunction):Promise<void>;
     getAllActiveSubscription(req:Request,res:Response,next:NextFunction):Promise<void>;
+    editSubscription(req:Request,res:Response,next:NextFunction):Promise<void>;
 }

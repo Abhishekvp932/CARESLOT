@@ -149,7 +149,8 @@ export const API_ROUTES = {
     CREATE:'/subscription/subscription', 
     GETAllSUBSCRIPTIONS:'/subscription/subscription',
     DELETESUBSCRIPTION:(subscriptionId:string)=> `/subscription/subscription/${subscriptionId}`,
-    GETACTIVESUBSCRIPTION:'/subscription/active-subscriptions'
+    GETACTIVESUBSCRIPTION:'/subscription/active-subscriptions',
+    EDITSUBSCRIPTION:'/subscription/edit-subscription',
   },
   USERSUBSCRIPTION:{
     findAllSubscriptionList:(page:number,limit:number)=>`/userSubscription/findAll?page=${page}&limit=${limit}`,

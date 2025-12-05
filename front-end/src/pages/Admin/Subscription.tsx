@@ -6,10 +6,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ConfirmationModal from "@/components/common/ConfirmationModal";
 import AddSubscriptionModal from "@/components/common/admin/SubscriptionModal";
-import { useCreateSubscriptionMutation} from "@/features/admin/adminApi";
+import { useCreateSubscriptionMutation, useEditSubscriptionMutation} from "@/features/admin/adminApi";
 import { handleApiError } from "@/utils/handleApiError";
 import { useGetAllSubscriptionsQuery } from "@/features/admin/adminApi";
 import { useDeleteSubscriptionMutation } from "@/features/admin/adminApi";
+import EditSubscriptionModal from "@/components/common/admin/EditSubscriptionModal";
 interface SubscriptionPlan {
   _id: string;
   name: string;
@@ -34,6 +35,7 @@ const Subscriptions = () => {
   console.log('subscription datas',data);
   const subscriptions = data || [];
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+   const [editModal,setIsEditModal] = useState(false);
 
 //   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
 
@@ -68,6 +70,22 @@ const Subscriptions = () => {
    toast.error(handleApiError(error));
   }
 };
+const [editSubscription] = useEditSubscriptionMutation();
+const handleUpdatePlan = async (updatedPlan: {
+  _id: string;
+  price: number;
+  discountAmount: number;
+  durationInDays: number;
+}) => {
+  try {
+   
+     const res = await editSubscription(updatedPlan).unwrap();
+    refetch();
+    toast.success(res.msg);
+  } catch (error) {
+    toast.error(handleApiError(error));
+  }
+};
 
   const columns:TableColumn<SubscriptionPlan>[] = [
     { label: "Plan Name", accessor: "name" },
@@ -91,17 +109,17 @@ const Subscriptions = () => {
       accessor: "actions",
       render: (item: SubscriptionPlan) => (
         <div className="flex gap-2">
-          <button
-            onClick={() => {
-              setSelectedPlan(item);
-              setConfirmOpen(true);
-            }}
-            className="px-3 py-1 bg-red-600 text-white rounded hover:opacity-90"
-            type="button"
-          >
-            Delete
-          </button>
-        </div>
+      <button
+        onClick={() => {
+          setSelectedPlan(item); // store plan for editing
+          setIsEditModal(true);
+        }}
+        className="px-3 py-1 bg-blue-600 text-white rounded hover:opacity-90"
+        type="button"
+      >
+        Edit
+      </button>
+    </div>
       ),
     },
   ];
@@ -194,7 +212,10 @@ const Subscriptions = () => {
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleCreatePlan}
       />
-
+       <EditSubscriptionModal open ={editModal} planData={selectedPlan}
+       onClose={()=> setIsEditModal(false)}
+       onUpdate={handleUpdatePlan}/>
+       
       <ToastContainer autoClose={2000} />
     </div>
   );

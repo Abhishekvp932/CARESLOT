@@ -1,3 +1,4 @@
+import { UpdateQuery } from 'mongoose';
 import { ISubscription } from '../../models/interface/ISubscription';
 
 export interface ISubscriptionRepository {
@@ -6,4 +7,5 @@ export interface ISubscriptionRepository {
     findByName(name:string):Promise<ISubscription | null>;
     findByIdAndDelete(subscriptionId:string):Promise<ISubscription | null>
     findById(subscriptionId:string):Promise<ISubscription | null>;
+    findByIdAndUpdate(subscriptionId:string,subscripionData:UpdateQuery<ISubscription>):Promise<ISubscription | null>;
 }

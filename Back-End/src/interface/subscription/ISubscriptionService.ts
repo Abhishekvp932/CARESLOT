@@ -1,3 +1,4 @@
+import { EditSubscriptionData } from '../../types/EditSubscriptionType';
 import { SubscriptionResult } from '../../types/SubscriptionResult';
 
 export interface ISubcriptionService {
@@ -5,4 +6,5 @@ export interface ISubcriptionService {
     getAllAdminSubscription():Promise<SubscriptionResult[]>;
     deleteSubscription(subscriptionId:string):Promise<{msg:string}>;
     getAllActiveSubscription():Promise<SubscriptionResult[]>;
+    editSubscription(subscriptionData:EditSubscriptionData):Promise<{msg:string}>
 }

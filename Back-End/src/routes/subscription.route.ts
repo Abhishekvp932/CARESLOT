@@ -26,4 +26,7 @@ router.route(Routers.subscriptionRouters.deleteSubscription)
 
 router.route(Routers.subscriptionRouters.getAllActiveSubscription)
 .get(authMiddleWare.protect,subscriptionController.getAllActiveSubscription.bind(subscriptionController));
+
+router.route(Routers.subscriptionRouters.editSubscription)
+.put(authMiddleWare.protect,subscriptionController.editSubscription.bind(subscriptionController));
 export default router;

@@ -103,7 +103,8 @@ export const Routers = {
         create:'/subscription',
         getAllSubscription:'/subscription',
         deleteSubscription:'/subscription/:subscriptionId', 
-        getAllActiveSubscription:'/active-subscriptions'
+        getAllActiveSubscription:'/active-subscriptions',
+        editSubscription:'/edit-subscription',
     },
     userSubscriptionRouters:{
         findAllUserSubscription:'/findAll',
