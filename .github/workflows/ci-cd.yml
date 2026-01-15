@@ -24,7 +24,7 @@ jobs:
 
       - name: Build & push backend image
         uses: docker/build-push-action@v5
-        with:
+        with: 
           context: ./Back-End
           push: true
           no-cache: true

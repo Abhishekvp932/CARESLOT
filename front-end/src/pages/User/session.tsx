@@ -1,4 +1,4 @@
-"use client";
+
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -103,7 +103,7 @@ export function SessionCard() {
   const downloadPrescription = async (appointmentId: string) => {
     try {
       const response = await axios.get<Blob>(
-        `https://www.careslot.site/api/prescription/download/${appointmentId}`,
+        `https://careslot-j0bz.onrender.com/api/prescription/download/${appointmentId}`,
         { responseType: "blob" }
       );
 

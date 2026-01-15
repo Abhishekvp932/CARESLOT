@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { AppointmentCard } from "@/components/common/admin/appoinment_card";
 

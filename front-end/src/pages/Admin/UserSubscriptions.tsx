@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { useFindAllUserSubscriptionQuery } from "@/features/admin/adminApi";
 import { Mail, DollarSign, User } from "lucide-react";
