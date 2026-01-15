@@ -83,8 +83,8 @@ router.get(
     });
     res.cookie('sessionId', sessionId, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'none',
+      secure: true,
+      sameSite: 'none', 
       maxAge: Number(process.env.REDIS_SESSION_MAX_AGE),
     });
 
