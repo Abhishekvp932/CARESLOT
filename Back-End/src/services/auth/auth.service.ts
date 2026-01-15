@@ -394,14 +394,18 @@ export class AuthService implements IAuthService{
     const sessionId = req.cookies?.sessionId;
 
     if (!sessionId) {
-      throw new Error('No session id found');
+      res.status(401).json({msg:'session  expired. please login again'});
+      return {msg :'login again'};
     }
 
     const storedRefreshToken = await redisClient.get(`refresh:${sessionId}`);
 
     if (!storedRefreshToken) {
-      throw new Error('NO_REFRESH_TOKEN_OR_EXPIRED');
+     res.clearCookie('sessionId');
+     res.status(401).json({ msg: 'Refresh token expired' });
+     return {msg : 'refresh token expired'};
     }
+    
 
     const decoded = verifyRefreshToken(storedRefreshToken);
 
@@ -423,7 +427,8 @@ export class AuthService implements IAuthService{
     logger.debug(user);
 
     if (!user) {
-      throw new Error(SERVICE_MESSAGE.USER_NOT_FOUND);
+      res.clearCookie('sessionId');
+      return {msg : SERVICE_MESSAGE.USER_NOT_FOUND};
     }
 
     const payload: TokenPayload = {
