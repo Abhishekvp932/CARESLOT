@@ -44,7 +44,7 @@ export class AuthController implements IAuthController {
       res.cookie('sessionId', sessionId, {
         httpOnly: true,
         secure: false,
-        sameSite: 'lax',
+        sameSite: 'none',
         maxAge: Number(process.env.REDIS_SESSION_MAX_AGE),
       });
       res
