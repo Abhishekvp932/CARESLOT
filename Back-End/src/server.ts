@@ -56,7 +56,7 @@ const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: 'https://www.careslot.site',
+    origin: 'https://careslotsit.vercel.app',
     credentials: true,
   },
 });
@@ -77,7 +77,7 @@ io.on('connection', (socket) => {
 });
 
 const corsOperation = {
-  origin: 'https://www.careslot.site',
+  origin: 'https://careslotsit.vercel.app',
   credentials: true,
 };
 
