@@ -4,7 +4,7 @@ import { DoctorService } from '../services/doctor/doctor.service';
 import { PatientRepository } from '../repositories/auth/auth.repository';
 import { DoctorAuthRepository } from '../repositories/doctors/doctor.auth.repository';
 import { multiFileUpload } from '../middleware/multer.middleware';
-import { AuthMiddleware } from '../middleware/auth.middleware';
+// import { AuthMiddleware } from '../middleware/auth.middleware';
 import { AppoinmentRepository } from '../repositories/appoinment/appoinment.repository';
 import { Routers } from '../utils/Routers';
 const router = express.Router();
@@ -19,10 +19,10 @@ const doctorService = new DoctorService(
 );
 
 const doctorController = new DoctorController(doctorService);
-const authMiddleware = new AuthMiddleware(
-  patientRepository,
-  doctorAuthRepository
-);
+// const authMiddleware = new AuthMiddleware(
+//   patientRepository,
+//   doctorAuthRepository
+// );
 
 router.post(
   Routers.doctorRouters.kycSubmit,
@@ -32,11 +32,11 @@ router.post(
 router
   .route(Routers.doctorRouters.profile)
   .get(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     doctorController.getDoctorProfile.bind(doctorController)
   )
   .put(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     multiFileUpload,
     doctorController.editDoctorProfile.bind(doctorController)
   );
@@ -44,7 +44,7 @@ router
 router
   .route(Routers.doctorRouters.reApply)
   .put(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     multiFileUpload,
     doctorController.reApplyDoctor.bind(doctorController)
   );
@@ -52,8 +52,8 @@ router
 router
   .route(Routers.doctorRouters.appoinments)
   .get(
-    authMiddleware.protect,
-    authMiddleware.isBlockedOrNot,
+    // authMiddleware.protect,
+    // authMiddleware.isBlockedOrNot,
     doctorController.getAllAppoinments.bind(doctorController)
   );
 
@@ -61,8 +61,8 @@ router
 router
     .route(Routers.doctorRouters.dashboardData)
     .get(
-      authMiddleware.protect,
-      authMiddleware.isBlockedOrNot,
+      // authMiddleware.protect,
+      // authMiddleware.isBlockedOrNot,
       doctorController.getDoctorDashboardData.bind(doctorController)
     );
 export default router;

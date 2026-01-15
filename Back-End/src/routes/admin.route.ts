@@ -36,12 +36,12 @@ const router = express.Router();
 router
   .route(Routers.adminRouters.users)
   .get(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     authMiddleware.authorizeRole('admin'),
     adminController.getAllUsers.bind(adminController)
   )
   .post(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     multiFileUpload,
     authMiddleware.authorizeRole('admin'),
     adminController.addUser.bind(adminController)
@@ -50,12 +50,12 @@ router
 router
   .route(Routers.adminRouters.usersId)
   .patch(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     authMiddleware.authorizeRole('admin'),
     adminController.blockAndUnblockUsers.bind(adminController)
   )
   .put(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     multiFileUpload,
     authMiddleware.authorizeRole('admin'),
     adminController.updateUserData.bind(adminController)
@@ -64,12 +64,12 @@ router
 router
   .route(Routers.adminRouters.doctors)
   .get(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     authMiddleware.authorizeRole('admin'),
     adminController.getAllDoctors.bind(adminController)
   )
   .post(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     multiFileUpload,
     authMiddleware.authorizeRole('admin'),
     adminController.addDoctor.bind(adminController)
@@ -78,12 +78,12 @@ router
 router
   .route(Routers.adminRouters.doctorsId)
   .patch(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     authMiddleware.authorizeRole('admin'),
     adminController.blockAndUnblockDoctors.bind(adminController)
   )
   .get(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     authMiddleware.authorizeRole('admin'),
     adminController.editDoctorData.bind(adminController)
   );
@@ -91,7 +91,7 @@ router
 router
   .route(Routers.adminRouters.doctorId)
   .patch(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     authMiddleware.authorizeRole('admin'),
     adminController.doctorApprove.bind(adminController)
   )
@@ -100,7 +100,7 @@ router
 router
   .route(Routers.adminRouters.verificationList)
   .get(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     authMiddleware.authorizeRole('admin'),
     adminController.findUnprovedDoctors.bind(adminController)
   );
@@ -108,7 +108,7 @@ router
 router
   .route(Routers.adminRouters.doctorDetails)
   .get(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     authMiddleware.authorizeRole('admin'),
     adminController.getVerificationDoctorDetails.bind(adminController)
   );
@@ -116,7 +116,7 @@ router
 router
   .route(Routers.adminRouters.appoinments)
   .get(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     authMiddleware.authorizeRole('admin'),
     adminController.getAllAppoinments.bind(adminController)
   );
@@ -124,7 +124,7 @@ router
 router
   .route(Routers.adminRouters.slotsAndAppoinments)
   .get(
-    authMiddleware.protect,
+    // authMiddleware.protect,
     adminController.getDoctorSlotAndAppoinment.bind(adminController)
   );
 
