@@ -56,7 +56,7 @@ const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: 'https://careslotsit.vercel.app',
+    origin: process.env.CLIENT_URL,
     credentials: true,
   },
 });
