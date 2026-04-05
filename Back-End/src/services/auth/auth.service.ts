@@ -115,7 +115,7 @@ export class AuthService implements IAuthService{
      logger.debug(otp);
     const otpExpire = new Date(Date.now() + 60 * 1000);
     const hashedPassword = await hashPassword(password);
-
+    
     if (role === 'patients') {
       const existingUser = await this._patientRepository.findByEmail(email);
       if (existingUser) {
