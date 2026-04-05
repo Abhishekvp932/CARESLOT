@@ -77,7 +77,7 @@ io.on('connection', (socket) => {
 });
 
 const corsOperation = {
-  origin: 'https://careslotsit.vercel.app',
+  origin: process.env.CLIENT_URL,
   credentials: true,
 };
 
@@ -97,8 +97,8 @@ app.use(
     },
   })
 );
-app.use(express.json());
 app.use(cors(corsOperation));
+app.use(express.json());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(requestLogger);
