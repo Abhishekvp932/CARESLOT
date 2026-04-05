@@ -86,7 +86,7 @@ const corsOperation = {
 //   credentials: true,
 // };
 app.use(cors(corsOperation));
-app.options('*', cors(corsOperation));
+// app.options('/*', cors(corsOperation));
 app.use(cookieParser());
 app.use(
   session({
