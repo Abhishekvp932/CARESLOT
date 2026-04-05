@@ -17,7 +17,7 @@ import patientRoute from './routes/patient.route';
 import slotRoute from './routes/slot.route';
 import appoinmentRoute from './routes/appoinment.route';
 import requestLogger from './middleware/requestLogger';
-import redisClient from './config/redisClient';
+// import redisClient from './config/redisClient';
 import chatbotRoute from './routes/chatbot.route';
 import notificationRoute from './routes/notification.route';
 import paymentRoute from './routes/payment.route';
@@ -35,7 +35,7 @@ import { initVideoCallSocket } from './utils/scoket/video.call.socket';
 import { errorHandler } from './middleware/errorHandler.middleware';
 (async () => {
   try {
-    await redisClient.connect();
+    // await redisClient.connect();
     console.log('redis connected');
   } catch (error: unknown) {
     if (error instanceof Error) {
