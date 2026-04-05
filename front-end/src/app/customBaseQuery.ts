@@ -8,10 +8,7 @@ import { AdminlogOut as adminLogOut } from "@/features/admin/adminSlice";
 import type { RootState } from "./store";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl:
-    process.env.NODE_ENV === "production"
-      ? "https://careslot-j0bz.onrender.com/api"
-      : "http://localhost:3000/api",
+  baseUrl:import.meta.env.VITE_API_URL,
   credentials: "include",
 });
 
